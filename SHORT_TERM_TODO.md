@@ -14,3 +14,6 @@
 - [ ] Fix window resizing
 - [ ] Add ImGUI support
 - [ ] Create a **proper** `Scene` class to group models in code
+- [ ] Make hot reload of shaders
+- [X] Do refractions and reflections with Fresnel coefficients
+- [ ] Start with spherical harmonics on sphere before raytracing: http://holger.dammertz.org/stuff/notes_HammersleyOnHemisphere.html

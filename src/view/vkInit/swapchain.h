@@ -35,7 +35,8 @@ namespace vkInit {
 		\param surface the window surface which will use the swapchain
 		\returns a struct holding the details
 	*/
-	SwapChainSupportDetails query_swapchain_support(vk::PhysicalDevice device, vk::SurfaceKHR surface) {
+	SwapChainSupportDetails query_swapchain_support(vk::PhysicalDevice device, vk::SurfaceKHR surface)
+	{
 		SwapChainSupportDetails support;
 
 		/*
@@ -102,7 +103,8 @@ namespace vkInit {
 		support.formats = device.getSurfaceFormatsKHR(surface);
 
 #ifndef NDEBUG
-		for (vk::SurfaceFormatKHR supportedFormat : support.formats) {
+		for (vk::SurfaceFormatKHR supportedFormat : support.formats)
+		{
 			/*
 			* typedef struct VkSurfaceFormatKHR {
 				VkFormat           format;
@@ -132,14 +134,12 @@ namespace vkInit {
 		\param formats a vector of surface formats supported by the device
 		\returns the chosen format
 	*/
-	vk::SurfaceFormatKHR choose_swapchain_surface_format(std::vector<vk::SurfaceFormatKHR> formats) {
-
-		for (vk::SurfaceFormatKHR format : formats) {
+	vk::SurfaceFormatKHR choose_swapchain_surface_format(std::vector<vk::SurfaceFormatKHR> formats)
+	{
+		for (vk::SurfaceFormatKHR format : formats)
 			if (format.format == vk::Format::eB8G8R8A8Unorm
-				&& format.colorSpace == vk::ColorSpaceKHR::eSrgbNonlinear) {
+				&& format.colorSpace == vk::ColorSpaceKHR::eSrgbNonlinear)
 				return format;
-			}
-		}
 
 		return formats[0];
 	}
@@ -150,13 +150,11 @@ namespace vkInit {
 		\param presentModes a vector of present modes supported by the device
 		\returns the chosen present mode
 	*/
-	vk::PresentModeKHR choose_swapchain_present_mode(std::vector<vk::PresentModeKHR> presentModes) {
-
-		for (vk::PresentModeKHR presentMode : presentModes) {
-			if (presentMode == vk::PresentModeKHR::eMailbox) {
+	vk::PresentModeKHR choose_swapchain_present_mode(std::vector<vk::PresentModeKHR> presentModes)
+	{
+		for (vk::PresentModeKHR presentMode : presentModes)
+			if (presentMode == vk::PresentModeKHR::eMailbox)
 				return presentMode;
-			}
-		}
 
 		return vk::PresentModeKHR::eFifo;
 	}
@@ -169,11 +167,10 @@ namespace vkInit {
 		\param capabilities a struct describing the supported capabilities of the device
 		\returns the chosen extent
 	*/
-	vk::Extent2D choose_swapchain_extent(uint32_t width, uint32_t height, vk::SurfaceCapabilitiesKHR capabilities) {
-
-		if (capabilities.currentExtent.width != UINT32_MAX) {
+	vk::Extent2D choose_swapchain_extent(uint32_t width, uint32_t height, vk::SurfaceCapabilitiesKHR capabilities)
+	{
+		if (capabilities.currentExtent.width != UINT32_MAX)
 			return capabilities.currentExtent;
-		}
 		else {
 			vk::Extent2D extent = { width, height };
 
@@ -201,8 +198,8 @@ namespace vkInit {
 		\param height the requested height
 		\returns a struct holding the swapchain and other associated data structures
 	*/
-	SwapChainBundle create_swapchain(vk::Device logicalDevice, vk::PhysicalDevice physicalDevice, vk::SurfaceKHR surface, int width, int height) {
-
+	SwapChainBundle create_swapchain(vk::Device logicalDevice, vk::PhysicalDevice physicalDevice, vk::SurfaceKHR surface, int width, int height)
+	{
 		SwapChainSupportDetails support = query_swapchain_support(physicalDevice, surface);
 
 		vk::SurfaceFormatKHR format = choose_swapchain_surface_format(support.formats);
@@ -246,7 +243,8 @@ namespace vkInit {
 		vkUtil::QueueFamilyIndices indices = vkUtil::find_queue_families(physicalDevice, surface);
 		uint32_t queueFamilyIndices[] = { indices.graphicsFamily.value(), indices.presentFamily.value() };
 
-		if (indices.graphicsFamily != indices.presentFamily) {
+		if (indices.graphicsFamily != indices.presentFamily)
+		{
 			createInfo.imageSharingMode = vk::SharingMode::eConcurrent;
 			createInfo.queueFamilyIndexCount = 2;
 			createInfo.pQueueFamilyIndices = queueFamilyIndices;
@@ -263,18 +261,20 @@ namespace vkInit {
 		createInfo.oldSwapchain = vk::SwapchainKHR(nullptr);
 
 		SwapChainBundle bundle{};
-		try {
+		try
+		{
 			bundle.swapchain = logicalDevice.createSwapchainKHR(createInfo);
 		}
-		catch (vk::SystemError err) {
+		catch (vk::SystemError err)
+		{
 			throw std::runtime_error("failed to create swap chain!");
 		}
 
 		std::vector<vk::Image> images = logicalDevice.getSwapchainImagesKHR(bundle.swapchain);
 		bundle.frames.resize(images.size());
 
-		for (size_t i = 0; i < images.size(); ++i) {
-
+		for (size_t i = 0; i < images.size(); ++i)
+		{
 			bundle.frames[i].image = images[i];
 			bundle.frames[i].imageView = vkImage::make_image_view(
 				logicalDevice, images[i], format.format, vk::ImageAspectFlagBits::eColor,

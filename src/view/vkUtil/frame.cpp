@@ -2,8 +2,8 @@
 #include "memory.h"
 #include "../vkImage/image.h"
 
-void vkUtil::SwapChainFrame::makeDescriptorResources() {
-
+void vkUtil::SwapChainFrame::makeDescriptorResources()
+{
 	BufferInputChunk input;
 	input.logicalDevice = logicalDevice;
 	input.memoryProperties = vk::MemoryPropertyFlagBits::eHostVisible | vk::MemoryPropertyFlagBits::eHostCoherent;
@@ -26,9 +26,8 @@ void vkUtil::SwapChainFrame::makeDescriptorResources() {
 	modelBufferWriteLocation = logicalDevice.mapMemory(modelBuffer.bufferMemory, 0, 1024 * sizeof(glm::mat4));
 
 	modelTransforms.reserve(1024);
-	for (int i = 0; i < 1024; ++i) {
+	for (int i = 0; i < 1024; ++i)
 		modelTransforms.push_back(glm::mat4(1.f));
-	}
 
 	/*
 	typedef struct VkDescriptorBufferInfo {
@@ -51,8 +50,8 @@ void vkUtil::SwapChainFrame::makeDescriptorResources() {
 
 }
 
-void vkUtil::SwapChainFrame::makeDepthResources() {
-
+void vkUtil::SwapChainFrame::makeDepthResources()
+{
 	depthFormat = vkImage::find_supported_format(
 		physicalDevice,
 		{ vk::Format::eD32Sfloat, vk::Format::eD24UnormS8Uint },
@@ -78,8 +77,8 @@ void vkUtil::SwapChainFrame::makeDepthResources() {
 	);
 }
 
-void vkUtil::SwapChainFrame::recordWriteOperations() {
-
+void vkUtil::SwapChainFrame::recordWriteOperations()
+{
 	/*
 	typedef struct VkWriteDescriptorSet {
 		VkStructureType                  sType;
@@ -121,13 +120,10 @@ void vkUtil::SwapChainFrame::recordWriteOperations() {
 
 }
 
-void vkUtil::SwapChainFrame::writeDescriptorSet() {
+void vkUtil::SwapChainFrame::writeDescriptorSet() { logicalDevice.updateDescriptorSets(writeOps, nullptr); }
 
-	logicalDevice.updateDescriptorSets(writeOps, nullptr);
-}
-
-void vkUtil::SwapChainFrame::destroy() {
-
+void vkUtil::SwapChainFrame::destroy()
+{
 	logicalDevice.destroyImageView(imageView);
 	logicalDevice.destroyFramebuffer(framebuffer[pipelineType::SKY]);
 	logicalDevice.destroyFramebuffer(framebuffer[pipelineType::STANDARD]);

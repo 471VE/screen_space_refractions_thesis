@@ -22,21 +22,21 @@ namespace vkInit {
 		\param surface the windows surface (used for getting the queue families)
 		\returns the created command pool
 	*/
-	vk::CommandPool make_command_pool(vk::Device device, vk::PhysicalDevice physicalDevice, vk::SurfaceKHR surface) {
-
+	vk::CommandPool make_command_pool(vk::Device device, vk::PhysicalDevice physicalDevice, vk::SurfaceKHR surface)
+	{
 		vkUtil::QueueFamilyIndices queueFamilyIndices = vkUtil::find_queue_families(physicalDevice, surface);
 
 		vk::CommandPoolCreateInfo poolInfo;
 		poolInfo.flags = vk::CommandPoolCreateFlags() | vk::CommandPoolCreateFlagBits::eResetCommandBuffer;
 		poolInfo.queueFamilyIndex = queueFamilyIndices.graphicsFamily.value();
 
-		try {
+		try
+		{
 			return device.createCommandPool(poolInfo);
 		}
-		catch (vk::SystemError err) {
-
+		catch (vk::SystemError err)
+		{
 			vkLogging::Logger::getLogger()->print("Failed to create Command Pool");
-
 			return nullptr;
 		}
 	}
@@ -47,8 +47,8 @@ namespace vkInit {
 		\param inputChunk the required input info
 		\returns the main command buffer
 	*/
-	vk::CommandBuffer make_command_buffer(commandBufferInputChunk inputChunk) {
-
+	vk::CommandBuffer make_command_buffer(commandBufferInputChunk inputChunk)
+	{
 		vk::CommandBufferAllocateInfo allocInfo = {};
 		allocInfo.commandPool = inputChunk.commandPool;
 		allocInfo.level = vk::CommandBufferLevel::ePrimary;
@@ -56,17 +56,15 @@ namespace vkInit {
 		
 
 		//Make a "main" command buffer for the engine
-		try {
+		try
+		{
 			vk::CommandBuffer commandBuffer = inputChunk.device.allocateCommandBuffers(allocInfo)[0];
-
 			vkLogging::Logger::getLogger()->print("Allocated main command buffer ");
-
 			return commandBuffer;
 		}
-		catch (vk::SystemError err) {
-
+		catch (vk::SystemError err)
+		{
 			vkLogging::Logger::getLogger()->print("Failed to allocate main command buffer ");
-
 			return nullptr;
 		}
 	}
@@ -76,8 +74,8 @@ namespace vkInit {
 
 		\param inputChunk the required input info
 	*/
-	void make_frame_command_buffers(commandBufferInputChunk inputChunk) {
-
+	void make_frame_command_buffers(commandBufferInputChunk inputChunk)
+	{
 		std::stringstream message;
 
 		vk::CommandBufferAllocateInfo allocInfo = {};
@@ -86,16 +84,18 @@ namespace vkInit {
 		allocInfo.commandBufferCount = 1;
 
 		//Make a command buffer for each frame
-		for (int i = 0; i < inputChunk.frames.size(); ++i) {
-			try {
+		for (int i = 0; i < inputChunk.frames.size(); ++i)
+		{
+			try
+			{
 				inputChunk.frames[i].commandBuffer = inputChunk.device.allocateCommandBuffers(allocInfo)[0];
 
 				message << "Allocated command buffer for frame " << i;
 				vkLogging::Logger::getLogger()->print(message.str());
 				message.str("");
 			}
-			catch (vk::SystemError err) {
-
+			catch (vk::SystemError err)
+			{
 				message << "Failed to allocate command buffer for frame " << i;
 				vkLogging::Logger::getLogger()->print(message.str());
 				message.str("");

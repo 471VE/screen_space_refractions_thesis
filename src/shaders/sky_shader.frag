@@ -6,7 +6,8 @@ layout(set = 1, binding = 0) uniform samplerCube material;
 
 layout(location = 0) out vec4 outColor;
 
-void main() {
+void main()
+{
 	outColor = texture(material, forwards);
 	//outColor = vec4(0.f, 1.f, 0.f, 1.f);
 }

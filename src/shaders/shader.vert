@@ -19,7 +19,8 @@ layout(location = 0) out vec3 fragColor;
 layout(location = 1) out vec2 fragTexCoord;
 layout(location = 2) out vec3 fragNormal;
 
-void main() {
+void main()
+{
 	gl_Position = cameraData.viewProjection * ObjectData.model[gl_InstanceIndex] * vec4(vertexPosition, 1.f);
 	fragColor = vertexColor;
 	fragTexCoord = vertexTexCoord;

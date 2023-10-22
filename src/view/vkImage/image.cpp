@@ -6,8 +6,8 @@
 #include "../vkUtil/single_time_commands.h"
 #include "../vkInit/descriptors.h"
 
-vk::Image vkImage::make_image(ImageInputChunk input) {
-
+vk::Image vkImage::make_image(ImageInputChunk input)
+{
 	/*
 	typedef struct VkImageCreateInfo {
 		VkStructureType          sType;
@@ -41,17 +41,19 @@ vk::Image vkImage::make_image(ImageInputChunk input) {
 	imageInfo.sharingMode = vk::SharingMode::eExclusive;
 	imageInfo.samples = vk::SampleCountFlagBits::e1;
 
-	try {
+	try
+	{
 		return input.logicalDevice.createImage(imageInfo);
 	}
-	catch (vk::SystemError err) {
+	catch (vk::SystemError err)
+	{
 		vkLogging::Logger::getLogger()->print("Unable to make image");
 	}
 	return nullptr;
 }
 
-vk::DeviceMemory vkImage::make_image_memory(ImageInputChunk input, vk::Image image) {
-
+vk::DeviceMemory vkImage::make_image_memory(ImageInputChunk input, vk::Image image)
+{
 	vk::MemoryRequirements requirements = input.logicalDevice.getImageMemoryRequirements(image);
 
 	vk::MemoryAllocateInfo allocation;
@@ -60,19 +62,21 @@ vk::DeviceMemory vkImage::make_image_memory(ImageInputChunk input, vk::Image ima
 		input.physicalDevice, requirements.memoryTypeBits, input.memoryProperties
 	);
 
-	try {
+	try
+	{
 		vk::DeviceMemory imageMemory = input.logicalDevice.allocateMemory(allocation);
 		input.logicalDevice.bindImageMemory(image, imageMemory, 0);
 		return imageMemory;
 	}
-	catch (vk::SystemError err) {
+	catch (vk::SystemError err)
+	{
 		vkLogging::Logger::getLogger()->print("Unable to allocate memory for image");
 	}
 	return nullptr;
 }
 
-void vkImage::transition_image_layout(ImageLayoutTransitionJob transitionJob) {
-
+void vkImage::transition_image_layout(ImageLayoutTransitionJob transitionJob)
+{
 	vkUtil::start_job(transitionJob.commandBuffer);
 
 	/*
@@ -116,7 +120,8 @@ void vkImage::transition_image_layout(ImageLayoutTransitionJob transitionJob) {
 	vk::PipelineStageFlags sourceStage, destinationStage;
 
 	if (transitionJob.oldLayout == vk::ImageLayout::eUndefined
-		&& transitionJob.newLayout == vk::ImageLayout::eTransferDstOptimal) {
+		&& transitionJob.newLayout == vk::ImageLayout::eTransferDstOptimal)
+	{
 
 		barrier.srcAccessMask = vk::AccessFlagBits::eNoneKHR;
 		barrier.dstAccessMask = vk::AccessFlagBits::eTransferWrite;
@@ -124,8 +129,8 @@ void vkImage::transition_image_layout(ImageLayoutTransitionJob transitionJob) {
 		sourceStage = vk::PipelineStageFlagBits::eTopOfPipe;
 		destinationStage = vk::PipelineStageFlagBits::eTransfer;
 	}
-	else {
-
+	else
+	{
 		barrier.srcAccessMask = vk::AccessFlagBits::eTransferWrite;
 		barrier.dstAccessMask = vk::AccessFlagBits::eShaderRead;
 
@@ -138,8 +143,8 @@ void vkImage::transition_image_layout(ImageLayoutTransitionJob transitionJob) {
 	vkUtil::end_job(transitionJob.commandBuffer, transitionJob.queue);
 }
 
-void vkImage::copy_buffer_to_image(BufferImageCopyJob copyJob) {
-
+void vkImage::copy_buffer_to_image(BufferImageCopyJob copyJob)
+{
 	vkUtil::start_job(copyJob.commandBuffer);
 
 	/*
@@ -180,8 +185,8 @@ void vkImage::copy_buffer_to_image(BufferImageCopyJob copyJob) {
 
 vk::ImageView vkImage::make_image_view(
 	vk::Device logicalDevice, vk::Image image, vk::Format format,
-	vk::ImageAspectFlags aspect, vk::ImageViewType type, uint32_t arrayCount) {
-
+	vk::ImageAspectFlags aspect, vk::ImageViewType type, uint32_t arrayCount)
+{
 	/*
 	* ImageViewCreateInfo( VULKAN_HPP_NAMESPACE::ImageViewCreateFlags flags_ = {},
 		VULKAN_HPP_NAMESPACE::Image                image_ = {},
@@ -211,10 +216,10 @@ vk::ImageView vkImage::make_image_view(
 vk::Format vkImage::find_supported_format(
 	vk::PhysicalDevice physicalDevice,
 	const std::vector<vk::Format>& candidates,
-	vk::ImageTiling tiling, vk::FormatFeatureFlags features) {
-
-	for (vk::Format format : candidates) {
-
+	vk::ImageTiling tiling, vk::FormatFeatureFlags features)
+{
+	for (vk::Format format : candidates)
+	{
 		vk::FormatProperties properties = physicalDevice.getFormatProperties(format);
 
 		/*
@@ -226,14 +231,12 @@ vk::Format vkImage::find_supported_format(
 		*/
 
 		if (tiling == vk::ImageTiling::eLinear
-			&& (properties.linearTilingFeatures & features) == features) {
+			&& (properties.linearTilingFeatures & features) == features)
 			return format;
-		}
 			
 		if (tiling == vk::ImageTiling::eOptimal
-			&& (properties.optimalTilingFeatures & features) == features) {
+			&& (properties.optimalTilingFeatures & features) == features)
 			return format;
-		}
 
 		std::runtime_error("Unable to find suitable format");
 	}

@@ -1,13 +1,13 @@
 #include "vertex_menagerie.h"
 
-VertexMenagerie::VertexMenagerie() {
-	indexOffset = 0;
-}
+VertexMenagerie::VertexMenagerie()
+	: indexOffset(0)
+{}
 	
 void VertexMenagerie::consume(
 	meshTypes type, std::vector<float>& vertexData, 
-	std::vector<uint32_t>& indexData) {
-
+	std::vector<uint32_t>& indexData
+) {
 	int indexCount = static_cast<int>(indexData.size());
 	int vertexCount = static_cast<int>(vertexData.size() / 11);
 	int lastIndex = static_cast<int>(indexLump.size());
@@ -15,19 +15,17 @@ void VertexMenagerie::consume(
 	firstIndices.insert(std::make_pair(type, lastIndex));
 	indexCounts.insert(std::make_pair(type, indexCount));
 
-	for (float attribute : vertexData) {
+	for (float attribute : vertexData)
 		vertexLump.push_back(attribute);
-	}
-	for (uint32_t index : indexData) {
-		//std::cout << (index + indexOffset) << std::endl;
+
+	for (uint32_t index : indexData)
 		indexLump.push_back(index + indexOffset);
-	}
 
 	indexOffset += vertexCount;
 }
 
-void VertexMenagerie::finalize(vertexBufferFinalizationChunk finalizationChunk) {
-
+void VertexMenagerie::finalize(vertexBufferFinalizationChunk finalizationChunk)
+{
 	logicalDevice = finalizationChunk.logicalDevice;
 
 	//make a staging buffer for vertices
@@ -91,8 +89,8 @@ void VertexMenagerie::finalize(vertexBufferFinalizationChunk finalizationChunk) 
 	vertexLump.clear();
 }
 
-VertexMenagerie::~VertexMenagerie() {
-
+VertexMenagerie::~VertexMenagerie()
+{
 	//destroy vertex buffer
 	logicalDevice.destroyBuffer(vertexBuffer.buffer);
 	logicalDevice.freeMemory(vertexBuffer.bufferMemory);

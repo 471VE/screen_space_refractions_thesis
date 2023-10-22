@@ -3,8 +3,8 @@
 /**
 * Scene constructor
 */
-Scene::Scene() {
-
+Scene::Scene()
+{
 	// Turn off scene for now
 	
 	// positions.insert({ meshTypes::GROUND, {} });
@@ -17,5 +17,4 @@ Scene::Scene() {
 	// positions[meshTypes::SKULL].push_back(glm::vec3(15.f, -5.f, 1.f));
 	// positions[meshTypes::SKULL].push_back(glm::vec3(15.f, 5.f, 1.f));
 	// positions[meshTypes::VIKING_ROOM].push_back(glm::vec3(3.f, 1.5f, 4.f));
-
 };

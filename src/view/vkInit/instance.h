@@ -12,8 +12,8 @@ namespace vkInit {
 		\param layers a list of layer names being requested.
 		\returns whether all of the extensions and layers are supported.
 	*/
-	bool supported(std::vector<const char*>& extensions, std::vector<const char*>& layers) {
-		
+	bool supported(std::vector<const char*>& extensions, std::vector<const char*>& layers)
+	{		
 		std::stringstream message;
 		//check extension support
 		std::vector<vk::ExtensionProperties> supportedExtensions = vk::enumerateInstanceExtensionProperties();
@@ -26,17 +26,21 @@ namespace vkInit {
 #endif
 
 		bool found;
-		for (const char* extension : extensions) {
+		for (const char* extension : extensions)
+		{
 			found = false;
-			for (vk::ExtensionProperties supportedExtension : supportedExtensions) {
-				if (strcmp(extension, supportedExtension.extensionName) == 0) {
+			for (vk::ExtensionProperties supportedExtension : supportedExtensions)
+			{
+				if (strcmp(extension, supportedExtension.extensionName) == 0)
+				{
 					found = true;
 					message << "Extension \"" << extension << "\" is supported!";
 					vkLogging::Logger::getLogger()->print(message.str());
 					message.str("");
 				}
 			}
-			if (!found) {
+			if (!found)
+			{
 				message << "Extension \"" << extension << "\" is not supported!";
 				vkLogging::Logger::getLogger()->print(message.str());
 				message.str("");
@@ -54,17 +58,21 @@ namespace vkInit {
 		std::cout << std::endl;
 #endif
 
-		for (const char* layer : layers) {
+		for (const char* layer : layers)
+		{
 			found = false;
-			for (vk::LayerProperties supportedLayer : supportedLayers) {
-				if (strcmp(layer, supportedLayer.layerName) == 0) {
+			for (vk::LayerProperties supportedLayer : supportedLayers)
+			{
+				if (strcmp(layer, supportedLayer.layerName) == 0)
+				{
 					found = true;
 					message << "Layer \"" << layer << "\" is supported!";
 					vkLogging::Logger::getLogger()->print(message.str());
 					message.str("");
 				}
 			}
-			if (!found) {
+			if (!found)
+			{
 				message << "Layer \"" << layer << "\" is not supported!";
 				vkLogging::Logger::getLogger()->print(message.str());
 				message.str("");
@@ -81,8 +89,8 @@ namespace vkInit {
 		\param applicationName the name of the application.
 		\returns the instance created.
 	*/
-	vk::Instance make_instance(const char* applicationName) {
-
+	vk::Instance make_instance(const char* applicationName)
+	{
 		vkLogging::Logger::getLogger()->print("Making an instance...");
 
 		/*
@@ -174,9 +182,8 @@ namespace vkInit {
 		layers.push_back("VK_LAYER_KHRONOS_validation");
 #endif
 
-		if (!supported(extensions, layers)) {
+		if (!supported(extensions, layers))
 			return nullptr;
-		}
 
 		/*
 		* 
@@ -197,7 +204,8 @@ namespace vkInit {
 		);
 
 
-		try {
+		try
+		{
 			/*
 			* from vulkan_funcs.h:
 			* 
@@ -208,7 +216,8 @@ namespace vkInit {
 			*/
 			return vk::createInstance(createInfo);
 		}
-		catch (vk::SystemError err) {
+		catch (vk::SystemError err)
+		{
 			vkLogging::Logger::getLogger()->print("Failed to create Instance!");
 			return nullptr;
 		}

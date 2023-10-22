@@ -10,8 +10,8 @@
 #include "vkMesh/mesh.h"
 #include "vkMesh/obj_mesh.h"
 
-Engine::Engine(int width, int height, GLFWwindow* window) {
-
+Engine::Engine(int width, int height, GLFWwindow* window)
+{
 	this->width = width;
 	this->height = height;
 	this->window = window;
@@ -32,8 +32,8 @@ Engine::Engine(int width, int height, GLFWwindow* window) {
 	endWorkerThreads();
 }
 
-void Engine::makeInstance() {
-
+void Engine::makeInstance()
+{
 	instance = vkInit::make_instance("ID Tech 12");
 	dldi = vk::DispatchLoaderDynamic(instance, vkGetInstanceProcAddr);
 
@@ -42,19 +42,18 @@ void Engine::makeInstance() {
 #endif
 
 	VkSurfaceKHR c_style_surface;
-	if (glfwCreateWindowSurface(instance, window, nullptr, &c_style_surface) != VK_SUCCESS) {
+	if (glfwCreateWindowSurface(instance, window, nullptr, &c_style_surface) != VK_SUCCESS)
 		vkLogging::Logger::getLogger()->print("Failed to abstract glfw surface for Vulkan.");
-	}
-	else {
+	else
 		vkLogging::Logger::getLogger()->print(
 			"Successfully abstracted glfw surface for Vulkan.");
-	}
+
 	//copy constructor converts to hpp convention
 	surface = c_style_surface;
 }
 
-void Engine::makeDevice() {
-
+void Engine::makeDevice()
+{
 	physicalDevice = vkInit::choose_physical_device(instance);
 	device = vkInit::create_logical_device(physicalDevice, surface);
 	std::array<vk::Queue,2> queues = vkInit::get_queues(physicalDevice, device, surface);
@@ -67,8 +66,8 @@ void Engine::makeDevice() {
 /**
 * Make a swapchain
 */
-void Engine::makeSwapchain() {
-
+void Engine::makeSwapchain()
+{
 	vkInit::SwapChainBundle bundle = vkInit::create_swapchain(
 		device, physicalDevice, surface, width, height
 	);
@@ -78,7 +77,8 @@ void Engine::makeSwapchain() {
 	swapchainExtent = bundle.extent;
 	maxFramesInFlight = static_cast<int>(swapchainFrames.size());
 
-	for (vkUtil::SwapChainFrame& frame : swapchainFrames) {
+	for (vkUtil::SwapChainFrame& frame : swapchainFrames)
+	{
 		frame.logicalDevice = device;
 		frame.physicalDevice = physicalDevice;
 		frame.width = swapchainExtent.width;
@@ -92,11 +92,12 @@ void Engine::makeSwapchain() {
 /**
 * The swapchain must be recreated upon resize or minimization, among other cases
 */
-void Engine::recreateSwapchain() {
-
+void Engine::recreateSwapchain()
+{
 	width = 0;
 	height = 0;
-	while (width == 0 || height == 0) {
+	while (width == 0 || height == 0)
+	{
 		glfwGetFramebufferSize(window, &width, &height);
 		glfwWaitEvents();
 	}
@@ -112,8 +113,8 @@ void Engine::recreateSwapchain() {
 
 }
 
-void Engine::makeDescriptorSetLayouts() {
-
+void Engine::makeDescriptorSetLayouts()
+{
 	// DON't FORGET TO SET BINDINGS HERE!!!
 
 	//Binding once per frame
@@ -151,8 +152,8 @@ void Engine::makeDescriptorSetLayouts() {
 	meshSetLayout[pipelineType::STANDARD] = vkInit::makeDescriptorSetLayout(device, bindings);
 }
 
-void Engine::makePipelines() {
-
+void Engine::makePipelines()
+{
 	vkInit::PipelineBuilder pipelineBuilder(device);
 
 	// Sky
@@ -191,14 +192,13 @@ void Engine::makePipelines() {
 	pipelineLayout[pipelineType::STANDARD] = output.layout;
 	renderpass[pipelineType::STANDARD] = output.renderpass;
 	pipeline[pipelineType::STANDARD] = output.pipeline;
-
 }
 
 /**
 * Make a framebuffer for each frame
 */
-void Engine::make_framebuffers() {
-
+void Engine::make_framebuffers()
+{
 	vkInit::framebufferInput frameBufferInput;
 	frameBufferInput.device = device;
 	frameBufferInput.renderpass = renderpass;
@@ -206,8 +206,8 @@ void Engine::make_framebuffers() {
 	vkInit::make_framebuffers(frameBufferInput, swapchainFrames);
 }
 
-void Engine::finalizeSetup() {
-
+void Engine::finalizeSetup()
+{
 	make_framebuffers();
 
 	commandPool = vkInit::make_command_pool(device, physicalDevice, surface);
@@ -217,11 +217,10 @@ void Engine::finalizeSetup() {
 	vkInit::make_frame_command_buffers(commandBufferInput);
 
 	makeFrameResources();
-
 }
 
-void Engine::makeFrameResources() {
-
+void Engine::makeFrameResources()
+{
 	vkInit::descriptorSetLayoutData bindings;
 	bindings.count = 2;
 	bindings.types.push_back(vk::DescriptorType::eUniformBuffer);
@@ -230,8 +229,8 @@ void Engine::makeFrameResources() {
 
 	frameDescriptorPool = vkInit::make_descriptor_pool(device, static_cast<uint32_t>(swapchainFrames.size() * descriptor_sets_per_frame), bindings);
 
-	for (vkUtil::SwapChainFrame& frame : swapchainFrames) {
-
+	for (vkUtil::SwapChainFrame& frame : swapchainFrames)
+	{
 		frame.imageAvailable = vkInit::make_semaphore(device);
 		frame.renderFinished = vkInit::make_semaphore(device);
 		frame.inFlight = vkInit::make_fence(device);
@@ -243,17 +242,17 @@ void Engine::makeFrameResources() {
 
 		frame.recordWriteOperations();
 	}
-
 }
 
-void Engine::makeWorkerThreads() {
-
+void Engine::makeWorkerThreads()
+{
 	done = false;
 	size_t threadCount = std::thread::hardware_concurrency() - 1;
 
 	workers.reserve(threadCount);
 	vkInit::commandBufferInputChunk commandBufferInput = { device, commandPool, swapchainFrames };
-	for (size_t i = 0; i < threadCount; ++i) {
+	for (size_t i = 0; i < threadCount; ++i)
+	{
 		vk::CommandBuffer commandBuffer = vkInit::make_command_buffer(commandBufferInput);
 		workers.push_back(
 			std::thread(
@@ -263,8 +262,8 @@ void Engine::makeWorkerThreads() {
 	}
 }
 
-void Engine::makeAssets() {
-
+void Engine::makeAssets()
+{
 	//Meshes
 	meshes = new VertexMenagerie();
 	std::unordered_map<meshTypes, std::vector<const char*>> model_filenames = {
@@ -308,7 +307,8 @@ void Engine::makeAssets() {
 	//Submit loading work
 	workQueue.lock.lock();
 	std::vector<meshTypes> mesh_types = { {meshTypes::GROUND, meshTypes::GIRL, meshTypes::SKULL, meshTypes::VIKING_ROOM} };
-	for (meshTypes type : mesh_types) {
+	for (meshTypes type : mesh_types)
+	{
 		vkImage::TextureInputChunk textureInfo;
 		textureInfo.logicalDevice = device;
 		textureInfo.physicalDevice = physicalDevice;
@@ -333,14 +333,16 @@ void Engine::makeAssets() {
 #ifndef NDEBUG
 	std::cout << "Waiting for work to finish." << std::endl;
 #endif
-	while (true) {
-
-		if (!workQueue.lock.try_lock()) {
+	while (true)
+	{
+		if (!workQueue.lock.try_lock())
+		{
 			std::this_thread::sleep_for(std::chrono::milliseconds(200));
 			continue;
 		}
 
-		if (workQueue.done()) {
+		if (workQueue.done())
+		{
 #ifndef NDEBUG
 			std::cout << "Work finished" << std::endl;
 #endif
@@ -352,9 +354,8 @@ void Engine::makeAssets() {
 	}
 
 	//Consume loaded meshes
-	for (std::pair<meshTypes, vkMesh::ObjMesh> pair : loaded_models) {
+	for (std::pair<meshTypes, vkMesh::ObjMesh> pair : loaded_models)
 		meshes->consume(pair.first, pair.second.vertices, pair.second.indices);
-	}
 
 	vertexBufferFinalizationChunk finalizationInfo;
 	finalizationInfo.logicalDevice = device;
@@ -383,14 +384,13 @@ void Engine::makeAssets() {
 	cubemap = new vkImage::CubeMap(textureInfo);
 }
 
-void Engine::endWorkerThreads() {
-
+void Engine::endWorkerThreads()
+{
 	done = true;
 	size_t threadCount = std::thread::hardware_concurrency() - 1;
 
-	for (size_t i = 0; i < threadCount; ++i) {
+	for (size_t i = 0; i < threadCount; ++i)
 		workers[i].join();
-	}
 
 #ifndef NDEBUG
 	std::cout << "Threads ended successfully." << std::endl;
@@ -403,8 +403,8 @@ void Engine::updateCameraData(Camera& camera)
 	camera.getTransformationMatrixColumns(camVecForwards, camVecRight, camVecUp, camPos);
 }
 
-void Engine::prepareFrame(uint32_t imageIndex, Scene* scene) {
-
+void Engine::prepareFrame(uint32_t imageIndex, Scene* scene)
+{
 	vkUtil::SwapChainFrame& _frame = swapchainFrames[imageIndex];
 
 	_frame.cameraVectorData.forwards = camVecForwards;
@@ -422,26 +422,24 @@ void Engine::prepareFrame(uint32_t imageIndex, Scene* scene) {
 	memcpy(_frame.cameraMatrixWriteLocation, &(_frame.cameraMatrixData), sizeof(vkUtil::CameraMatrices));
 
 	size_t i = 0;
-	for (std::pair<meshTypes, std::vector<glm::vec3>> pair : scene->positions) {
-		for (glm::vec3& position : pair.second) {
+	for (std::pair<meshTypes, std::vector<glm::vec3>> pair : scene->positions)
+		for (glm::vec3& position : pair.second)
 			_frame.modelTransforms[i++] = glm::translate(glm::mat4(1.f), position);
-		}
-	}
 	memcpy(_frame.modelBufferWriteLocation, _frame.modelTransforms.data(), i * sizeof(glm::mat4));
 
 	_frame.writeDescriptorSet();
 }
 
-void Engine::prepareScene(vk::CommandBuffer commandBuffer) {
-
+void Engine::prepareScene(vk::CommandBuffer commandBuffer)
+{
 	vk::Buffer vertexBuffers[] = {meshes->vertexBuffer.buffer};
 	vk::DeviceSize offsets[] = { 0 };
 	commandBuffer.bindVertexBuffers(0, 1, vertexBuffers, offsets);
 	commandBuffer.bindIndexBuffer(meshes->indexBuffer.buffer, 0, vk::IndexType::eUint32);
 }
 
-void Engine::recordDrawCommandsSky(vk::CommandBuffer commandBuffer, uint32_t imageIndex, Scene* scene) {
-
+void Engine::recordDrawCommandsSky(vk::CommandBuffer commandBuffer, uint32_t imageIndex, Scene* scene)
+{
 	vk::RenderPassBeginInfo renderPassInfo = {};
 	renderPassInfo.renderPass = renderpass[pipelineType::SKY];
 	renderPassInfo.framebuffer = swapchainFrames[imageIndex].framebuffer[pipelineType::SKY];
@@ -469,8 +467,8 @@ void Engine::recordDrawCommandsSky(vk::CommandBuffer commandBuffer, uint32_t ima
 	commandBuffer.endRenderPass();
 }
 
-void Engine::recordDrawCommandsScene(vk::CommandBuffer commandBuffer, uint32_t imageIndex, Scene* scene) {
-
+void Engine::recordDrawCommandsScene(vk::CommandBuffer commandBuffer, uint32_t imageIndex, Scene* scene)
+{
 	vk::RenderPassBeginInfo renderPassInfo = {};
 	renderPassInfo.renderPass = renderpass[pipelineType::STANDARD];
 	renderPassInfo.framebuffer = swapchainFrames[imageIndex].framebuffer[pipelineType::STANDARD];
@@ -498,17 +496,16 @@ void Engine::recordDrawCommandsScene(vk::CommandBuffer commandBuffer, uint32_t i
 	prepareScene(commandBuffer);
 
 	uint32_t startInstance = 0;
-	for (std::pair<meshTypes, std::vector<glm::vec3>> pair : scene->positions) {
+	for (std::pair<meshTypes, std::vector<glm::vec3>> pair : scene->positions)
 		renderObjects(
 			commandBuffer, pair.first, startInstance, static_cast<uint32_t>(pair.second.size())
 		);
-	}
 
 	commandBuffer.endRenderPass();
 }
 
-void Engine::renderObjects(vk::CommandBuffer commandBuffer, meshTypes objectType, uint32_t& startInstance, uint32_t instanceCount) {
-
+void Engine::renderObjects(vk::CommandBuffer commandBuffer, meshTypes objectType, uint32_t& startInstance, uint32_t instanceCount)
+{
 	int indexCount = meshes->indexCounts.find(objectType)->second;
 	int firstIndex = meshes->firstIndices.find(objectType)->second;
 	materials[objectType]->use(commandBuffer, pipelineLayout[pipelineType::STANDARD]);
@@ -516,31 +513,35 @@ void Engine::renderObjects(vk::CommandBuffer commandBuffer, meshTypes objectType
 	startInstance += instanceCount;
 }
 
-void Engine::render(Scene* scene) {
-
+void Engine::render(Scene* scene)
+{
 	std::ignore = device.waitForFences(1, &(swapchainFrames[frameNumber].inFlight), VK_TRUE, UINT64_MAX);
 	std::ignore = device.resetFences(1, &(swapchainFrames[frameNumber].inFlight));
 
 	//acquireNextImageKHR(vk::SwapChainKHR, timeout, semaphore_to_signal, fence)
 	uint32_t imageIndex;
-	try {
+	try
+	{
 		vk::ResultValue acquire = device.acquireNextImageKHR(
 			swapchain, UINT64_MAX, 
 			swapchainFrames[frameNumber].imageAvailable, nullptr
 		);
 		imageIndex = acquire.value;
 	}
-	catch (vk::OutOfDateKHRError error) {
+	catch (vk::OutOfDateKHRError error)
+	{
 		std::cout << "Recreate" << std::endl;
 		recreateSwapchain();
 		return;
 	}
-	catch (vk::IncompatibleDisplayKHRError error) {
+	catch (vk::IncompatibleDisplayKHRError error)
+	{
 		std::cout << "Recreate" << std::endl;
 		recreateSwapchain();
 		return;
 	}
-	catch (vk::SystemError error) {
+	catch (vk::SystemError error)
+	{
 		std::cout << "Failed to acquire swapchain image!" << std::endl;
 	}
 
@@ -552,21 +553,24 @@ void Engine::render(Scene* scene) {
 
 	vk::CommandBufferBeginInfo beginInfo = {};
 
-	try {
+	try
+	{
 		commandBuffer.begin(beginInfo);
 	}
-	catch (vk::SystemError err) {
+	catch (vk::SystemError err)
+	{
 		vkLogging::Logger::getLogger()->print("Failed to begin recording command buffer!");
 	}
 
 	recordDrawCommandsSky(commandBuffer, imageIndex, scene);
 	recordDrawCommandsScene(commandBuffer, imageIndex, scene);
 
-	try {
+	try
+	{
 		commandBuffer.end();
 	}
-	catch (vk::SystemError err) {
-
+	catch (vk::SystemError err)
+	{
 		vkLogging::Logger::getLogger()->print("failed to record command buffer!");
 	}
 
@@ -585,10 +589,12 @@ void Engine::render(Scene* scene) {
 	submitInfo.signalSemaphoreCount = 1;
 	submitInfo.pSignalSemaphores = signalSemaphores;
 
-	try {
+	try
+	{
 		graphicsQueue.submit(submitInfo, swapchainFrames[frameNumber].inFlight);
 	}
-	catch (vk::SystemError err) {
+	catch (vk::SystemError err)
+	{
 		vkLogging::Logger::getLogger()->print("failed to submit draw command buffer!");
 	}
 
@@ -604,53 +610,55 @@ void Engine::render(Scene* scene) {
 
 	vk::Result present;
 
-	try {
+	try
+	{
 		present = presentQueue.presentKHR(presentInfo);
 	}
-	catch (vk::OutOfDateKHRError error) {
+	catch (vk::OutOfDateKHRError error)
+	{
 		present = vk::Result::eErrorOutOfDateKHR;
 	}
 
-	if (present == vk::Result::eErrorOutOfDateKHR || present == vk::Result::eSuboptimalKHR) {
+	if (present == vk::Result::eErrorOutOfDateKHR || present == vk::Result::eSuboptimalKHR)
+	{
 		std::cout << "Recreate" << std::endl;
 		recreateSwapchain();
 		return;
 	}
 
 	frameNumber = (frameNumber + 1) % maxFramesInFlight;
-
 }
 
 /**
 * Free the memory associated with the swapchain objects
 */
-void Engine::cleanupSwapchain() {
-
-	for (vkUtil::SwapChainFrame& frame : swapchainFrames) {
+void Engine::cleanupSwapchain()
+{
+	for (vkUtil::SwapChainFrame& frame : swapchainFrames)
 		frame.destroy();
-	}
+
 	device.destroySwapchainKHR(swapchain);
-
 	device.destroyDescriptorPool(frameDescriptorPool);
-
 }
 
-Engine::~Engine() {
-
+Engine::~Engine()
+{
 	device.waitIdle();
 
 	vkLogging::Logger::getLogger()->print("The app has been closed.");
 
 	device.destroyCommandPool(commandPool);
 
-	for (pipelineType pipeline_type : pipelineTypes) {
+	for (pipelineType pipeline_type : pipelineTypes)
+	{
 		device.destroyPipeline(pipeline[pipeline_type]);
 		device.destroyPipelineLayout(pipelineLayout[pipeline_type]);
 		device.destroyRenderPass(renderpass[pipeline_type]);
 	}
 
 	cleanupSwapchain();
-	for (pipelineType pipeline_type : pipelineTypes) {
+	for (pipelineType pipeline_type : pipelineTypes)
+	{
 		device.destroyDescriptorSetLayout(frameSetLayout[pipeline_type]);
 		device.destroyDescriptorSetLayout(meshSetLayout[pipeline_type]);
 	}

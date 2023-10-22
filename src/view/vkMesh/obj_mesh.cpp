@@ -1,7 +1,7 @@
 #include "obj_mesh.h"
 
-void vkMesh::ObjMesh::load(const char* objFilepath, const char* mtlFilepath, glm::mat4 preTransform) {
-
+void vkMesh::ObjMesh::load(const char* objFilepath, const char* mtlFilepath, glm::mat4 preTransform)
+{
 	this->preTransform = preTransform;
 
 	std::ifstream file;
@@ -10,14 +10,15 @@ void vkMesh::ObjMesh::load(const char* objFilepath, const char* mtlFilepath, glm
 	std::string materialName;
 	std::vector<std::string> words;
 
-	while (std::getline(file, line)) {
-
+	while (std::getline(file, line))
+	{
 		words = split(line, " ");
 
-		if (!words[0].compare("newmtl")) {
+		if (!words[0].compare("newmtl"))
 			materialName = words[1];
-		}
-		if (!words[0].compare("Kd")) {
+
+		if (!words[0].compare("Kd"))
+		{
 			brushColor = glm::vec3(std::stof(words[1]), std::stof(words[2]), std::stof(words[3]));
 			colorLookup.insert({ materialName,brushColor });
 		}
@@ -32,19 +33,20 @@ void vkMesh::ObjMesh::load(const char* objFilepath, const char* mtlFilepath, glm
 
 	file.open(objFilepath);
 
-	while (std::getline(file, line)) {
+	while (std::getline(file, line))
+	{
 		words = split(line, " ");
-
-		if (!words[0].compare("v")) {
+		if (!words[0].compare("v"))
 			vertex_count += 1;
-		}
-		else if (!words[0].compare("vt")) {
+
+		else if (!words[0].compare("vt"))
 			texcoord_count += 1;
-		}
-		else if (!words[0].compare("vn")) {
+
+		else if (!words[0].compare("vn"))
 			normal_count += 1;
-		}
-		else if (!words[0].compare("f")) {
+
+		else if (!words[0].compare("f"))
+		{
 			size_t triangle_count = words.size() - 3;
 			corner_count += 3 * triangle_count;
 		}
@@ -60,66 +62,70 @@ void vkMesh::ObjMesh::load(const char* objFilepath, const char* mtlFilepath, glm
 
 	file.open(objFilepath);
 
-	while (std::getline(file, line)) {
+	while (std::getline(file, line))
+	{
 		words = split(line, " ");
 
-		if (!words[0].compare("v")) {
+		if (!words[0].compare("v"))
 			readVertexData(words);
-		}
-		else if (!words[0].compare("vt")) {
+
+		else if (!words[0].compare("vt"))
 			readTexcoordData(words);
-		}
-		else if (!words[0].compare("vn")) {
+
+		else if (!words[0].compare("vn"))
 			readNormalData(words);
-		}
-		else if (!words[0].compare("usemtl")) {
-			if (colorLookup.contains(words[1])) {
+
+		else if (!words[0].compare("usemtl"))
+		{
+			if (colorLookup.contains(words[1]))
 				brushColor = colorLookup[words[1]];
-			}
-			else {
+			else
 				brushColor = glm::vec3(1.f);
-			}
 		}
-		else if (!words[0].compare("f")) {
+		else if (!words[0].compare("f"))
 			readFaceData(words);
-		}
 	}
 
 	file.close();
 }
 
-void vkMesh::ObjMesh::readVertexData(const std::vector<std::string>& words) {
+void vkMesh::ObjMesh::readVertexData(const std::vector<std::string>& words)
+{
 	glm::vec4 new_vertex = glm::vec4(std::stof(words[1]), std::stof(words[2]), std::stof(words[3]), 1.f);
 	glm::vec3 transformed_vertex = glm::vec3(preTransform * new_vertex);
 	v.push_back(transformed_vertex);
 }
 
-void vkMesh::ObjMesh::readTexcoordData(const std::vector<std::string>& words) {
+void vkMesh::ObjMesh::readTexcoordData(const std::vector<std::string>& words)
+{
 	// To account for difference between Vulkan and OBJ coordinate systems, we need to flip Y coordinates
 	glm::vec2 new_texcoord = glm::vec2(std::stof(words[1]), 1.f - std::stof(words[2]));
 	vt.push_back(new_texcoord);
 }
 
-void vkMesh::ObjMesh::readNormalData(const std::vector<std::string>& words) {
+void vkMesh::ObjMesh::readNormalData(const std::vector<std::string>& words)
+{
 	glm::vec4 new_normal = glm::vec4(std::stof(words[1]), std::stof(words[2]), std::stof(words[3]), 0.f);
 	glm::vec3 transformed_normal = glm::vec3(preTransform * new_normal);
 	vn.push_back(transformed_normal);
 }
 
-void vkMesh::ObjMesh::readFaceData(const std::vector<std::string>& words) {
-	
+void vkMesh::ObjMesh::readFaceData(const std::vector<std::string>& words)
+{
 	size_t triangleCount = words.size() - 3;
 
-	for (int i = 0; i < triangleCount; ++i) {
+	for (int i = 0; i < triangleCount; ++i)
+	{
 		readCorner(words[1]);
 		readCorner(words[2 + i]);
 		readCorner(words[3 + i]);
 	}
 }
 
-void vkMesh::ObjMesh::readCorner(const std::string& vertex_description) {
-
-	if (history.contains(vertex_description)) {
+void vkMesh::ObjMesh::readCorner(const std::string& vertex_description)
+{
+	if (history.contains(vertex_description))
+	{
 		indices.push_back(history[vertex_description]);
 		return;
 	}
@@ -144,9 +150,9 @@ void vkMesh::ObjMesh::readCorner(const std::string& vertex_description) {
 
 	//texcoord
 	glm::vec2 texcoord = glm::vec2(0.f, 0.f);
-	if (v_vt_vn.size() == 3 && v_vt_vn[1].size() > 0) {
+	if (v_vt_vn.size() == 3 && v_vt_vn[1].size() > 0)
 		texcoord = vt[std::stol(v_vt_vn[1]) - 1];
-	}
+
 	vertices.push_back(texcoord[0]);
 	vertices.push_back(texcoord[1]);
 

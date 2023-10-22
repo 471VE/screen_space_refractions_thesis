@@ -4,26 +4,25 @@ namespace vkLogging {
 	Logger* Logger::logger;
 }
 
-vkLogging::Logger* vkLogging::Logger::getLogger() {
-	if (logger == nullptr) {
+vkLogging::Logger* vkLogging::Logger::getLogger()
+{
+	if (logger == nullptr)
 		logger = new Logger();
-	}
 
 	return logger;
 }
 
-void vkLogging::Logger::print(std::string message) {
-
+void vkLogging::Logger::print(std::string message)
+{
 #ifndef NDEBUG
 	std::cout << message << std::endl;
 #endif
 }
 
-void vkLogging::Logger::printList(std::vector<std::string> items) {
-
-	for (std::string item : items) {
+void vkLogging::Logger::printList(std::vector<std::string> items)
+{
+	for (std::string item : items)
 		std::cout << "    " << item << std::endl;
-	}
 	std::cout << std::endl;
 }
 
@@ -33,7 +32,8 @@ void vkLogging::Logger::printList(std::vector<std::string> items) {
 * @param bits	the bitmask which holds various transforms
 * @return		a vector of strings describing the transforms
 */
-std::vector<std::string> vkLogging::log_transform_bits(vk::SurfaceTransformFlagsKHR bits) {
+std::vector<std::string> vkLogging::log_transform_bits(vk::SurfaceTransformFlagsKHR bits)
+{
 	std::vector<std::string> result;
 
 	/*
@@ -87,7 +87,8 @@ std::vector<std::string> vkLogging::log_transform_bits(vk::SurfaceTransformFlags
 	* @return		a vector of strings describing the alpha composite modes
 	*/
 
-	std::vector<std::string> vkLogging::log_alpha_composite_bits(vk::CompositeAlphaFlagsKHR bits) {
+	std::vector<std::string> vkLogging::log_alpha_composite_bits(vk::CompositeAlphaFlagsKHR bits)
+	{
 		std::vector<std::string> result;
 
 		/*
@@ -120,7 +121,8 @@ std::vector<std::string> vkLogging::log_transform_bits(vk::SurfaceTransformFlags
 	* @param bits	the bitmask which holds various image usages
 	* @return		a vector of strings describing the image usages
 	*/
-	std::vector<std::string> vkLogging::log_image_usage_bits(vk::ImageUsageFlags bits) {
+	std::vector<std::string> vkLogging::log_image_usage_bits(vk::ImageUsageFlags bits)
+	{
 		std::vector<std::string> result;
 
 		/*
@@ -218,7 +220,8 @@ suitable for use as a fragment shading rate attachment or shading rate image");
 	* @param presentMode	an enum which describes the present mode
 	* @return				a description of the present mode
 	*/
-	std::string vkLogging::log_present_mode(vk::PresentModeKHR presentMode) {
+	std::string vkLogging::log_present_mode(vk::PresentModeKHR presentMode)
+	{
 		/*
 		* // Provided by VK_KHR_surface
 		typedef enum VkPresentModeKHR {
@@ -232,8 +235,8 @@ suitable for use as a fragment shading rate attachment or shading rate image");
 			VK_PRESENT_MODE_SHARED_CONTINUOUS_REFRESH_KHR = 1000111001,
 		} VkPresentModeKHR;
 		*/
-		switch (presentMode) {
-
+		switch (presentMode)
+		{
 			case (vk::PresentModeKHR::eImmediate):
 				return "immediate: the presentation engine does not wait for a vertical blanking period \
 to update the current image, meaning this mode may result in visible tearing. No internal \
@@ -295,7 +298,8 @@ This mode may result in visible tearing if rendering to the image is not timed c
 	*
 	* @param device the physical device
 	*/
-	void vkLogging::log_device_properties(const vk::PhysicalDevice& device) {
+	void vkLogging::log_device_properties(const vk::PhysicalDevice& device)
+	{
 		/*
 		* void vkGetPhysicalDeviceProperties(
 			VkPhysicalDevice                            physicalDevice,
@@ -319,8 +323,8 @@ This mode may result in visible tearing if rendering to the image is not timed c
 		std::cout << "Device name: " << properties.deviceName << '\n';
 
 		std::cout << "Device type: ";
-		switch (properties.deviceType) {
-
+		switch (properties.deviceType)
+		{
 			case (vk::PhysicalDeviceType::eCpu):
 				std::cout << "CPU\n";
 				break;
@@ -351,7 +355,6 @@ VKAPI_ATTR VkBool32 VKAPI_CALL vkLogging::debugCallback(
 	const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData,
 	void* pUserData
 ) {
-
 	/*
 	* Debug call back:
 	*
@@ -399,8 +402,8 @@ VKAPI_ATTR VkBool32 VKAPI_CALL vkLogging::debugCallback(
 * @param dldi		the dispatch loader used to call the creation function
 * @return			the created debug messenger
 */
-vk::DebugUtilsMessengerEXT vkLogging::make_debug_messenger(vk::Instance& instance, vk::DispatchLoaderDynamic& dldi) {
-
+vk::DebugUtilsMessengerEXT vkLogging::make_debug_messenger(vk::Instance& instance, vk::DispatchLoaderDynamic& dldi)
+{
 	/*
 	* DebugUtilsMessengerCreateInfoEXT( VULKAN_HPP_NAMESPACE::DebugUtilsMessengerCreateFlagsEXT flags_           = {},
 									VULKAN_HPP_NAMESPACE::DebugUtilsMessageSeverityFlagsEXT messageSeverity_ = {},

@@ -1,8 +1,8 @@
 #include "memory.h"
 #include "single_time_commands.h"
 
-uint32_t vkUtil::find_memory_type_index(vk::PhysicalDevice physicalDevice, uint32_t supportedMemoryIndices, vk::MemoryPropertyFlags requestedProperties) {
-
+uint32_t vkUtil::find_memory_type_index(vk::PhysicalDevice physicalDevice, uint32_t supportedMemoryIndices, vk::MemoryPropertyFlags requestedProperties)
+{
 	/*
 	* // Provided by VK_VERSION_1_0
 	typedef struct VkPhysicalDeviceMemoryProperties {
@@ -14,24 +14,22 @@ uint32_t vkUtil::find_memory_type_index(vk::PhysicalDevice physicalDevice, uint3
 	*/
 	vk::PhysicalDeviceMemoryProperties memoryProperties = physicalDevice.getMemoryProperties();
 
-	for (uint32_t i = 0; i < memoryProperties.memoryTypeCount; i++) {
-
+	for (uint32_t i = 0; i < memoryProperties.memoryTypeCount; i++)
+	{
 		//bit i of supportedMemoryIndices is set if that memory type is supported by the device
 		bool supported{ static_cast<bool>(supportedMemoryIndices & (1 << i)) };
 
 		//propertyFlags holds all the memory properties supported by this memory type
 		bool sufficient{ (memoryProperties.memoryTypes[i].propertyFlags & requestedProperties) == requestedProperties };
 
-		if (supported && sufficient) {
+		if (supported && sufficient)
 			return i;
-		}
 	}
-
 	return 0;
 }
 
-void vkUtil::allocate_buffer_memory(Buffer& buffer, const BufferInputChunk& input) {
-
+void vkUtil::allocate_buffer_memory(Buffer& buffer, const BufferInputChunk& input)
+{
 	/*
 	// Provided by VK_VERSION_1_0
 	typedef struct VkMemoryRequirements {
@@ -62,8 +60,8 @@ void vkUtil::allocate_buffer_memory(Buffer& buffer, const BufferInputChunk& inpu
 	input.logicalDevice.bindBufferMemory(buffer.buffer, buffer.bufferMemory, 0);
 }
 
-Buffer vkUtil::create_buffer(BufferInputChunk input) {
-
+Buffer vkUtil::create_buffer(BufferInputChunk input)
+{
 	/*
 	* // Provided by VK_VERSION_1_0
 	typedef struct VkBufferCreateInfo {
@@ -90,8 +88,8 @@ Buffer vkUtil::create_buffer(BufferInputChunk input) {
 	return buffer;
 }
 
-void vkUtil::copy_buffer(Buffer& srcBuffer, Buffer& dstBuffer, vk::DeviceSize size, vk::Queue queue, vk::CommandBuffer commandBuffer) {
-
+void vkUtil::copy_buffer(Buffer& srcBuffer, Buffer& dstBuffer, vk::DeviceSize size, vk::Queue queue, vk::CommandBuffer commandBuffer)
+{
 	vkUtil::start_job(commandBuffer);
 
 	/*

@@ -6,29 +6,32 @@ workQueue(workQueue), done(done){
 	this->queue = queue;
 }
 
-void vkJob::WorkerThread::operator()() {
-
+void vkJob::WorkerThread::operator()()
+{
 	workQueue.lock.lock();
 #ifndef NDEBUG
 	std::cout << "----    Thread is ready to go.    ----" << std::endl;
 #endif
 	workQueue.lock.unlock();
 
-	while (!done) {
-
-		if (!workQueue.lock.try_lock()) {
+	while (!done)
+	{
+		if (!workQueue.lock.try_lock())
+		{
 			std::this_thread::sleep_for(std::chrono::milliseconds(200));
 			continue;
 		}
 		
-		if (workQueue.done()) {
+		if (workQueue.done())
+		{
 			workQueue.lock.unlock();
 			continue;
 		}
 
 		vkJob::Job* pendingJob = workQueue.getNext();
 
-		if (!pendingJob) {
+		if (!pendingJob)
+		{
 			workQueue.lock.unlock();
 			continue;
 		}

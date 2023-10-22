@@ -9,15 +9,17 @@ namespace vkInit {
 		\param device the logical device
 		\returns the created semaphore
 	*/
-	vk::Semaphore make_semaphore(vk::Device device) {
-
+	vk::Semaphore make_semaphore(vk::Device device)
+	{
 		vk::SemaphoreCreateInfo semaphoreInfo = {};
 		semaphoreInfo.flags = vk::SemaphoreCreateFlags();
 
-		try {
+		try
+		{
 			return device.createSemaphore(semaphoreInfo);
 		}
-		catch (vk::SystemError err) {
+		catch (vk::SystemError err)
+		{
 			vkLogging::Logger::getLogger()->print("Failed to create semaphore ");
 			return nullptr;
 		}
@@ -29,15 +31,17 @@ namespace vkInit {
 		\param device the logical device
 		\returns the created fence
 	*/
-	vk::Fence make_fence(vk::Device device) {
-
+	vk::Fence make_fence(vk::Device device)
+	{
 		vk::FenceCreateInfo fenceInfo = {};
 		fenceInfo.flags = vk::FenceCreateFlags() | vk::FenceCreateFlagBits::eSignaled;
 
-		try {
+		try
+		{
 			return device.createFence(fenceInfo);
 		}
-		catch (vk::SystemError err) {
+		catch (vk::SystemError err)
+		{
 			vkLogging::Logger::getLogger()->print("Failed to create fence ");
 			return nullptr;
 		}

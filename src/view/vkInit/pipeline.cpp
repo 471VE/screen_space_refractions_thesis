@@ -1,7 +1,8 @@
 #include "pipeline.h"
 #include "../../control/logging.h"
 
-vkInit::PipelineBuilder::PipelineBuilder(vk::Device device) {
+vkInit::PipelineBuilder::PipelineBuilder(vk::Device device)
+{
 	this->device = device;
 	reset();
 
@@ -14,12 +15,10 @@ vkInit::PipelineBuilder::PipelineBuilder(vk::Device device) {
 	pipelineInfo.basePipelineHandle = nullptr;
 }
 
-vkInit::PipelineBuilder::~PipelineBuilder() {
-	reset();
-}
+vkInit::PipelineBuilder::~PipelineBuilder() { reset(); }
 
-void vkInit::PipelineBuilder::reset() {
-
+void vkInit::PipelineBuilder::reset()
+{
 	pipelineInfo.flags = vk::PipelineCreateFlags();
 
 	resetVertexFormat();
@@ -28,8 +27,8 @@ void vkInit::PipelineBuilder::reset() {
 	resetDescriptorSetLayouts();
 }
 
-void vkInit::PipelineBuilder::resetVertexFormat() {
-
+void vkInit::PipelineBuilder::resetVertexFormat()
+{
 	vertexInputInfo.flags = vk::PipelineVertexInputStateCreateFlags();
 	vertexInputInfo.vertexBindingDescriptionCount = 0;
 	vertexInputInfo.pVertexBindingDescriptions = nullptr;
@@ -38,15 +37,16 @@ void vkInit::PipelineBuilder::resetVertexFormat() {
 
 }
 
-void vkInit::PipelineBuilder::resetRenderpassAttachments() {
+void vkInit::PipelineBuilder::resetRenderpassAttachments()
+{
 	attachmentDescriptions.clear();
 	attachmentReferences.clear();
 }
 
 void vkInit::PipelineBuilder::specifyVertexFormat (
 	vk::VertexInputBindingDescription bindingDescription,
-	std::vector<vk::VertexInputAttributeDescription> attributeDescriptions) {
-
+	std::vector<vk::VertexInputAttributeDescription> attributeDescriptions)
+{
 	this->bindingDescription = bindingDescription;
 	this->attributeDescriptions = attributeDescriptions;
 
@@ -57,25 +57,27 @@ void vkInit::PipelineBuilder::specifyVertexFormat (
 	
 }
 
-void vkInit::PipelineBuilder::setOverwriteMode(bool mode) {
-	overwrite = mode;
-}
+void vkInit::PipelineBuilder::setOverwriteMode(bool mode) {	overwrite = mode; }
 
-void vkInit::PipelineBuilder::resetShaderModules() {
-	if (vertexShader) {
+void vkInit::PipelineBuilder::resetShaderModules()
+{
+	if (vertexShader)
+	{
 		device.destroyShaderModule(vertexShader);
 		vertexShader = nullptr;
 	}
-	if (fragmentShader) {
+	if (fragmentShader)
+	{
 		device.destroyShaderModule(fragmentShader);
 		fragmentShader = nullptr;
 	}
 	shaderStages.clear();
 }
 
-void vkInit::PipelineBuilder::specifyVertexShader(const char* filename) {
-
-	if (vertexShader) {
+void vkInit::PipelineBuilder::specifyVertexShader(const char* filename)
+{
+	if (vertexShader)
+	{
 		device.destroyShaderModule(vertexShader);
 		vertexShader = nullptr;
 	}
@@ -86,9 +88,10 @@ void vkInit::PipelineBuilder::specifyVertexShader(const char* filename) {
 	shaderStages.push_back(vertexShaderInfo);
 }
 
-void vkInit::PipelineBuilder::specifyFragmentShader(const char* filename) {
-
-	if (fragmentShader) {
+void vkInit::PipelineBuilder::specifyFragmentShader(const char* filename)
+{
+	if (fragmentShader)
+	{	
 		device.destroyShaderModule(fragmentShader);
 		fragmentShader = nullptr;
 	}
@@ -100,8 +103,8 @@ void vkInit::PipelineBuilder::specifyFragmentShader(const char* filename) {
 }
 
 vk::PipelineShaderStageCreateInfo vkInit::PipelineBuilder::makeShaderInfo(
-	const vk::ShaderModule& shaderModule, const vk::ShaderStageFlagBits& stage) {
-
+	const vk::ShaderModule& shaderModule, const vk::ShaderStageFlagBits& stage
+) {
 	vk::PipelineShaderStageCreateInfo shaderInfo = {};
 	shaderInfo.flags = vk::PipelineShaderStageCreateFlags();
 	shaderInfo.stage = stage;
@@ -110,14 +113,11 @@ vk::PipelineShaderStageCreateInfo vkInit::PipelineBuilder::makeShaderInfo(
 	return shaderInfo;
 }
 
-void vkInit::PipelineBuilder::specifySwapchainExtent(vk::Extent2D screen_size) {
-	
-	swapchainExtent = screen_size;
-}
+void vkInit::PipelineBuilder::specifySwapchainExtent(vk::Extent2D screen_size) { swapchainExtent = screen_size; }
 
 void vkInit::PipelineBuilder::specifyDepthAttachment(
-	const vk::Format& depthFormat, uint32_t attachment_index) {
-
+	const vk::Format& depthFormat, uint32_t attachment_index
+) {
 	depthState.flags = vk::PipelineDepthStencilStateCreateFlags();
 	depthState.depthTestEnable = true;
 	depthState.depthWriteEnable = true;
@@ -142,18 +142,18 @@ void vkInit::PipelineBuilder::specifyDepthAttachment(
 }
 
 void vkInit::PipelineBuilder::addColorAttachment(
-	const vk::Format& format, uint32_t attachment_index) {
-
+	const vk::Format& format, uint32_t attachment_index
+) {
 	vk::AttachmentLoadOp loadOp = vk::AttachmentLoadOp::eDontCare;
-	if (overwrite) {
+	if (overwrite)
 		loadOp = vk::AttachmentLoadOp::eLoad;
-	}
+
 	vk::AttachmentStoreOp storeOp = vk::AttachmentStoreOp::eStore;
 
 	vk::ImageLayout initialLayout = vk::ImageLayout::eUndefined;
-	if (overwrite) {
+	if (overwrite)
 		initialLayout = vk::ImageLayout::ePresentSrcKHR;
-	}
+
 	vk::ImageLayout finalLayout = vk::ImageLayout::ePresentSrcKHR;
 
 	attachmentDescriptions.insert(
@@ -170,8 +170,8 @@ void vkInit::PipelineBuilder::addColorAttachment(
 
 vk::AttachmentDescription vkInit::PipelineBuilder::makeRenderpassAttachment(
 	const vk::Format& format, vk::AttachmentLoadOp loadOp, 
-	vk::AttachmentStoreOp storeOp, vk::ImageLayout initialLayout, vk::ImageLayout finalLayout) {
-
+	vk::AttachmentStoreOp storeOp, vk::ImageLayout initialLayout, vk::ImageLayout finalLayout
+) {
 	vk::AttachmentDescription attachment = {};
 	attachment.flags = vk::AttachmentDescriptionFlags();
 	attachment.format = format;
@@ -187,8 +187,8 @@ vk::AttachmentDescription vkInit::PipelineBuilder::makeRenderpassAttachment(
 }
 
 vk::AttachmentReference vkInit::PipelineBuilder::makeAttachmentReference(
-	uint32_t attachment_index, vk::ImageLayout layout) {
-
+	uint32_t attachment_index, vk::ImageLayout layout
+) {
 	vk::AttachmentReference attachmentRef = {};
 	attachmentRef.attachment = attachment_index;
 	attachmentRef.layout = layout;
@@ -196,20 +196,17 @@ vk::AttachmentReference vkInit::PipelineBuilder::makeAttachmentReference(
 	return attachmentRef;
 }
 
-void vkInit::PipelineBuilder::clearDepthAttachment() {
-	pipelineInfo.pDepthStencilState = nullptr;
-}
+void vkInit::PipelineBuilder::clearDepthAttachment() { pipelineInfo.pDepthStencilState = nullptr; }
 
-void vkInit::PipelineBuilder::addDescriptorSetLayout(vk::DescriptorSetLayout descriptorSetLayout) {
+void vkInit::PipelineBuilder::addDescriptorSetLayout(vk::DescriptorSetLayout descriptorSetLayout)
+{
 	descriptorSetLayouts.push_back(descriptorSetLayout);
 }
 
-void vkInit::PipelineBuilder::resetDescriptorSetLayouts() {
-	descriptorSetLayouts.clear();
-}
+void vkInit::PipelineBuilder::resetDescriptorSetLayouts() {	descriptorSetLayouts.clear(); }
 
-vkInit::GraphicsPipelineOutBundle vkInit::PipelineBuilder::build() {
-
+vkInit::GraphicsPipelineOutBundle vkInit::PipelineBuilder::build()
+{
 		//Vertex Input
 		pipelineInfo.pVertexInputState = &vertexInputInfo;
 
@@ -249,10 +246,12 @@ vkInit::GraphicsPipelineOutBundle vkInit::PipelineBuilder::build() {
 		//Make the Pipeline
 		vkLogging::Logger::getLogger()->print("Create Graphics Pipeline");
 		vk::Pipeline graphicsPipeline;
-		try {
+		try
+		{
 			graphicsPipeline = (device.createGraphicsPipeline(nullptr, pipelineInfo)).value;
 		}
-		catch (vk::SystemError err) {
+		catch (vk::SystemError err)
+		{
 			vkLogging::Logger::getLogger()->print("Failed to create Pipeline");
 		}
 
@@ -264,15 +263,14 @@ vkInit::GraphicsPipelineOutBundle vkInit::PipelineBuilder::build() {
 		return output;
 	}
 
-void vkInit::PipelineBuilder::configureInputAssembly() {
-
+void vkInit::PipelineBuilder::configureInputAssembly()
+{
 	inputAssemblyInfo.flags = vk::PipelineInputAssemblyStateCreateFlags();
 	inputAssemblyInfo.topology = vk::PrimitiveTopology::eTriangleList;
-
 }
 
-vk::PipelineViewportStateCreateInfo vkInit::PipelineBuilder::makeViewportState() {
-
+vk::PipelineViewportStateCreateInfo vkInit::PipelineBuilder::makeViewportState()
+{
 	viewport.x = 0.f;
 	viewport.y = 0.f;
 	viewport.width = (float)swapchainExtent.width;
@@ -293,8 +291,8 @@ vk::PipelineViewportStateCreateInfo vkInit::PipelineBuilder::makeViewportState()
 	return viewportState;
 }
 
-void vkInit::PipelineBuilder::makeRasterizerInfo() {
-
+void vkInit::PipelineBuilder::makeRasterizerInfo()
+{
 	rasterizer.flags = vk::PipelineRasterizationStateCreateFlags();
 	rasterizer.depthClampEnable = VK_FALSE; //discard out of bounds fragments, don't clamp them
 	rasterizer.rasterizerDiscardEnable = VK_FALSE; //This flag would disable fragment output
@@ -306,16 +304,15 @@ void vkInit::PipelineBuilder::makeRasterizerInfo() {
 
 }
 
-void vkInit::PipelineBuilder::configureMultisampling() {
-
+void vkInit::PipelineBuilder::configureMultisampling()
+{
 	multisampling.flags = vk::PipelineMultisampleStateCreateFlags();
 	multisampling.sampleShadingEnable = VK_FALSE;
 	multisampling.rasterizationSamples = vk::SampleCountFlagBits::e1;
-
 }
 
-void vkInit::PipelineBuilder::configureColorBlending() {
-
+void vkInit::PipelineBuilder::configureColorBlending()
+{
 	colorBlendAttachment.colorWriteMask = vk::ColorComponentFlagBits::eR | vk::ColorComponentFlagBits::eG | vk::ColorComponentFlagBits::eB | vk::ColorComponentFlagBits::eA;
 	colorBlendAttachment.blendEnable = VK_FALSE;
 
@@ -331,8 +328,8 @@ void vkInit::PipelineBuilder::configureColorBlending() {
 
 }
 
-vk::PipelineLayout vkInit::PipelineBuilder::makePipelineLayout() {
-
+vk::PipelineLayout vkInit::PipelineBuilder::makePipelineLayout()
+{
 	/*
 	typedef struct VkPipelineLayoutCreateInfo {
 		VkStructureType                 sType;
@@ -353,24 +350,27 @@ vk::PipelineLayout vkInit::PipelineBuilder::makePipelineLayout() {
 
 	layoutInfo.pushConstantRangeCount = 0;
 
-	try {
+	try
+	{
 		return device.createPipelineLayout(layoutInfo);
 	}
-	catch (vk::SystemError err) {
+	catch (vk::SystemError err)
+	{
 		vkLogging::Logger::getLogger()->print("Failed to create pipeline layout!");
 	}
 	return nullptr;
 }
 
-vk::RenderPass vkInit::PipelineBuilder::makeRenderpass() {
-
+vk::RenderPass vkInit::PipelineBuilder::makeRenderpass()
+{
 	flattenedAttachmentDescriptions.clear();
 	flattenedAttachmentReferences.clear();
 	size_t attachmentCount = attachmentDescriptions.size();
 	flattenedAttachmentDescriptions.resize(attachmentCount);
 	flattenedAttachmentReferences.resize(attachmentCount);
 
-	for (int i = 0; i < attachmentCount; ++i) {
+	for (int i = 0; i < attachmentCount; ++i)
+	{
 		flattenedAttachmentDescriptions[i] = attachmentDescriptions[i];
 		flattenedAttachmentReferences[i] = attachmentReferences[i];
 	}
@@ -379,37 +379,37 @@ vk::RenderPass vkInit::PipelineBuilder::makeRenderpass() {
 	vk::SubpassDescription subpass = makeSubpass(flattenedAttachmentReferences);
 	//Now create the renderpass
 	vk::RenderPassCreateInfo renderpassInfo = makeRenderpassInfo(flattenedAttachmentDescriptions, subpass);
-	try {
+	try
+	{
 		return device.createRenderPass(renderpassInfo);
 	}
-	catch (vk::SystemError err) {
+	catch (vk::SystemError err)
+	{
 		vkLogging::Logger::getLogger()->print("Failed to create renderpass!");
 	}
 	return nullptr;
 }
 
 vk::SubpassDescription vkInit::PipelineBuilder::makeSubpass(
-	const std::vector<vk::AttachmentReference>& attachments) {
-
+	const std::vector<vk::AttachmentReference>& attachments
+) {
 	vk::SubpassDescription subpass = {};
 	subpass.flags = vk::SubpassDescriptionFlags();
 	subpass.pipelineBindPoint = vk::PipelineBindPoint::eGraphics;
 	subpass.colorAttachmentCount = 1;
 	subpass.pColorAttachments = &attachments[0];
-	if (attachments.size() > 1) {
+	if (attachments.size() > 1)
 		subpass.pDepthStencilAttachment = &attachments[1];
-	}
-	else {
+	else
 		subpass.pDepthStencilAttachment = nullptr;
-	}
 
 	return subpass;
 }
 
 vk::RenderPassCreateInfo vkInit::PipelineBuilder::makeRenderpassInfo(
 	const std::vector<vk::AttachmentDescription>& attachments,
-	const vk::SubpassDescription& subpass) {
-
+	const vk::SubpassDescription& subpass
+) {
 	vk::RenderPassCreateInfo renderpassInfo = {};
 	renderpassInfo.flags = vk::RenderPassCreateFlags();
 	renderpassInfo.attachmentCount = static_cast<uint32_t>(attachments.size());

@@ -10,9 +10,7 @@ namespace vkUtil {
 		std::optional<uint32_t> graphicsFamily;
 		std::optional<uint32_t> presentFamily;
 
-		bool isComplete() {
-			return graphicsFamily.has_value() && presentFamily.has_value();
-		}
+		bool isComplete() {	return graphicsFamily.has_value() && presentFamily.has_value(); }
 	};
 
 	/**
@@ -22,7 +20,8 @@ namespace vkUtil {
 		\param surface the window surface
 		\returns a struct holding the queue family indices
 	*/
-	QueueFamilyIndices find_queue_families(vk::PhysicalDevice device, vk::SurfaceKHR surface) {
+	QueueFamilyIndices find_queue_families(vk::PhysicalDevice device, vk::SurfaceKHR surface)
+	{
 		QueueFamilyIndices indices;
 
 		std::vector<vk::QueueFamilyProperties> queueFamilies = device.getQueueFamilyProperties();
@@ -33,8 +32,8 @@ namespace vkUtil {
 		message.str("");
 
 		int i = 0;
-		for (vk::QueueFamilyProperties queueFamily : queueFamilies) {
-
+		for (vk::QueueFamilyProperties queueFamily : queueFamilies)
+		{
 			/*
 			* // Provided by VK_VERSION_1_0
 				typedef struct VkQueueFamilyProperties {
@@ -67,7 +66,8 @@ namespace vkUtil {
 				} VkQueueFlagBits;
 			*/
 
-			if (queueFamily.queueFlags & vk::QueueFlagBits::eGraphics) {
+			if (queueFamily.queueFlags & vk::QueueFlagBits::eGraphics)
+			{
 				indices.graphicsFamily = i;
 
 				message << "Queue Family " << i << " is suitable for graphics.";
@@ -75,7 +75,8 @@ namespace vkUtil {
 				message.str("");
 			}
 
-			if (device.getSurfaceSupportKHR(i, surface)) {
+			if (device.getSurfaceSupportKHR(i, surface))
+			{
 				indices.presentFamily = i;
 
 				message << "Queue Family " << i << " is suitable for presenting.";
@@ -83,9 +84,8 @@ namespace vkUtil {
 				message.str("");
 			}
 
-			if (indices.isComplete()) {
+			if (indices.isComplete())
 				break;
-			}
 
 			i++;
 		}

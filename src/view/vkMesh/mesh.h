@@ -6,8 +6,8 @@ namespace vkMesh {
 	/**
 		\returns the input binding description for a (vec2 pos, vec3 color, vec2 texcoords) vertex format.
 	*/
-	vk::VertexInputBindingDescription get_pos_color_binding_description() {
-
+	vk::VertexInputBindingDescription get_pos_color_binding_description()
+	{
 		/* Provided by VK_VERSION_1_0
 		typedef struct VkVertexInputBindingDescription {
 			uint32_t             binding;
@@ -27,8 +27,8 @@ namespace vkMesh {
 	/**
 		\returns the input attribute descriptions for a (vec2 pos, vec3 color, vec2 texcoords) vertex format.
 	*/
-	std::vector<vk::VertexInputAttributeDescription> get_pos_color_attribute_descriptions() {
-
+	std::vector<vk::VertexInputAttributeDescription> get_pos_color_attribute_descriptions()
+	{
 		/* Provided by VK_VERSION_1_0
 		typedef struct VkVertexInputAttributeDescription {
 			uint32_t    location;

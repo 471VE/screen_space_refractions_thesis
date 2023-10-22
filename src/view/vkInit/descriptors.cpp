@@ -3,8 +3,8 @@
 
 	
 vk::DescriptorSetLayout vkInit::makeDescriptorSetLayout(
-	vk::Device device, const descriptorSetLayoutData& bindings) {
-
+	vk::Device device, const descriptorSetLayoutData& bindings
+) {
 	/*
 		Bindings describes a whole bunch of descriptor types, collect them all into a
 		list of some kind.
@@ -12,8 +12,8 @@ vk::DescriptorSetLayout vkInit::makeDescriptorSetLayout(
 	std::vector<vk::DescriptorSetLayoutBinding> layoutBindings;
 	layoutBindings.reserve(bindings.count);
 
-	for (int i = 0; i < bindings.count; i++) {
-
+	for (int i = 0; i < bindings.count; i++)
+	{
 		/*
 			typedef struct VkDescriptorSetLayoutBinding {
 				uint32_t              binding;
@@ -47,19 +47,20 @@ vk::DescriptorSetLayout vkInit::makeDescriptorSetLayout(
 	layoutInfo.pBindings = layoutBindings.data();
 
 
-	try {
+	try
+	{
 		return device.createDescriptorSetLayout(layoutInfo);
 	}
-	catch (vk::SystemError err) {
-
+	catch (vk::SystemError err)
+	{
 		vkLogging::Logger::getLogger()->print("Failed to create descriptor set layout");
 		return nullptr;
 	}
 }
 
 vk::DescriptorPool vkInit::make_descriptor_pool(
-	vk::Device device, uint32_t size, const descriptorSetLayoutData& bindings) {
-
+	vk::Device device, uint32_t size, const descriptorSetLayoutData& bindings
+) {
 	std::vector<vk::DescriptorPoolSize> poolSizes;
 	/*
 		typedef struct VkDescriptorPoolSize {
@@ -68,8 +69,8 @@ vk::DescriptorPool vkInit::make_descriptor_pool(
 		} VkDescriptorPoolSize;
 	*/
 
-	for (int i = 0; i < bindings.count; i++) {
-
+	for (int i = 0; i < bindings.count; i++)
+	{
 		vk::DescriptorPoolSize poolSize;
 		poolSize.type = bindings.types[i];
 		poolSize.descriptorCount = size;
@@ -93,10 +94,12 @@ vk::DescriptorPool vkInit::make_descriptor_pool(
 	poolInfo.poolSizeCount = static_cast<uint32_t>(poolSizes.size());
 	poolInfo.pPoolSizes = poolSizes.data();
 
-	try {
+	try
+	{
 		return device.createDescriptorPool(poolInfo);
 	}
-	catch (vk::SystemError err) {
+	catch (vk::SystemError err)
+	{
 		vkLogging::Logger::getLogger()->print("Failed to make descriptor pool");
 		return nullptr;
 	}
@@ -104,8 +107,8 @@ vk::DescriptorPool vkInit::make_descriptor_pool(
 
 vk::DescriptorSet vkInit::allocate_descriptor_set(
 	vk::Device device, vk::DescriptorPool descriptorPool,
-	vk::DescriptorSetLayout layout) {
-
+	vk::DescriptorSetLayout layout
+) {
 	vk::DescriptorSetAllocateInfo allocationInfo;
 	/*
 		typedef struct VkDescriptorSetAllocateInfo {
@@ -121,10 +124,12 @@ vk::DescriptorSet vkInit::allocate_descriptor_set(
 	allocationInfo.descriptorSetCount = 1;
 	allocationInfo.pSetLayouts = &layout;
 
-	try {
+	try
+	{
 		return device.allocateDescriptorSets(allocationInfo)[0];
 	}
-	catch (vk::SystemError err) {
+	catch (vk::SystemError err)
+	{
 		vkLogging::Logger::getLogger()->print("Failed to allocate descriptor set from pool");
 		return nullptr;
 	}

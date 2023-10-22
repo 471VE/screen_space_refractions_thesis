@@ -11,6 +11,7 @@ layout(location = 0) out vec4 outColor;
 const vec4 sunColor = vec4(0.9f, 0.95f, 1.f, 1.f);
 const vec3 sunDirection = normalize(vec3(1.f, -1.f, -1.f));
 
-void main() {
+void main()
+{
 	outColor = sunColor * max(0.f, dot(fragNormal, -sunDirection)) * vec4(fragColor, 1.f) * texture(material, fragTexCoord);
 }
