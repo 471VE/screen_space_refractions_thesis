@@ -17,7 +17,7 @@ layout(location = 0) out vec4 outColor;
 #define MAX_STEPS 100
 #define MAX_DIST 100.f
 #define SURF_DIST 0.001f
-#define MAX_TIR_COUNT 5
+#define MAX_INTERNAL_REFLECTION_COUNT 5 // seems to be enough
 #define GAMMA 2.2f
 #define IOR 1.45f // index of refraction
 
@@ -124,8 +124,10 @@ vec3 get_normal(vec3 p)
 
 vec3 sample_cubemap_linear_space(vec3 rd)
 {
-  // Inverse gamma correction to sample light in linear brightness space
-  return pow(texture(material, rd).rgb, vec3(GAMMA));
+  if (dot(rd, rd) != 0.f)
+    // Inverse gamma correction to sample light in linear brightness space
+    return pow(texture(material, rd).rgb, vec3(GAMMA));
+  return vec3(0.f);
 }
 
 
@@ -133,6 +135,14 @@ float pow5(float x)
 {
   float y = x * x;
   return x * y * y;
+}
+
+float get_fresnel_factor(float cos_theta)
+{
+  // Schlick's approximation for reflective Fresnel factor on an interface between two insulators.
+  return R0 + (1.f - R0) * pow5(1.f - abs(cos_theta));
+  // Why TF can cosine of theta be outside of [0, 1] range if theta ALWAYS lies in [0, pi/2]?
+  // I honestly have absolutely no idea
 }
 
 
@@ -143,53 +153,50 @@ void main()
   
   if (dist < MAX_DIST)
   {
+    color = vec3(0.f);
     float totalDistanceInside = 0.f;
 
     vec3 pos = cameraData.position.xyz + rayDirection * dist; // 3d hit position
     vec3 normal = get_normal(pos); // surface normal orientation
 
+    float energyLeft = 1.f;
+
     vec3 reflectedRayDirection = reflect(rayDirection, normal);
     vec3 colorReflected = sample_cubemap_linear_space(reflectedRayDirection);
     vec3 colorRefracted = vec3(0.f);
 
-    // Schlick's approximation for reflective Fresnel factor on an interface between two insulators.
-    float R = R0 + (1.f - R0) * pow5(1.f - dot(-rayDirection, normal)); 
+    float R = get_fresnel_factor(dot(-rayDirection, normal));
+    float T = 1.f - R;
+    color += energyLeft * R * colorReflected;
+    energyLeft *= T;
     
     vec3 inRayDirection = refract(rayDirection, normal, 1.f/IOR); // ray dir when entering
     
     vec3 enterPoint = pos - normal * SURF_DIST * 3.f;
-    float distanceInside = ray_march(enterPoint, inRayDirection, -1.f); // inside the object    
-    totalDistanceInside += distanceInside;
 
-    vec3 exitPoint = enterPoint + inRayDirection * distanceInside; // 3d position of exit
-    vec3 exitNormal = -get_normal(exitPoint); 
-    
-    vec3 outRayDirection = refract(inRayDirection, exitNormal, IOR);
+    float distanceInside; // inside the object
+    vec3 exitPoint; // 3d position of exit
+    vec3 exitNormal;
+    vec3 outRayDirection;
 
-    bool totalInternalReflection = dot(outRayDirection, outRayDirection) == 0.f;
-    if (totalInternalReflection)
+    exitPoint = enterPoint;
+
+    for (int i = 0; i < MAX_INTERNAL_REFLECTION_COUNT; i++)
     {
-      for (int i = 0; i < MAX_TIR_COUNT; i++)
-      {
-        if (totalInternalReflection)
-        {
-          inRayDirection = reflect(inRayDirection, exitNormal);
-          distanceInside = ray_march(exitPoint, inRayDirection, -1.f);
-          totalDistanceInside += distanceInside;
-          exitPoint += inRayDirection * distanceInside;
-          exitNormal = -get_normal(exitPoint);
-          outRayDirection = refract(inRayDirection, exitNormal, IOR);
-        }
-        else
-          break;
-        totalInternalReflection = dot(outRayDirection, outRayDirection) == 0.f;
-      }
-    }
-    
-    if (!totalInternalReflection)
-      colorRefracted = sample_cubemap_linear_space(outRayDirection);
+      distanceInside = ray_march(exitPoint, inRayDirection, -1.f);
+      totalDistanceInside += distanceInside;
+      exitPoint = enterPoint + inRayDirection * distanceInside; 
+      exitNormal = -get_normal(exitPoint);
+      R = get_fresnel_factor(dot(-inRayDirection, exitNormal));
+      T = 1.f - R;
+      outRayDirection = refract(inRayDirection, exitNormal, IOR);
+      inRayDirection = reflect(inRayDirection, exitNormal);
 
-    color = R * colorReflected + (1.f - R) * colorRefracted;
+      colorRefracted = sample_cubemap_linear_space(outRayDirection);
+      color += energyLeft * T * colorRefracted;
+      energyLeft *= R;
+    }
+    color = vec3(energyLeft);
   }
 
   // Gamma correction
