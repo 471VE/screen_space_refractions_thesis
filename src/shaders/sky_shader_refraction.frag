@@ -9,6 +9,10 @@ layout(set = 0, binding = 0) uniform CameraVectors {
 	vec4 position;
 } cameraData;
 
+layout(set = 0, binding = 1) uniform RenderParams {
+	uint distanceCalculationMode;
+} renderParams;
+
 layout(set = 1, binding = 0) uniform samplerCube material;
 
 layout(location = 0) out vec4 outColor;
@@ -196,7 +200,12 @@ void main()
       color += energyLeft * T * colorRefracted;
       energyLeft *= R;
     }
-    color = vec3(energyLeft);
+    if (renderParams.distanceCalculationMode == 1)
+      color = color;
+    else if (renderParams.distanceCalculationMode == 2)
+      color = vec3(energyLeft);
+    else
+      color = vec3(float(renderParams.distanceCalculationMode));
   }
 
   // Gamma correction

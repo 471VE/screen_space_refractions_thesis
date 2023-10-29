@@ -18,6 +18,7 @@ App::App(int width, int height)
 }
 
 Camera camera;
+uint32_t distance_calculation_mode = 1;
 
 static void on_keyboard_pressed(GLFWwindow* window, int , int, int , int)
 {
@@ -40,6 +41,12 @@ static void on_keyboard_pressed(GLFWwindow* window, int , int, int , int)
 
 	if (glfwGetKey(window, 'C'))
 		camera.moveDown();
+
+	if (glfwGetKey(window, '1'))
+		distance_calculation_mode = 1;
+
+	if (glfwGetKey(window, '2'))
+		distance_calculation_mode = 2;
 }
 
 /**
@@ -81,6 +88,7 @@ void App::run()
 	while (!glfwWindowShouldClose(window))
 	{
 		glfwPollEvents();
+		graphicsEngine->setDistanceCalculationMode(distance_calculation_mode);
 		graphicsEngine->render(scene);
 
 		camera.move(static_cast<float>(glfwGetTime() - lastTime));

@@ -19,6 +19,11 @@ namespace vkUtil {
 		glm::vec4 position;
 	};
 
+	struct RenderParams
+	{
+		uint32_t distanceCalculationMode = 1;
+	};
+
 	/**
 		Holds the data structures associated with a "Frame"
 	*/
@@ -55,12 +60,18 @@ namespace vkUtil {
 		Buffer cameraVectorBuffer;
 		void* cameraVectorWriteLocation;
 
+		RenderParams renderParamsData;
+		Buffer renderParamsBuffer;
+		void* renderParamsWriteLocation;
+
 		std::vector<glm::mat4> modelTransforms;
 		Buffer modelBuffer;
 		void* modelBufferWriteLocation;
 
 		//Resource Descriptors
-		vk::DescriptorBufferInfo cameraVectorDescriptor, cameraMatrixDescriptor, ssboDescriptor;
+		vk::DescriptorBufferInfo cameraVectorDescriptor, cameraMatrixDescriptor;
+		vk::DescriptorBufferInfo ssboDescriptor;
+		vk::DescriptorBufferInfo renderParamsDescriptor; 
 		std::unordered_map<pipelineType, vk::DescriptorSet> descriptorSet;
 
 		//Write Operations

@@ -120,23 +120,33 @@ void Engine::makeDescriptorSetLayouts()
 	//Binding once per frame
 	vkInit::descriptorSetLayoutData bindings;
 
+	// TODO: CHANGE THIS ABSOLUTELY STUPID HORRENDOUS SYSTEM
+	// Create separate binding for different pipelines and do it automatically
+
 	// Sky pipeline bindings
-	bindings.count = 1;
+	bindings.count = 2;
 
 	bindings.indices.push_back(0);
 	bindings.types.push_back(vk::DescriptorType::eUniformBuffer);
 	bindings.counts.push_back(1);
 	bindings.stages.push_back(vk::ShaderStageFlagBits::eVertex | vk::ShaderStageFlagBits::eFragment);
 
+	bindings.indices.push_back(1);
+	bindings.types.push_back(vk::DescriptorType::eUniformBuffer);
+	bindings.counts.push_back(1);
+	bindings.stages.push_back(vk::ShaderStageFlagBits::eFragment);
+
 	frameSetLayout[pipelineType::SKY] = vkInit::makeDescriptorSetLayout(device, bindings);
 
 	// Standard pipeline bindings
-	bindings.count = 2;
 
-	bindings.indices.push_back(1);
-	bindings.types.push_back(vk::DescriptorType::eStorageBuffer);
-	bindings.counts.push_back(1);
-	bindings.stages.push_back(vk::ShaderStageFlagBits::eVertex);
+	// bindings.indices.push_back(1);
+	// bindings.types.push_back(vk::DescriptorType::eStorageBuffer);
+	// bindings.counts.push_back(1);
+	// bindings.stages.push_back(vk::ShaderStageFlagBits::eVertex);
+
+	bindings.types[1] = vk::DescriptorType::eStorageBuffer;
+	bindings.stages[1] = vk::ShaderStageFlagBits::eVertex;
 
 	frameSetLayout[pipelineType::STANDARD] = vkInit::makeDescriptorSetLayout(device, bindings);
 
@@ -403,6 +413,11 @@ void Engine::updateCameraData(Camera& camera)
 	camera.getTransformationMatrixColumns(camVecForwards, camVecRight, camVecUp, camPos);
 }
 
+void Engine::setDistanceCalculationMode(int mode)
+{
+	distanceCalculationMode = mode;
+}
+
 void Engine::prepareFrame(uint32_t imageIndex, Scene* scene)
 {
 	vkUtil::SwapChainFrame& _frame = swapchainFrames[imageIndex];
@@ -412,6 +427,9 @@ void Engine::prepareFrame(uint32_t imageIndex, Scene* scene)
 	_frame.cameraVectorData.up = camVecUp;
 	_frame.cameraVectorData.position = camPos;
 	memcpy(_frame.cameraVectorWriteLocation, &(_frame.cameraVectorData), sizeof(vkUtil::CameraVectors));
+
+	_frame.renderParamsData.distanceCalculationMode = distanceCalculationMode;
+	memcpy(_frame.renderParamsWriteLocation, &(_frame.renderParamsData), sizeof(vkUtil::RenderParams));
 
 	glm::mat4 projection = glm::perspective(glm::radians(45.f), static_cast<float>(swapchainExtent.width) / static_cast<float>(swapchainExtent.height), 0.1f, 100.f);
 	projection[1][1] *= -1;

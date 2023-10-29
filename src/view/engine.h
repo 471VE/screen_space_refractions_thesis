@@ -19,6 +19,7 @@ public:
 
 	void render(Scene* scene);
 	void updateCameraData(Camera& camera);
+	void setDistanceCalculationMode(int mode);
 
 private:
 
@@ -75,6 +76,9 @@ private:
 	//Camera-related variables
 	glm::mat4 view;
 	glm::vec4 camVecForwards, camVecRight, camVecUp, camPos;
+
+	//Render-related variables
+	uint32_t distanceCalculationMode = 1;
 
 	//instance setup
 	void makeInstance();

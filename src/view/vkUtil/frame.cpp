@@ -8,13 +8,21 @@ void vkUtil::SwapChainFrame::makeDescriptorResources()
 	input.logicalDevice = logicalDevice;
 	input.memoryProperties = vk::MemoryPropertyFlagBits::eHostVisible | vk::MemoryPropertyFlagBits::eHostCoherent;
 	input.physicalDevice = physicalDevice;
+
 	input.size = sizeof(CameraVectors);
 	input.usage = vk::BufferUsageFlagBits::eUniformBuffer;
 	cameraVectorBuffer = create_buffer(input);
 
 	cameraVectorWriteLocation = logicalDevice.mapMemory(cameraVectorBuffer.bufferMemory, 0, sizeof(CameraVectors));
 
+	input.size = sizeof(RenderParams);
+	input.usage = vk::BufferUsageFlagBits::eUniformBuffer;
+	renderParamsBuffer = create_buffer(input);
+
+	renderParamsWriteLocation = logicalDevice.mapMemory(renderParamsBuffer.bufferMemory, 0, sizeof(RenderParams));
+
 	input.size = sizeof(CameraMatrices);
+	input.usage = vk::BufferUsageFlagBits::eUniformBuffer;
 	cameraMatrixBuffer = create_buffer(input);
 
 	cameraMatrixWriteLocation = logicalDevice.mapMemory(cameraMatrixBuffer.bufferMemory, 0, sizeof(CameraMatrices));
@@ -39,6 +47,10 @@ void vkUtil::SwapChainFrame::makeDescriptorResources()
 	cameraVectorDescriptor.buffer = cameraVectorBuffer.buffer;
 	cameraVectorDescriptor.offset = 0;
 	cameraVectorDescriptor.range = sizeof(CameraVectors);
+
+	renderParamsDescriptor.buffer = renderParamsBuffer.buffer;
+	renderParamsDescriptor.offset = 0;
+	renderParamsDescriptor.range = sizeof(RenderParams);
 
 	cameraMatrixDescriptor.buffer = cameraMatrixBuffer.buffer;
 	cameraMatrixDescriptor.offset = 0;
@@ -93,7 +105,7 @@ void vkUtil::SwapChainFrame::recordWriteOperations()
 		const VkBufferView* pTexelBufferView;
 	} VkWriteDescriptorSet;
 	*/
-	vk::WriteDescriptorSet cameraVectorWriteOp, cameraMatrixWriteOp, ssboWriteOp;
+	vk::WriteDescriptorSet cameraVectorWriteOp, cameraMatrixWriteOp, ssboWriteOp, renderParamsWriteOp;
 
 	cameraVectorWriteOp.dstSet = descriptorSet[pipelineType::SKY];
 	cameraVectorWriteOp.dstBinding = 0;
@@ -101,6 +113,13 @@ void vkUtil::SwapChainFrame::recordWriteOperations()
 	cameraVectorWriteOp.descriptorCount = 1;
 	cameraVectorWriteOp.descriptorType = vk::DescriptorType::eUniformBuffer;
 	cameraVectorWriteOp.pBufferInfo = &cameraVectorDescriptor;
+
+	renderParamsWriteOp.dstSet = descriptorSet[pipelineType::SKY];
+	renderParamsWriteOp.dstBinding = 1;
+	renderParamsWriteOp.dstArrayElement = 0; //byte offset within binding for inline uniform blocks
+	renderParamsWriteOp.descriptorCount = 1;
+	renderParamsWriteOp.descriptorType = vk::DescriptorType::eUniformBuffer;
+	renderParamsWriteOp.pBufferInfo = &renderParamsDescriptor;
 
 	cameraMatrixWriteOp.dstSet = descriptorSet[pipelineType::STANDARD];
 	cameraMatrixWriteOp.dstBinding = 0;
@@ -116,7 +135,7 @@ void vkUtil::SwapChainFrame::recordWriteOperations()
 	ssboWriteOp.descriptorType = vk::DescriptorType::eStorageBuffer;
 	ssboWriteOp.pBufferInfo = &ssboDescriptor;
 
-	writeOps = { cameraVectorWriteOp, cameraMatrixWriteOp, ssboWriteOp };
+	writeOps = { cameraVectorWriteOp, cameraMatrixWriteOp, ssboWriteOp, renderParamsWriteOp };
 
 }
 
@@ -134,6 +153,10 @@ void vkUtil::SwapChainFrame::destroy()
 	logicalDevice.unmapMemory(cameraVectorBuffer.bufferMemory);
 	logicalDevice.freeMemory(cameraVectorBuffer.bufferMemory);
 	logicalDevice.destroyBuffer(cameraVectorBuffer.buffer);
+
+	logicalDevice.unmapMemory(renderParamsBuffer.bufferMemory);
+	logicalDevice.freeMemory(renderParamsBuffer.bufferMemory);
+	logicalDevice.destroyBuffer(renderParamsBuffer.buffer);
 
 	logicalDevice.unmapMemory(cameraMatrixBuffer.bufferMemory);
 	logicalDevice.freeMemory(cameraMatrixBuffer.bufferMemory);
