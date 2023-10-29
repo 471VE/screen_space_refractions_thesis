@@ -47,6 +47,9 @@ static void on_keyboard_pressed(GLFWwindow* window, int , int, int , int)
 
 	if (glfwGetKey(window, '2'))
 		distance_calculation_mode = 2;
+
+	if (glfwGetKey(window, '3'))
+		distance_calculation_mode = 3;
 }
 
 /**

@@ -21,12 +21,53 @@ layout(location = 0) out vec4 outColor;
 #define MAX_STEPS 100
 #define MAX_DIST 100.f
 #define SURF_DIST 0.001f
-#define MAX_INTERNAL_REFLECTION_COUNT 5 // seems to be enough
+#define MAX_INTERNAL_REFLECTION_COUNT 1 // seems to be enough
 #define GAMMA 2.2f
 #define IOR 1.45f // index of refraction
+#define M_PI 3.1415926535897932384626433832795f
+#define STUB 0.f
 
 
 const float R0 = (IOR - 1.f) * (IOR - 1.f) / ((IOR + 1.f) * (IOR + 1.f));
+const float SPHERE_RADIUS = 0.5f;
+
+const float[9] SH_CONSTANTS = {
+  1.f / 2.f * sqrt(1.f / M_PI),
+  sqrt(3.f / (4.f * M_PI)),
+  sqrt(3.f / (4.f * M_PI)),
+  sqrt(3.f / (4.f * M_PI)),
+  1.f / 2.f * sqrt(15.f / M_PI),
+  1.f / 2.f * sqrt(15.f / M_PI),
+  1.f / 4.f * sqrt(5.f / M_PI),
+  1.f / 2.f * sqrt(15.f / M_PI),
+  1.f / 4.f * sqrt(15.f / M_PI)
+};
+
+const float[9] SH_SPHERE_COEFFICIENTS = {
+  2.f * M_PI * SPHERE_RADIUS * SH_CONSTANTS[0] * SH_CONSTANTS[0],
+  0.f,
+  4.f / 3.f * M_PI * SPHERE_RADIUS * SH_CONSTANTS[2] * SH_CONSTANTS[2],
+  0.f,
+  0.f,
+  0.f,
+  M_PI * SPHERE_RADIUS * SH_CONSTANTS[6] * SH_CONSTANTS[6],
+  0.f,
+  0.f
+};
+
+// Half-assed implementation of spherical harmonics
+// Note that constant coefficients are already accounted for in expansion terms
+float Y00(float sin_theta, float cos_theta, float sin_phi, float cos_phi) { return 1.f; }
+
+float Y1m1(float sin_theta, float cos_theta, float sin_phi, float cos_phi) { return 0.f; } // TODO: change this, this is wrong
+float Y10 (float sin_theta, float cos_theta, float sin_phi, float cos_phi) { return cos_theta; }
+float Y11 (float sin_theta, float cos_theta, float sin_phi, float cos_phi) { return 0.f; } // TODO: change this, this is wrong
+
+float Y2m2(float sin_theta, float cos_theta, float sin_phi, float cos_phi) { return 0.f; } // TODO: change this, this is wrong
+float Y2m1(float sin_theta, float cos_theta, float sin_phi, float cos_phi) { return 0.f; } // TODO: change this, this is wrong
+float Y20 (float sin_theta, float cos_theta, float sin_phi, float cos_phi) { return 3.f * cos_theta * cos_theta - 1.f; }
+float Y21 (float sin_theta, float cos_theta, float sin_phi, float cos_phi) { return 0.f; } // TODO: change this, this is wrong
+float Y22 (float sin_theta, float cos_theta, float sin_phi, float cos_phi) { return 0.f; } // TODO: change this, this is wrong
 
 
 float sd_box(vec3 p, vec3 s)
@@ -84,8 +125,8 @@ float sd_box_frame(vec3 p, vec3 b, float e)
 
 float get_dist(vec3 p)
 {
-  float d = sd_box(p, vec3(0.5));
-  // float d = sd_sphere(p, 0.5);
+  // float d = sd_box(p, vec3(0.5));
+  float d = sd_sphere(p, SPHERE_RADIUS);
   // float d = sd_cylinder(p, vec3(-0.2, -0.2, -0.f), vec3(0.f, 0.2, 0.2), 0.25);
   // float d = sd_cylinder(p, vec3(-0.f, -0.2, -0.f), vec3(0.f, 0.2, 0.f), 0.25);
   // float d = sd_cone(p - vec3(0.f, 0.5f, 0.f), vec2(sin(3.14f / 6.f), cos(3.14f / 6.f)), 1.f);
@@ -123,6 +164,30 @@ vec3 get_normal(vec3 p)
   );
   
   return normalize(n);
+}
+
+
+float sh_distance(vec3 rd, vec3 n)
+{
+  float cos_theta = dot(rd, n);
+  return (1.77 * 0.282095 + 2.05 * 0.488603 * cos_theta + 0.99 * 0.315392 *(3 * cos_theta * cos_theta - 1)) *  SPHERE_RADIUS * 1.394; // ????
+  // return SH_SPHERE_COEFFICIENTS[0] * Y00 (STUB, cos_theta, STUB, STUB)
+
+  //      + SH_SPHERE_COEFFICIENTS[1] * Y1m1(STUB, cos_theta, STUB, STUB)
+  //      + SH_SPHERE_COEFFICIENTS[2] * Y10 (STUB, cos_theta, STUB, STUB)
+  //      + SH_SPHERE_COEFFICIENTS[3] * Y11 (STUB, cos_theta, STUB, STUB);
+
+  //      + SH_SPHERE_COEFFICIENTS[4] * Y2m2(STUB, cos_theta, STUB, STUB)
+  //      + SH_SPHERE_COEFFICIENTS[5] * Y2m1(STUB, cos_theta, STUB, STUB)
+  //      + SH_SPHERE_COEFFICIENTS[6] * Y20 (STUB, cos_theta, STUB, STUB)
+  //      + SH_SPHERE_COEFFICIENTS[7] * Y21 (STUB, cos_theta, STUB, STUB)
+  //      + SH_SPHERE_COEFFICIENTS[8] * Y22 (STUB, cos_theta, STUB, STUB);
+}
+
+
+float constant_distance(vec3 rd, vec3 n)
+{
+  return 4.f / 3.f;
 }
 
 
@@ -184,10 +249,16 @@ void main()
     vec3 outRayDirection;
 
     exitPoint = enterPoint;
+    exitNormal = -normal;
 
     for (int i = 0; i < MAX_INTERNAL_REFLECTION_COUNT; i++)
     {
-      distanceInside = ray_march(exitPoint, inRayDirection, -1.f);
+      if (renderParams.distanceCalculationMode == 1)
+        distanceInside = ray_march(exitPoint, inRayDirection, -1.f);
+      else if (renderParams.distanceCalculationMode == 2)
+        distanceInside = sh_distance(inRayDirection, exitNormal);
+      else if (renderParams.distanceCalculationMode == 3)
+        distanceInside = constant_distance(inRayDirection, exitNormal);
       totalDistanceInside += distanceInside;
       exitPoint = enterPoint + inRayDirection * distanceInside; 
       exitNormal = -get_normal(exitPoint);
@@ -200,12 +271,6 @@ void main()
       color += energyLeft * T * colorRefracted;
       energyLeft *= R;
     }
-    if (renderParams.distanceCalculationMode == 1)
-      color = color;
-    else if (renderParams.distanceCalculationMode == 2)
-      color = vec3(energyLeft);
-    else
-      color = vec3(float(renderParams.distanceCalculationMode));
   }
 
   // Gamma correction
