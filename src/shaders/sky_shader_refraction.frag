@@ -21,7 +21,7 @@ layout(location = 0) out vec4 outColor;
 #define MAX_STEPS 100
 #define MAX_DIST 100.f
 #define SURF_DIST 0.001f
-#define MAX_INTERNAL_REFLECTION_COUNT 1 // seems to be enough
+#define MAX_INTERNAL_REFLECTION_COUNT 10 // seems to be enough
 #define GAMMA 2.2f
 #define IOR 1.45f // index of refraction
 #define M_PI 3.1415926535897932384626433832795f
@@ -125,8 +125,8 @@ float sd_box_frame(vec3 p, vec3 b, float e)
 
 float get_dist(vec3 p)
 {
-  // float d = sd_box(p, vec3(0.5));
-  float d = sd_sphere(p, SPHERE_RADIUS);
+  float d = sd_box(p, vec3(0.5));
+  // float d = sd_sphere(p, SPHERE_RADIUS);
   // float d = sd_cylinder(p, vec3(-0.2, -0.2, -0.f), vec3(0.f, 0.2, 0.2), 0.25);
   // float d = sd_cylinder(p, vec3(-0.f, -0.2, -0.f), vec3(0.f, 0.2, 0.f), 0.25);
   // float d = sd_cone(p - vec3(0.f, 0.5f, 0.f), vec2(sin(3.14f / 6.f), cos(3.14f / 6.f)), 1.f);
@@ -259,7 +259,7 @@ void main()
       else if (renderParams.distanceCalculationMode == 3)
         distanceInside = constant_distance(inRayDirection, exitNormal);
       totalDistanceInside += distanceInside;
-      exitPoint = enterPoint + inRayDirection * distanceInside; 
+      exitPoint += inRayDirection * distanceInside; 
       exitNormal = -get_normal(exitPoint);
       R = get_fresnel_factor(dot(-inRayDirection, exitNormal));
       T = 1.f - R;
