@@ -170,24 +170,23 @@ vec3 get_normal(vec3 p)
 float sh_distance(vec3 rd, vec3 n)
 {
   float cos_theta = dot(rd, n);
-  return (1.77 * 0.282095 + 2.05 * 0.488603 * cos_theta + 0.99 * 0.315392 *(3 * cos_theta * cos_theta - 1)) *  SPHERE_RADIUS * 1.394; // ????
-  // return SH_SPHERE_COEFFICIENTS[0] * Y00 (STUB, cos_theta, STUB, STUB)
+  return SH_SPHERE_COEFFICIENTS[0] * Y00 (STUB, cos_theta, STUB, STUB)
 
-  //      + SH_SPHERE_COEFFICIENTS[1] * Y1m1(STUB, cos_theta, STUB, STUB)
-  //      + SH_SPHERE_COEFFICIENTS[2] * Y10 (STUB, cos_theta, STUB, STUB)
-  //      + SH_SPHERE_COEFFICIENTS[3] * Y11 (STUB, cos_theta, STUB, STUB);
+       + SH_SPHERE_COEFFICIENTS[1] * Y1m1(STUB, cos_theta, STUB, STUB)
+       + SH_SPHERE_COEFFICIENTS[2] * Y10 (STUB, cos_theta, STUB, STUB)
+       + SH_SPHERE_COEFFICIENTS[3] * Y11 (STUB, cos_theta, STUB, STUB)
 
-  //      + SH_SPHERE_COEFFICIENTS[4] * Y2m2(STUB, cos_theta, STUB, STUB)
-  //      + SH_SPHERE_COEFFICIENTS[5] * Y2m1(STUB, cos_theta, STUB, STUB)
-  //      + SH_SPHERE_COEFFICIENTS[6] * Y20 (STUB, cos_theta, STUB, STUB)
-  //      + SH_SPHERE_COEFFICIENTS[7] * Y21 (STUB, cos_theta, STUB, STUB)
-  //      + SH_SPHERE_COEFFICIENTS[8] * Y22 (STUB, cos_theta, STUB, STUB);
+       + SH_SPHERE_COEFFICIENTS[4] * Y2m2(STUB, cos_theta, STUB, STUB)
+       + SH_SPHERE_COEFFICIENTS[5] * Y2m1(STUB, cos_theta, STUB, STUB)
+       + SH_SPHERE_COEFFICIENTS[6] * Y20 (STUB, cos_theta, STUB, STUB)
+       + SH_SPHERE_COEFFICIENTS[7] * Y21 (STUB, cos_theta, STUB, STUB)
+       + SH_SPHERE_COEFFICIENTS[8] * Y22 (STUB, cos_theta, STUB, STUB);
 }
 
 
 float constant_distance(vec3 rd, vec3 n)
 {
-  return 4.f / 3.f;
+  return 4.f / 3.f * SPHERE_RADIUS;
 }
 
 
@@ -209,7 +208,7 @@ float pow5(float x)
 float get_fresnel_factor(float cos_theta)
 {
   // Schlick's approximation for reflective Fresnel factor on an interface between two insulators.
-  return R0 + (1.f - R0) * pow5(1.f - abs(cos_theta));
+  return R0 + (1.f - R0) * pow5(1.f - clamp(cos_theta, 0.f, 1.f));
   // Why TF can cosine of theta be outside of [0, 1] range if theta ALWAYS lies in [0, pi/2]?
   // I honestly have absolutely no idea
 }
