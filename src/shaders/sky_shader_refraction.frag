@@ -21,7 +21,7 @@ layout(location = 0) out vec4 outColor;
 #define MAX_STEPS 100
 #define MAX_DIST 100.f
 #define SURF_DIST 0.001f
-#define MAX_INTERNAL_REFLECTION_COUNT 10 // seems to be enough
+#define MAX_INTERNAL_REFLECTION_COUNT 1 // seems to be enough
 #define GAMMA 2.2f
 #define IOR 1.45f // index of refraction
 #define M_PI 3.1415926535897932384626433832795f
@@ -208,9 +208,7 @@ float pow5(float x)
 float get_fresnel_factor(float cos_theta)
 {
   // Schlick's approximation for reflective Fresnel factor on an interface between two insulators.
-  return R0 + (1.f - R0) * pow5(1.f - clamp(cos_theta, 0.f, 1.f));
-  // Why TF can cosine of theta be outside of [0, 1] range if theta ALWAYS lies in [0, pi/2]?
-  // I honestly have absolutely no idea
+  return R0 + (1.f - R0) * pow5(1.f - cos_theta);
 }
 
 
