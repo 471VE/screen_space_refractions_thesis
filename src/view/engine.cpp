@@ -110,7 +110,7 @@ void Engine::recreateSwapchain()
 	makeFrameResources();
 	vkInit::commandBufferInputChunk commandBufferInput = { device, commandPool, swapchainFrames };
 	vkInit::make_frame_command_buffers(commandBufferInput);
-
+	makePipelines();
 }
 
 void Engine::makeDescriptorSetLayouts()
@@ -278,23 +278,23 @@ void Engine::makeAssets()
 	meshes = new VertexMenagerie();
 	std::unordered_map<meshTypes, std::vector<const char*>> model_filenames = {
 		{meshTypes::GROUND, {"resources/models/ground.obj","resources/models/ground.mtl"}},
-		{meshTypes::GIRL, {"resources/models/girl.obj","resources/models/girl.mtl"}},
-		{meshTypes::SKULL, {"resources/models/skull.obj","resources/models/skull.mtl"}},
-		{meshTypes::VIKING_ROOM, {"resources/models/viking_room.obj","resources/models/viking_room.mtl"}}
+		// {meshTypes::GIRL, {"resources/models/girl.obj","resources/models/girl.mtl"}},
+		// {meshTypes::SKULL, {"resources/models/skull.obj","resources/models/skull.mtl"}},
+		// {meshTypes::VIKING_ROOM, {"resources/models/viking_room.obj","resources/models/viking_room.mtl"}}
 	};
 	std::unordered_map<meshTypes, glm::mat4> preTransforms = {
 		{meshTypes::GROUND, glm::mat4(1.f)},
-		{meshTypes::GIRL, glm::rotate(
-			glm::mat4(1.f), 
-			glm::radians(180.f), 
-			glm::vec3(0.f, 0.f, 1.f)
-		)},
-		{meshTypes::SKULL, glm::mat4(1.f)},
-		{meshTypes::VIKING_ROOM, glm::rotate(
-			glm::mat4(1.f), 
-			glm::radians(135.f), 
-			glm::vec3(0.f, 0.f, 1.f)
-		)}
+		// {meshTypes::GIRL, glm::rotate(
+		// 	glm::mat4(1.f), 
+		// 	glm::radians(180.f), 
+		// 	glm::vec3(0.f, 0.f, 1.f)
+		// )},
+		// {meshTypes::SKULL, glm::mat4(1.f)},
+		// {meshTypes::VIKING_ROOM, glm::rotate(
+		// 	glm::mat4(1.f), 
+		// 	glm::radians(135.f), 
+		// 	glm::vec3(0.f, 0.f, 1.f)
+		// )}
 	};
 	std::unordered_map<meshTypes, vkMesh::ObjMesh> loaded_models;
 
@@ -302,9 +302,9 @@ void Engine::makeAssets()
 
 	std::unordered_map<meshTypes, std::vector<const char*>> filenames = {
 		{meshTypes::GROUND, {"resources/textures/ground.jpg"}},
-		{meshTypes::GIRL, {"resources/textures/none.png"}},
-		{meshTypes::SKULL, {"resources/textures/skull.png"}},
-		{meshTypes::VIKING_ROOM, {"resources/textures/viking_room.png"}},
+		// {meshTypes::GIRL, {"resources/textures/none.png"}},
+		// {meshTypes::SKULL, {"resources/textures/skull.png"}},
+		// {meshTypes::VIKING_ROOM, {"resources/textures/viking_room.png"}},
 	};
 
 	//Make a descriptor pool to allocate sets.
@@ -316,7 +316,9 @@ void Engine::makeAssets()
 
 	//Submit loading work
 	workQueue.lock.lock();
-	std::vector<meshTypes> mesh_types = { {meshTypes::GROUND, meshTypes::GIRL, meshTypes::SKULL, meshTypes::VIKING_ROOM} };
+	std::vector<meshTypes> mesh_types = {
+		meshTypes::GROUND,// meshTypes::GIRL, meshTypes::SKULL, meshTypes::VIKING_ROOM
+	};
 	for (meshTypes type : mesh_types)
 	{
 		vkImage::TextureInputChunk textureInfo;
