@@ -9,3 +9,28 @@ Heavily based on the code from "Vulkan with C++" tutorial series: https://github
 ![Sphere width](./graphics/sphere_width.png)
 
 <span style="color:red">**Red**</span> plot is true width of a unit sphere, while <span style="color:blue">**blue**</span> one is calculated using first 9 terms of spherical harmonics expansion series.
+
+# Short Term TODO list
+
+- [X] Add simple camera control
+- [ ] Add proper camera control (with mouse and everything)
+- [X] Fix horizontal stretching of a cubemap
+- [X] Fix camera's chaotic movement at the poles and close to the object
+- [ ] Fix problems with weird camera related to cross product with upwards vector
+- [X] Pass aspect ratio to shader as a parameter
+- [ ] Implement dynamic viewport and scissor
+- [ ] Create separate `descriptorSetLayoutData` for each pipeline (maybe even abstract it to pipeline class)
+- [ ] Make common definitions of uniform data for shaders and C++ (`RenderParams`, for example)
+- [ ] Fix that weird switching between Y- and Z-coordinates
+- [X] Add analytical ray traced refractions with simple geometric shapes
+  - [X] Sphere
+  - [X] Cylinder
+  - [X] Box
+- [X] Fix window resizing
+- [ ] Add ImGUI support
+- [ ] Create a **proper** `Scene` class to group models in code
+- [ ] Make hot reload of shaders
+- [X] Do refractions and reflections with Fresnel coefficients
+- [X] Do ***proper*** refractions and reflections with Fresnel coefficients
+- [ ] Start with spherical harmonics on sphere before raytracing
+  - http://holger.dammertz.org/stuff/notes_HammersleyOnHemisphere.html

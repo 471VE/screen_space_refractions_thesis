@@ -10,6 +10,7 @@ layout(set = 0, binding = 0) uniform CameraVectors {
 } cameraData;
 
 layout(set = 0, binding = 1) uniform RenderParams {
+	float aspectRatio;
 	uint distanceCalculationMode;
 } renderParams;
 

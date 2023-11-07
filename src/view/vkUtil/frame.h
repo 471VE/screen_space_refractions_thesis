@@ -21,6 +21,7 @@ namespace vkUtil {
 
 	struct RenderParams
 	{
+		float aspectRatio = 16.f / 9.f;
 		uint32_t distanceCalculationMode = 1;
 	};
 

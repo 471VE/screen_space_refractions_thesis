@@ -120,7 +120,7 @@ void Engine::makeDescriptorSetLayouts()
 	//Binding once per frame
 	vkInit::descriptorSetLayoutData bindings;
 
-	// TODO: CHANGE THIS ABSOLUTELY STUPID HORRENDOUS SYSTEM
+	// TODO: CHANGE THIS ABSOLUTELY IDIOTIC HORRENDOUS SYSTEM
 	// Create separate binding for different pipelines and do it automatically
 
 	// Sky pipeline bindings
@@ -134,7 +134,7 @@ void Engine::makeDescriptorSetLayouts()
 	bindings.indices.push_back(1);
 	bindings.types.push_back(vk::DescriptorType::eUniformBuffer);
 	bindings.counts.push_back(1);
-	bindings.stages.push_back(vk::ShaderStageFlagBits::eFragment);
+	bindings.stages.push_back(vk::ShaderStageFlagBits::eVertex | vk::ShaderStageFlagBits::eFragment);
 
 	frameSetLayout[pipelineType::SKY] = vkInit::makeDescriptorSetLayout(device, bindings);
 
@@ -430,6 +430,7 @@ void Engine::prepareFrame(uint32_t imageIndex, Scene* scene)
 	_frame.cameraVectorData.position = camPos;
 	memcpy(_frame.cameraVectorWriteLocation, &(_frame.cameraVectorData), sizeof(vkUtil::CameraVectors));
 
+	_frame.renderParamsData.aspectRatio = static_cast<float>(width) / static_cast<float>(height);
 	_frame.renderParamsData.distanceCalculationMode = distanceCalculationMode;
 	memcpy(_frame.renderParamsWriteLocation, &(_frame.renderParamsData), sizeof(vkUtil::RenderParams));
 
