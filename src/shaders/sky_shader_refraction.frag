@@ -125,8 +125,8 @@ float sd_box_frame(vec3 p, vec3 b, float e)
 
 float get_dist(vec3 p)
 {
-  float d = sd_box(p, vec3(0.5));
-  // float d = sd_sphere(p, SPHERE_RADIUS);
+  // float d = sd_box(p, vec3(0.5));
+  float d = sd_sphere(p, SPHERE_RADIUS);
   // float d = sd_cylinder(p, vec3(-0.2, -0.2, -0.f), vec3(0.f, 0.2, 0.2), 0.25);
   // float d = sd_cylinder(p, vec3(-0.f, -0.2, -0.f), vec3(0.f, 0.2, 0.f), 0.25);
   // float d = sd_cone(p - vec3(0.f, 0.5f, 0.f), vec2(sin(3.14f / 6.f), cos(3.14f / 6.f)), 1.f);
@@ -211,6 +211,12 @@ float get_fresnel_factor(float cos_theta)
   return R0 + (1.f - R0) * pow5(1.f - cos_theta);
 }
 
+vec3 refract_safe(vec3 I, vec3 N, float eta)
+{
+  vec3 R = refract(I, N, eta);
+  return dot(R, R) != 0.f ? normalize(R) : R;
+}
+
 
 void main()
 {
@@ -236,7 +242,7 @@ void main()
     color += energyLeft * R * colorReflected;
     energyLeft *= T;
     
-    vec3 inRayDirection = refract(rayDirection, normal, 1.f/IOR); // ray dir when entering
+    vec3 inRayDirection = refract_safe(rayDirection, normal, 1.f/IOR); // ray dir when entering
     
     vec3 enterPoint = pos - normal * SURF_DIST * 3.f;
 
@@ -261,7 +267,7 @@ void main()
       exitNormal = -get_normal(exitPoint);
       R = get_fresnel_factor(dot(-inRayDirection, exitNormal));
       T = 1.f - R;
-      outRayDirection = refract(inRayDirection, exitNormal, IOR);
+      outRayDirection = refract_safe(inRayDirection, exitNormal, IOR);
       inRayDirection = reflect(inRayDirection, exitNormal);
 
       colorRefracted = sample_cubemap_linear_space(outRayDirection);
