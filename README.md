@@ -28,6 +28,7 @@ Heavily based on the code from "Vulkan with C++" tutorial series: https://github
   - [X] Box
 - [X] Fix window resizing
 - [ ] Add ImGUI support
+- [ ] Make an in-app slider for comparing different methods
 - [ ] Create a **proper** `Scene` class to group models in code
 - [ ] Make hot reload of shaders
 - [X] Do refractions and reflections with Fresnel coefficients

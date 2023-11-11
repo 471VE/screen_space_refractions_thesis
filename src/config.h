@@ -52,7 +52,3 @@ enum class pipelineType {
 	SKY,
 	STANDARD
 };
-
-// String Processing functions
-
-std::vector<std::string> split(std::string line, std::string delimiter);

@@ -16,21 +16,28 @@ include_directories(
 )
 link_directories(${CMAKE_SOURCE_DIR}/3rdParty/lib)
 
-file(GLOB_RECURSE lib_src
+file(GLOB_RECURSE rendering_lib_src
     "src/control/*.cpp"
     "src/model/*.cpp"
     "src/view/*.cpp"
-    "src/config.cpp"
 )
-
-add_library(${PROJECT_NAME} STATIC
-    ${lib_src}
+add_library(rendering STATIC
+    ${rendering_lib_src}
 )
-
-add_executable(renderer src/main.cpp)
-
+add_executable(renderer src/renderer.cpp)
 target_link_libraries(renderer
-    ${PROJECT_NAME}
+    rendering
     "$ENV{VULKAN_SDK}/Lib/vulkan-1.lib"
     glfw3
+)
+
+file(GLOB_RECURSE preprocessing_lib_src
+    "src/preprocessing/*.cpp"
+)
+add_library(preprocessing STATIC
+    ${preprocessing_lib_src}
+)
+add_executable(preprocessor src/preprocessor.cpp)
+target_link_libraries(preprocessor
+    preprocessing
 )
