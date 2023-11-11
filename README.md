@@ -19,7 +19,8 @@ Heavily based on the code from "Vulkan with C++" tutorial series: https://github
 - [ ] Fix problems with weird camera related to cross product with upwards vector
 - [X] Pass aspect ratio to shader as a parameter
 - [ ] Implement dynamic viewport and scissor
-- [ ] Create separate `descriptorSetLayoutData` for each pipeline (maybe even abstract it to pipeline class)
+- [X] Create separate `descriptorSetLayoutData` for each pipeline
+- [ ] Create a **normal** `Pipeline` class and put `descriptorSetLayoutData` in there
 - [ ] Make common definitions of uniform data for shaders and C++ (`RenderParams`, for example)
 - [ ] Fix that weird switching between Y- and Z-coordinates
 - [X] Add analytical ray traced refractions with simple geometric shapes

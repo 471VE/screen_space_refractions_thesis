@@ -63,9 +63,7 @@ void Engine::makeDevice()
 	frameNumber = 0;
 }
 
-/**
-* Make a swapchain
-*/
+// Make a swapchain
 void Engine::makeSwapchain()
 {
 	vkInit::SwapChainBundle bundle = vkInit::create_swapchain(
@@ -89,9 +87,7 @@ void Engine::makeSwapchain()
 
 }
 
-/**
-* The swapchain must be recreated upon resize or minimization, among other cases
-*/
+// The swapchain must be recreated upon resize or minimization, among other cases
 void Engine::recreateSwapchain()
 {
 	width = 0;
@@ -115,51 +111,40 @@ void Engine::recreateSwapchain()
 
 void Engine::makeDescriptorSetLayouts()
 {
-	// DON't FORGET TO SET BINDINGS HERE!!!
+	// DON'T FORGET TO SET BINDINGS HERE!!!
 
-	//Binding once per frame
-	vkInit::descriptorSetLayoutData bindings;
-
-	// TODO: CHANGE THIS ABSOLUTELY IDIOTIC HORRENDOUS SYSTEM
-	// Create separate binding for different pipelines and do it automatically
+	// Binding once per frame
+	vkInit::descriptorSetLayoutData skyPipelineBindings;
+	vkInit::descriptorSetLayoutData standardPipelineBindings;
+	vkInit::descriptorSetLayoutData individualDrawCallBindings;
 
 	// Sky pipeline bindings
-	bindings.count = 2;
-
-	bindings.indices.push_back(0);
-	bindings.types.push_back(vk::DescriptorType::eUniformBuffer);
-	bindings.counts.push_back(1);
-	bindings.stages.push_back(vk::ShaderStageFlagBits::eVertex | vk::ShaderStageFlagBits::eFragment);
-
-	bindings.indices.push_back(1);
-	bindings.types.push_back(vk::DescriptorType::eUniformBuffer);
-	bindings.counts.push_back(1);
-	bindings.stages.push_back(vk::ShaderStageFlagBits::eVertex | vk::ShaderStageFlagBits::eFragment);
-
-	frameSetLayout[pipelineType::SKY] = vkInit::makeDescriptorSetLayout(device, bindings);
+	skyPipelineBindings.emplace_back(
+		vk::DescriptorType::eUniformBuffer,
+		vk::ShaderStageFlagBits::eVertex | vk::ShaderStageFlagBits::eFragment
+	);
+	skyPipelineBindings.emplace_back(
+		vk::DescriptorType::eUniformBuffer,
+		vk::ShaderStageFlagBits::eVertex | vk::ShaderStageFlagBits::eFragment
+	);
+	frameSetLayout[pipelineType::SKY] = vkInit::makeDescriptorSetLayout(device, skyPipelineBindings);
 
 	// Standard pipeline bindings
-
-	// bindings.indices.push_back(1);
-	// bindings.types.push_back(vk::DescriptorType::eStorageBuffer);
-	// bindings.counts.push_back(1);
-	// bindings.stages.push_back(vk::ShaderStageFlagBits::eVertex);
-
-	bindings.types[1] = vk::DescriptorType::eStorageBuffer;
-	bindings.stages[1] = vk::ShaderStageFlagBits::eVertex;
-
-	frameSetLayout[pipelineType::STANDARD] = vkInit::makeDescriptorSetLayout(device, bindings);
+	standardPipelineBindings.emplace_back(
+		vk::DescriptorType::eUniformBuffer,
+		vk::ShaderStageFlagBits::eVertex | vk::ShaderStageFlagBits::eFragment
+	);
+	standardPipelineBindings.emplace_back(
+		vk::DescriptorType::eStorageBuffer, vk::ShaderStageFlagBits::eVertex
+	);
+	frameSetLayout[pipelineType::STANDARD] = vkInit::makeDescriptorSetLayout(device, standardPipelineBindings);
 
 	//Binding for individual draw calls
-	bindings.count = 1;
-
-	bindings.indices[0] = 0;
-	bindings.types[0] = vk::DescriptorType::eCombinedImageSampler;
-	bindings.counts[0] = 1;
-	bindings.stages[0] = vk::ShaderStageFlagBits::eFragment;
-
-	meshSetLayout[pipelineType::SKY] = vkInit::makeDescriptorSetLayout(device, bindings);
-	meshSetLayout[pipelineType::STANDARD] = vkInit::makeDescriptorSetLayout(device, bindings);
+	individualDrawCallBindings.emplace_back(
+		vk::DescriptorType::eCombinedImageSampler, vk::ShaderStageFlagBits::eFragment
+	);
+	meshSetLayout[pipelineType::SKY] = vkInit::makeDescriptorSetLayout(device, individualDrawCallBindings);
+	meshSetLayout[pipelineType::STANDARD] = vkInit::makeDescriptorSetLayout(device, individualDrawCallBindings);
 }
 
 void Engine::makePipelines()
@@ -204,9 +189,7 @@ void Engine::makePipelines()
 	pipeline[pipelineType::STANDARD] = output.pipeline;
 }
 
-/**
-* Make a framebuffer for each frame
-*/
+// Make a framebuffer for each frame
 void Engine::make_framebuffers()
 {
 	vkInit::framebufferInput frameBufferInput;
@@ -231,13 +214,11 @@ void Engine::finalizeSetup()
 
 void Engine::makeFrameResources()
 {
-	vkInit::descriptorSetLayoutData bindings;
-	bindings.count = 2;
-	bindings.types.push_back(vk::DescriptorType::eUniformBuffer);
-	bindings.types.push_back(vk::DescriptorType::eStorageBuffer);
 	uint32_t descriptor_sets_per_frame = 2;
-
-	frameDescriptorPool = vkInit::make_descriptor_pool(device, static_cast<uint32_t>(swapchainFrames.size() * descriptor_sets_per_frame), bindings);
+	frameDescriptorPool = vkInit::make_descriptor_pool(
+		device, static_cast<uint32_t>(swapchainFrames.size() * descriptor_sets_per_frame),
+		{vk::DescriptorType::eUniformBuffer, vk::DescriptorType::eStorageBuffer}
+	);
 
 	for (vkUtil::SwapChainFrame& frame : swapchainFrames)
 	{
@@ -247,8 +228,10 @@ void Engine::makeFrameResources()
 
 		frame.makeDescriptorResources();
 
-		frame.descriptorSet[pipelineType::SKY] = vkInit::allocate_descriptor_set(device, frameDescriptorPool, frameSetLayout[pipelineType::SKY]);
-		frame.descriptorSet[pipelineType::STANDARD] = vkInit::allocate_descriptor_set(device, frameDescriptorPool, frameSetLayout[pipelineType::STANDARD]);
+		frame.descriptorSet[pipelineType::SKY] = vkInit::allocate_descriptor_set(
+			device, frameDescriptorPool, frameSetLayout[pipelineType::SKY]);
+		frame.descriptorSet[pipelineType::STANDARD] = vkInit::allocate_descriptor_set(
+			device, frameDescriptorPool, frameSetLayout[pipelineType::STANDARD]);
 
 		frame.recordWriteOperations();
 	}
@@ -308,11 +291,9 @@ void Engine::makeAssets()
 	};
 
 	//Make a descriptor pool to allocate sets.
-	vkInit::descriptorSetLayoutData bindings;
-	bindings.count = 1;
-	bindings.types.push_back(vk::DescriptorType::eCombinedImageSampler);
-
-	meshDescriptorPool = vkInit::make_descriptor_pool(device, static_cast<uint32_t>(filenames.size()) + 1, bindings);
+	meshDescriptorPool = vkInit::make_descriptor_pool(
+		device, static_cast<uint32_t>(filenames.size()) + 1, {vk::DescriptorType::eCombinedImageSampler}
+	);
 
 	//Submit loading work
 	workQueue.lock.lock();
@@ -539,7 +520,6 @@ void Engine::render(Scene* scene)
 	std::ignore = device.waitForFences(1, &(swapchainFrames[frameNumber].inFlight), VK_TRUE, UINT64_MAX);
 	std::ignore = device.resetFences(1, &(swapchainFrames[frameNumber].inFlight));
 
-	//acquireNextImageKHR(vk::SwapChainKHR, timeout, semaphore_to_signal, fence)
 	uint32_t imageIndex;
 	try
 	{
@@ -650,9 +630,7 @@ void Engine::render(Scene* scene)
 	frameNumber = (frameNumber + 1) % maxFramesInFlight;
 }
 
-/**
-* Free the memory associated with the swapchain objects
-*/
+// Free the memory associated with the swapchain objects
 void Engine::cleanupSwapchain()
 {
 	for (vkUtil::SwapChainFrame& frame : swapchainFrames)

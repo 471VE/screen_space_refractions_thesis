@@ -3,35 +3,8 @@
 
 	
 vk::DescriptorSetLayout vkInit::makeDescriptorSetLayout(
-	vk::Device device, const descriptorSetLayoutData& bindings
+	vk::Device device, const descriptorSetLayoutData &bindings
 ) {
-	/*
-		Bindings describes a whole bunch of descriptor types, collect them all into a
-		list of some kind.
-	*/
-	std::vector<vk::DescriptorSetLayoutBinding> layoutBindings;
-	layoutBindings.reserve(bindings.count);
-
-	for (int i = 0; i < bindings.count; i++)
-	{
-		/*
-			typedef struct VkDescriptorSetLayoutBinding {
-				uint32_t              binding;
-				VkDescriptorType      descriptorType;
-				uint32_t              descriptorCount;
-				VkShaderStageFlags    stageFlags;
-				const VkSampler*      pImmutableSamplers;
-			} VkDescriptorSetLayoutBinding;
-		*/
-
-		vk::DescriptorSetLayoutBinding layoutBinding;
-		layoutBinding.binding = bindings.indices[i];
-		layoutBinding.descriptorType = bindings.types[i];
-		layoutBinding.descriptorCount = bindings.counts[i];
-		layoutBinding.stageFlags = bindings.stages[i];
-		layoutBindings.push_back(layoutBinding);
-	}
-
 	/*
 		typedef struct VkDescriptorSetLayoutCreateInfo {
 			VkStructureType                        sType;
@@ -43,9 +16,8 @@ vk::DescriptorSetLayout vkInit::makeDescriptorSetLayout(
 	*/
 	vk::DescriptorSetLayoutCreateInfo layoutInfo;
 	layoutInfo.flags = vk::DescriptorSetLayoutCreateFlagBits();
-	layoutInfo.bindingCount = bindings.count;
-	layoutInfo.pBindings = layoutBindings.data();
-
+	layoutInfo.bindingCount = bindings.bindings.size();
+	layoutInfo.pBindings = bindings.bindings.data();
 
 	try
 	{
@@ -59,7 +31,7 @@ vk::DescriptorSetLayout vkInit::makeDescriptorSetLayout(
 }
 
 vk::DescriptorPool vkInit::make_descriptor_pool(
-	vk::Device device, uint32_t size, const descriptorSetLayoutData& bindings
+	vk::Device device, uint32_t size, const std::vector<vk::DescriptorType> &descriptorTypes
 ) {
 	std::vector<vk::DescriptorPoolSize> poolSizes;
 	/*
@@ -69,10 +41,10 @@ vk::DescriptorPool vkInit::make_descriptor_pool(
 		} VkDescriptorPoolSize;
 	*/
 
-	for (int i = 0; i < bindings.count; i++)
+	for (int i = 0; i < descriptorTypes.size(); i++)
 	{
 		vk::DescriptorPoolSize poolSize;
-		poolSize.type = bindings.types[i];
+		poolSize.type = descriptorTypes[i];
 		poolSize.descriptorCount = size;
 		poolSizes.push_back(poolSize);
 	}

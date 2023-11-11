@@ -3,37 +3,47 @@
 
 namespace vkInit {
 
-	/**
-		Describes the bindings of a descriptor set layout
-	*/
+	// Describes the bindings of a descriptor set layout
 	struct descriptorSetLayoutData {
-		int count;
-		std::vector<int> indices;
-		std::vector<vk::DescriptorType> types;
-		std::vector<int> counts;
-		std::vector<vk::ShaderStageFlags> stages;
+		// Bindings describe a whole bunch of descriptor types, and collect them all into a
+		// list of some kind.
+
+		// typedef struct VkDescriptorSetLayoutBinding {
+		// 	 uint32_t              binding;
+		// 	 VkDescriptorType      descriptorType;
+		// 	 uint32_t              descriptorCount;
+		// 	 VkShaderStageFlags    stageFlags;
+		// 	 const VkSampler*      pImmutableSamplers;
+		// } VkDescriptorSetLayoutBinding;
+		std::vector<vk::DescriptorSetLayoutBinding> bindings;
+
+		void emplace_back(vk::DescriptorType descriptorType, vk::ShaderStageFlags stageFlags)
+		{
+			uint32_t binding = bindings.size();
+			bindings.emplace_back(binding, descriptorType, 1, stageFlags);
+		}
 	};
 
 	/**
 		Make a descriptor set layout from the given descriptions
 
 		\param device the logical device
-		\param bindings	a struct describing the bindings used in the shader
+		\param bindings	a vector of the bindings used in the shader
 		\returns the created descriptor set layout
 	*/
 	vk::DescriptorSetLayout makeDescriptorSetLayout(
-		vk::Device device, const descriptorSetLayoutData& bindings);
+		vk::Device device, const descriptorSetLayoutData &bindings);
 
 	/**
 		Make a descriptor pool
 
 		\param device the logical device
 		\param size the number of descriptor sets to allocate from the pool
-		\param bindings	used to get the descriptor types
+		\param descriptorTypes	used to get the descriptor types
 		\returns the created descriptor pool
 	*/
 	vk::DescriptorPool make_descriptor_pool(
-		vk::Device device, uint32_t size, const descriptorSetLayoutData& bindings);
+		vk::Device device, uint32_t size, const std::vector<vk::DescriptorType> &descriptorTypes);
 
 	/**
 		Allocate a descriptor set from a pool.
