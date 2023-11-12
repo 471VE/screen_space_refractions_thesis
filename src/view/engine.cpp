@@ -409,11 +409,11 @@ void Engine::prepareFrame(uint32_t imageIndex, Scene* scene)
 	_frame.cameraVectorData.right = camVecRight;
 	_frame.cameraVectorData.up = camVecUp;
 	_frame.cameraVectorData.position = camPos;
-	memcpy(_frame.cameraVectorWriteLocation, &(_frame.cameraVectorData), sizeof(vkUtil::CameraVectors));
+	memcpy(_frame.cameraVectorWriteLocation, &(_frame.cameraVectorData), sizeof(CameraVectors));
 
 	_frame.renderParamsData.aspectRatio = static_cast<float>(width) / static_cast<float>(height);
 	_frame.renderParamsData.distanceCalculationMode = distanceCalculationMode;
-	memcpy(_frame.renderParamsWriteLocation, &(_frame.renderParamsData), sizeof(vkUtil::RenderParams));
+	memcpy(_frame.renderParamsWriteLocation, &(_frame.renderParamsData), sizeof(RenderParams));
 
 	glm::mat4 projection = glm::perspective(glm::radians(45.f), static_cast<float>(swapchainExtent.width) / static_cast<float>(swapchainExtent.height), 0.1f, 100.f);
 	projection[1][1] *= -1;
@@ -421,7 +421,7 @@ void Engine::prepareFrame(uint32_t imageIndex, Scene* scene)
 	_frame.cameraMatrixData.view = view;
 	_frame.cameraMatrixData.projection = projection;
 	_frame.cameraMatrixData.viewProjection = projection * view;
-	memcpy(_frame.cameraMatrixWriteLocation, &(_frame.cameraMatrixData), sizeof(vkUtil::CameraMatrices));
+	memcpy(_frame.cameraMatrixWriteLocation, &(_frame.cameraMatrixData), sizeof(CameraMatrices));
 
 	size_t i = 0;
 	for (std::pair<meshTypes, std::vector<glm::vec3>> pair : scene->positions)

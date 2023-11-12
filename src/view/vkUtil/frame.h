@@ -1,33 +1,10 @@
 #pragma once
 #include "../../config.h"
+#include "../../common/common_definitions.h"
 
-namespace vkUtil {
-
-	/**
-		Describes the data to send to the shader for each frame.
-	*/
-	struct CameraMatrices {
-		glm::mat4 view;
-		glm::mat4 projection;
-		glm::mat4 viewProjection;
-	};
-
-	struct CameraVectors {
-		glm::vec4 forwards;
-		glm::vec4 right;
-		glm::vec4 up;
-		glm::vec4 position;
-	};
-
-	struct RenderParams
-	{
-		float aspectRatio = 16.f / 9.f;
-		uint32_t distanceCalculationMode = 1;
-	};
-
-	/**
-		Holds the data structures associated with a "Frame"
-	*/
+namespace vkUtil
+{
+	// Holds the data structures associated with a "Frame"
 	class SwapChainFrame {
 
 	public:
@@ -61,7 +38,10 @@ namespace vkUtil {
 		Buffer cameraVectorBuffer;
 		void* cameraVectorWriteLocation;
 
-		RenderParams renderParamsData;
+		RenderParams renderParamsData = {
+			.aspectRatio = 16.f / 9.f,
+			.distanceCalculationMode = 1
+		};
 		Buffer renderParamsBuffer;
 		void* renderParamsWriteLocation;
 

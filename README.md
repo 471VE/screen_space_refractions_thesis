@@ -21,7 +21,8 @@ Heavily based on the code from "Vulkan with C++" tutorial series: https://github
 - [ ] Implement dynamic viewport and scissor
 - [X] Create separate `descriptorSetLayoutData` for each pipeline
 - [ ] Create a **normal** `Pipeline` class and put `descriptorSetLayoutData` in there
-- [ ] Make common definitions of uniform data for shaders and C++ (`RenderParams`, for example)
+  - For starters, it may be put into `vkInit::PipelineBuilder` class
+- [X] Make common definitions of uniform data for shaders and C++ (`RenderParams`, for example)
 - [ ] Fix that weird switching between Y- and Z-coordinates
 - [X] Add analytical ray traced refractions with simple geometric shapes
   - [X] Sphere

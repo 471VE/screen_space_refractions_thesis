@@ -1,10 +1,10 @@
 #version 450
+#extension GL_GOOGLE_include_directive : require
+#include "../common/common_definitions.h"
 
 layout(set = 0, binding = 0) uniform UBO {
-	mat4 view;
-	mat4 projection;
-	mat4 viewProjection;
-} cameraData;
+	CameraMatrices cameraData;
+};
 
 layout(std140, set = 0, binding = 1) readonly buffer storageBuffer {
 	mat4 model[];

@@ -1,16 +1,14 @@
 #version 450
+#extension GL_GOOGLE_include_directive : require
+#include "../common/common_definitions.h"
 
-layout(set = 0, binding = 0) uniform CameraVectors {
-	vec4 forwards;
-	vec4 right;
-	vec4 up;
-	vec4 position;
-} cameraData;
+layout(set = 0, binding = 0) uniform CameraData {
+	CameraVectors cameraData;
+};
 
-layout(set = 0, binding = 1) uniform RenderParams {
-	float aspectRatio;
-	uint distanceCalculationMode;
-} renderParams;
+layout(set = 0, binding = 1) uniform RenderData {
+	RenderParams renderParams;
+};
 
 layout(location = 0) out vec3 forwards;
 
