@@ -30,33 +30,33 @@ layout(location = 0) out vec4 outColor;
 const float R0 = (IOR - 1.f) * (IOR - 1.f) / ((IOR + 1.f) * (IOR + 1.f));
 const float SPHERE_RADIUS = 0.5f;
 
-const float[9] SH_CONSTANTS = {
-  1.f / 2.f * sqrt(1.f / M_PI),
-  sqrt(3.f / (4.f * M_PI)),
-  sqrt(3.f / (4.f * M_PI)),
-  sqrt(3.f / (4.f * M_PI)),
-  1.f / 2.f * sqrt(15.f / M_PI),
-  1.f / 2.f * sqrt(15.f / M_PI),
-  1.f / 4.f * sqrt(5.f / M_PI),
-  1.f / 2.f * sqrt(15.f / M_PI),
-  1.f / 4.f * sqrt(15.f / M_PI)
+const float[9] SH_CONSTANTS_SQUARED = {
+  1.f / (4.f * M_PI),
+  3.f / (4.f * M_PI),
+  3.f / (4.f * M_PI),
+  3.f / (4.f * M_PI),
+  15.f / (4.f * M_PI),
+  15.f / (4.f * M_PI),
+  5.f / (16.f * M_PI),
+  15.f / (4.f * M_PI),
+  15.f / (16.f * M_PI)
 };
 
 const float[9] SH_SPHERE_COEFFICIENTS = {
-  2.f * M_PI * SPHERE_RADIUS * SH_CONSTANTS[0] * SH_CONSTANTS[0],
+  2.f * M_PI * SPHERE_RADIUS * SH_CONSTANTS_SQUARED[0],
   0.f,
-  4.f / 3.f * M_PI * SPHERE_RADIUS * SH_CONSTANTS[2] * SH_CONSTANTS[2],
+  4.f / 3.f * M_PI * SPHERE_RADIUS * SH_CONSTANTS_SQUARED[2],
   0.f,
   0.f,
   0.f,
-  M_PI * SPHERE_RADIUS * SH_CONSTANTS[6] * SH_CONSTANTS[6],
+  M_PI * SPHERE_RADIUS * SH_CONSTANTS_SQUARED[6],
   0.f,
   0.f
 };
 
 // Half-assed implementation of spherical harmonics
 // Note that constant coefficients are already accounted for in expansion terms
-float Y00(float sin_theta, float cos_theta, float sin_phi, float cos_phi) { return 1.f; }
+float Y00 (float sin_theta, float cos_theta, float sin_phi, float cos_phi) { return 1.f; }
 
 float Y1m1(float sin_theta, float cos_theta, float sin_phi, float cos_phi) { return 0.f; } // TODO: change this, this is wrong
 float Y10 (float sin_theta, float cos_theta, float sin_phi, float cos_phi) { return cos_theta; }
