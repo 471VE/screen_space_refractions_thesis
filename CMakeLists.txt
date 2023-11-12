@@ -16,6 +16,18 @@ include_directories(
 )
 link_directories(${CMAKE_SOURCE_DIR}/3rdParty/lib)
 
+add_compile_definitions(IMGUI_USER_CONFIG="${PROJECT_SOURCE_DIR}/src/my_imgui_config.h")
+
+set(imgui_src
+    ${PROJECT_SOURCE_DIR}/3rdParty/include/imgui/imgui.cpp
+    ${PROJECT_SOURCE_DIR}/3rdParty/include/imgui/imgui_draw.cpp
+    ${PROJECT_SOURCE_DIR}/3rdParty/include/imgui/imgui_tables.cpp
+    ${PROJECT_SOURCE_DIR}/3rdParty/include/imgui/imgui_widgets.cpp
+    ${PROJECT_SOURCE_DIR}/3rdParty/include/imgui/imgui_demo.cpp
+    ${PROJECT_SOURCE_DIR}/3rdParty/include/imgui/backends/imgui_impl_vulkan.cpp
+    ${PROJECT_SOURCE_DIR}/3rdParty/include/imgui/backends/imgui_impl_glfw.cpp
+    ${PROJECT_SOURCE_DIR}/3rdParty/include/imgui/misc/cpp/imgui_stdlib.cpp)
+
 file(GLOB_RECURSE rendering_lib_src
     "src/control/*.cpp"
     "src/model/*.cpp"
@@ -23,6 +35,7 @@ file(GLOB_RECURSE rendering_lib_src
 )
 add_library(rendering STATIC
     ${rendering_lib_src}
+    ${imgui_src}
 )
 add_executable(renderer src/renderer.cpp)
 target_link_libraries(renderer
