@@ -153,8 +153,8 @@ void Engine::makePipelines()
 
 	// Sky
 	pipelineBuilder.setOverwriteMode(false);
-	pipelineBuilder.specifyVertexShader("resources/shaders/sky_shader.vert.spv");
-	pipelineBuilder.specifyFragmentShader("resources/shaders/sky_shader_refraction.frag.spv"); // for now
+	pipelineBuilder.specifyVertexShader("resources/shaders/simple_skybox.vert.spv");
+	pipelineBuilder.specifyFragmentShader("resources/shaders/refraction.frag.spv");
 	pipelineBuilder.specifySwapchainExtent(swapchainExtent);
 	pipelineBuilder.clearDepthAttachment();
 	pipelineBuilder.addDescriptorSetLayout(frameSetLayout[pipelineType::SKY]);
@@ -174,8 +174,8 @@ void Engine::makePipelines()
 		vkMesh::get_pos_color_binding_description(), 
 		vkMesh::get_pos_color_attribute_descriptions()
 	);
-	pipelineBuilder.specifyVertexShader("resources/shaders/shader.vert.spv");
-	pipelineBuilder.specifyFragmentShader("resources/shaders/shader.frag.spv");
+	pipelineBuilder.specifyVertexShader("resources/shaders/model.vert.spv");
+	pipelineBuilder.specifyFragmentShader("resources/shaders/model.frag.spv");
 	pipelineBuilder.specifySwapchainExtent(swapchainExtent);
 	pipelineBuilder.specifyDepthAttachment(swapchainFrames[0].depthFormat, 1);
 	pipelineBuilder.addDescriptorSetLayout(frameSetLayout[pipelineType::STANDARD]);
