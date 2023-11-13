@@ -1,0 +1,69 @@
+#include "preprocessing_common.h"
+
+#include <glm/ext.hpp>
+
+// Spherical harmonics without constant terms
+static double Y00 (glm::dvec3 dir) { return 1.; }
+
+static double Y1m1(glm::dvec3 dir) { return dir.y; }
+static double Y10 (glm::dvec3 dir) { return dir.z; }
+static double Y11 (glm::dvec3 dir) { return dir.x; }
+
+static double Y2m2(glm::dvec3 dir) { return dir.x * dir.y; }
+static double Y2m1(glm::dvec3 dir) { return dir.y * dir.z; }
+static double Y20 (glm::dvec3 dir) { return 3. * dir.z * dir.z - 1.; }
+static double Y21 (glm::dvec3 dir) { return dir.x * dir.z; }
+static double Y22 (glm::dvec3 dir) { return dir.x * dir.x - dir.y * dir.y; }
+
+static const std::vector<std::function<double(glm::dvec3)>> SPHERICAL_HARMONICS = {
+  Y00, Y1m1, Y10, Y11, Y2m2, Y2m1, Y20, Y21, Y22 
+};
+
+static double van_der_corput_sequence(uint32_t bits)
+{
+  // Reversing bits:
+  bits = (bits << 16u) | (bits >> 16u);
+  bits = ((bits & 0x55555555u) << 1u) | ((bits & 0xAAAAAAAAu) >> 1u);
+  bits = ((bits & 0x33333333u) << 2u) | ((bits & 0xCCCCCCCCu) >> 2u);
+  bits = ((bits & 0x0F0F0F0Fu) << 4u) | ((bits & 0xF0F0F0F0u) >> 4u);
+  bits = ((bits & 0x00FF00FFu) << 8u) | ((bits & 0xFF00FF00u) >> 8u);
+  // Equivalent to: double(bits) / double(0x100000000):
+  return double(bits) * 2.3283064365386963e-10;
+}
+
+static glm::vec2 get_hammersley_point(uint32_t i, uint32_t N)
+{
+  return glm::vec2(double(i) / double(N), van_der_corput_sequence(i));
+}
+
+static glm::dvec3 sample_hemisphere_uniform(glm::vec2 H)
+{
+  double phi = H.y * 2. * glm::pi<double>();
+  double cosTheta = 1. - H.x;
+  double sinTheta = sqrt(1. - cosTheta * cosTheta);
+  return glm::dvec3(cos(phi) * sinTheta, sin(phi) * sinTheta, cosTheta);
+}
+
+std::vector<glm::dvec3> construct_hemisphere_hammersley_sequence(uint32_t numPoints)
+{
+  std::vector<glm::dvec3> hammersleySequence;
+  hammersleySequence.reserve(numPoints);
+  for (int i = 0; i < numPoints; i++)
+    hammersleySequence.push_back(sample_hemisphere_uniform(get_hammersley_point(i, numPoints)));
+  return hammersleySequence;
+}
+
+std::vector<double> calculate_sh_terms(
+  std::vector<glm::dvec3> hammersleySequence, std::function<double(glm::dvec3)> getObjectWidth
+) {
+  std::vector<double> shTerms(SPHERICAL_HARMONICS.size(), 0.);
+  for (const glm::dvec3 &direction : hammersleySequence)
+  {
+    double width = getObjectWidth(direction);
+    for (int i = 0; i < SPHERICAL_HARMONICS.size(); i++)
+      shTerms[i] += SPHERICAL_HARMONICS[i](direction) * width;
+  }
+  for (double &term : shTerms)
+    term *= 2. * glm::pi<double>() / double(hammersleySequence.size());
+  return shTerms;
+}

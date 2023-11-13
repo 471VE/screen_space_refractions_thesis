@@ -35,5 +35,8 @@ Heavily based on the code from "Vulkan with C++" tutorial series: https://github
 - [ ] Make hot reload of shaders
 - [X] Do refractions and reflections with Fresnel coefficients
 - [X] Do ***proper*** refractions and reflections with Fresnel coefficients
-- [ ] Start with spherical harmonics on sphere before raytracing
+- [X] Start with spherical harmonics on sphere before raytracing
   - http://holger.dammertz.org/stuff/notes_HammersleyOnHemisphere.html
+- [X] Solve the problem with black hole in the middle of the object when calculating even number of refractions with SDF (hopefully, this just wouldn't be a problem when I implement proper ray tracing, in which case I wouldn't have to do anything)
+- [ ] Make `sh_distance` in `sky_shader_refraction.frag` $\varphi$-dependent. Also, rename that shader already
+- [ ] Add a slider for number of points in Hammersley point set

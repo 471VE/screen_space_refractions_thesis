@@ -20,7 +20,7 @@ layout(location = 0) out vec4 outColor;
 #define MAX_STEPS 100
 #define MAX_DIST 100.f
 #define SURF_DIST 0.001f
-#define MAX_INTERNAL_REFLECTION_COUNT 1 // seems to be enough
+#define MAX_INTERNAL_REFLECTION_COUNT 10 // seems to be enough
 #define GAMMA 2.2f
 #define IOR 1.45f // index of refraction
 #define M_PI 3.1415926535897932384626433832795f
@@ -29,6 +29,21 @@ layout(location = 0) out vec4 outColor;
 
 const float R0 = (IOR - 1.f) * (IOR - 1.f) / ((IOR + 1.f) * (IOR + 1.f));
 const float SPHERE_RADIUS = 0.5f;
+
+
+// Implementation of spherical harmonics
+// Note that constant coefficients are already accounted for in expansion terms
+float Y00 (vec3 dir) { return 1.f; }
+
+float Y1m1(vec3 dir) { return dir.y; }
+float Y10 (vec3 dir) { return dir.z; }
+float Y11 (vec3 dir) { return dir.x; }
+
+float Y2m2(vec3 dir) { return dir.x * dir.y; }
+float Y2m1(vec3 dir) { return dir.y * dir.z; }
+float Y20 (vec3 dir) { return 3.f * dir.z * dir.z - 1.f; }
+float Y21 (vec3 dir) { return dir.x * dir.z; }
+float Y22 (vec3 dir) { return dir.x * dir.x - dir.y * dir.y; }
 
 const float[9] SH_CONSTANTS_SQUARED = {
   1.f / (4.f * M_PI),
@@ -42,43 +57,82 @@ const float[9] SH_CONSTANTS_SQUARED = {
   15.f / (16.f * M_PI)
 };
 
-const float[9] SH_SPHERE_COEFFICIENTS = {
+float sh_distance(vec3 rd, vec3 n, float terms[9])
+{
+  float cosTheta = dot(rd, n);
+  vec3 direction = vec3(0.f, 0.f, cosTheta);
+  return terms[0] * Y00 (direction)
+
+       + terms[1] * Y1m1(direction)
+       + terms[2] * Y10 (direction)
+       + terms[3] * Y11 (direction)
+
+       + terms[4] * Y2m2(direction)
+       + terms[5] * Y2m1(direction)
+       + terms[6] * Y20 (direction)
+       + terms[7] * Y21 (direction)
+       + terms[8] * Y22 (direction);
+}
+
+// Calculating sphere width using exact values of integrals
+const float[9] SH_SPHERE_EXACT_COEFFICIENTS = {
   2.f * M_PI * SPHERE_RADIUS,
-  0.f,
+  0.f * SPHERE_RADIUS,
   4.f / 3.f * M_PI * SPHERE_RADIUS,
-  0.f,
-  0.f,
-  0.f,
+  0.f * SPHERE_RADIUS,
+  0.f * SPHERE_RADIUS,
+  0.f * SPHERE_RADIUS,
   M_PI * SPHERE_RADIUS,
-  0.f,
-  0.f
+  0.f * SPHERE_RADIUS,
+  0.f * SPHERE_RADIUS
 };
 
-const float[9] SH_EXPANSION_CONSTANT_TERMS = {
-  SH_SPHERE_COEFFICIENTS[0] * SH_CONSTANTS_SQUARED[0],
-  SH_SPHERE_COEFFICIENTS[1] * SH_CONSTANTS_SQUARED[1],
-  SH_SPHERE_COEFFICIENTS[2] * SH_CONSTANTS_SQUARED[2],
-  SH_SPHERE_COEFFICIENTS[3] * SH_CONSTANTS_SQUARED[3],
-  SH_SPHERE_COEFFICIENTS[4] * SH_CONSTANTS_SQUARED[4],
-  SH_SPHERE_COEFFICIENTS[5] * SH_CONSTANTS_SQUARED[5],
-  SH_SPHERE_COEFFICIENTS[6] * SH_CONSTANTS_SQUARED[6],
-  SH_SPHERE_COEFFICIENTS[7] * SH_CONSTANTS_SQUARED[7],
-  SH_SPHERE_COEFFICIENTS[8] * SH_CONSTANTS_SQUARED[8]
+const float[9] SH_EXPANSION_EXACT_CONSTANT_TERMS = {
+  SH_SPHERE_EXACT_COEFFICIENTS[0] * SH_CONSTANTS_SQUARED[0],
+  SH_SPHERE_EXACT_COEFFICIENTS[1] * SH_CONSTANTS_SQUARED[1],
+  SH_SPHERE_EXACT_COEFFICIENTS[2] * SH_CONSTANTS_SQUARED[2],
+  SH_SPHERE_EXACT_COEFFICIENTS[3] * SH_CONSTANTS_SQUARED[3],
+  SH_SPHERE_EXACT_COEFFICIENTS[4] * SH_CONSTANTS_SQUARED[4],
+  SH_SPHERE_EXACT_COEFFICIENTS[5] * SH_CONSTANTS_SQUARED[5],
+  SH_SPHERE_EXACT_COEFFICIENTS[6] * SH_CONSTANTS_SQUARED[6],
+  SH_SPHERE_EXACT_COEFFICIENTS[7] * SH_CONSTANTS_SQUARED[7],
+  SH_SPHERE_EXACT_COEFFICIENTS[8] * SH_CONSTANTS_SQUARED[8]
 };
 
-// Half-assed implementation of spherical harmonics
-// Note that constant coefficients are already accounted for in expansion terms
-float Y00 (float sin_theta, float cos_theta, float sin_phi, float cos_phi) { return 1.f; }
+float sh_exact_distance(vec3 rd, vec3 n)
+{
+  return sh_distance(rd, n, SH_EXPANSION_EXACT_CONSTANT_TERMS);
+}
 
-float Y1m1(float sin_theta, float cos_theta, float sin_phi, float cos_phi) { return 0.f; } // TODO: change this, this is wrong
-float Y10 (float sin_theta, float cos_theta, float sin_phi, float cos_phi) { return cos_theta; }
-float Y11 (float sin_theta, float cos_theta, float sin_phi, float cos_phi) { return 0.f; } // TODO: change this, this is wrong
+// Calculating sphere width using calculated numerically values of integrals
+const float[9] SH_SPHERE_NUMERIC_COEFFICIENTS = {
+  6.28319f * SPHERE_RADIUS,
+  1.34716e-10f * SPHERE_RADIUS,
+  4.18879f * SPHERE_RADIUS,
+  -6.97138e-10f * SPHERE_RADIUS,
+  -2.85638e-14f * SPHERE_RADIUS,
+  1.34427e-10f * SPHERE_RADIUS,
+  3.14159f * SPHERE_RADIUS,
+  -6.96829e-10f * SPHERE_RADIUS,
+  -5.69001e-12f * SPHERE_RADIUS,
+};
 
-float Y2m2(float sin_theta, float cos_theta, float sin_phi, float cos_phi) { return 0.f; } // TODO: change this, this is wrong
-float Y2m1(float sin_theta, float cos_theta, float sin_phi, float cos_phi) { return 0.f; } // TODO: change this, this is wrong
-float Y20 (float sin_theta, float cos_theta, float sin_phi, float cos_phi) { return 3.f * cos_theta * cos_theta - 1.f; }
-float Y21 (float sin_theta, float cos_theta, float sin_phi, float cos_phi) { return 0.f; } // TODO: change this, this is wrong
-float Y22 (float sin_theta, float cos_theta, float sin_phi, float cos_phi) { return 0.f; } // TODO: change this, this is wrong
+const float[9] SH_EXPANSION_NUMERIC_CONSTANT_TERMS = {
+  SH_SPHERE_NUMERIC_COEFFICIENTS[0] * SH_CONSTANTS_SQUARED[0],
+  SH_SPHERE_NUMERIC_COEFFICIENTS[1] * SH_CONSTANTS_SQUARED[1],
+  SH_SPHERE_NUMERIC_COEFFICIENTS[2] * SH_CONSTANTS_SQUARED[2],
+  SH_SPHERE_NUMERIC_COEFFICIENTS[3] * SH_CONSTANTS_SQUARED[3],
+  SH_SPHERE_NUMERIC_COEFFICIENTS[4] * SH_CONSTANTS_SQUARED[4],
+  SH_SPHERE_NUMERIC_COEFFICIENTS[5] * SH_CONSTANTS_SQUARED[5],
+  SH_SPHERE_NUMERIC_COEFFICIENTS[6] * SH_CONSTANTS_SQUARED[6],
+  SH_SPHERE_NUMERIC_COEFFICIENTS[7] * SH_CONSTANTS_SQUARED[7],
+  SH_SPHERE_NUMERIC_COEFFICIENTS[8] * SH_CONSTANTS_SQUARED[8]
+};
+
+float sh_numeric_distance(vec3 rd, vec3 n)
+{
+  return sh_distance(rd, n, SH_EXPANSION_NUMERIC_CONSTANT_TERMS);
+}
 
 
 float sd_box(vec3 p, vec3 s)
@@ -178,23 +232,6 @@ vec3 get_normal(vec3 p)
 }
 
 
-float sh_distance(vec3 rd, vec3 n)
-{
-  float cos_theta = dot(rd, n);
-  return SH_EXPANSION_CONSTANT_TERMS[0] * Y00 (STUB, cos_theta, STUB, STUB)
-
-       + SH_EXPANSION_CONSTANT_TERMS[1] * Y1m1(STUB, cos_theta, STUB, STUB)
-       + SH_EXPANSION_CONSTANT_TERMS[2] * Y10 (STUB, cos_theta, STUB, STUB)
-       + SH_EXPANSION_CONSTANT_TERMS[3] * Y11 (STUB, cos_theta, STUB, STUB)
-
-       + SH_EXPANSION_CONSTANT_TERMS[4] * Y2m2(STUB, cos_theta, STUB, STUB)
-       + SH_EXPANSION_CONSTANT_TERMS[5] * Y2m1(STUB, cos_theta, STUB, STUB)
-       + SH_EXPANSION_CONSTANT_TERMS[6] * Y20 (STUB, cos_theta, STUB, STUB)
-       + SH_EXPANSION_CONSTANT_TERMS[7] * Y21 (STUB, cos_theta, STUB, STUB)
-       + SH_EXPANSION_CONSTANT_TERMS[8] * Y22 (STUB, cos_theta, STUB, STUB);
-}
-
-
 float constant_distance(vec3 rd, vec3 n)
 {
   return 4.f / 3.f * SPHERE_RADIUS;
@@ -216,10 +253,11 @@ float pow5(float x)
   return x * y * y;
 }
 
-float get_fresnel_factor(float cos_theta)
+float get_fresnel_factor(float cosTheta)
 {
   // Schlick's approximation for reflective Fresnel factor on an interface between two insulators.
-  return R0 + (1.f - R0) * pow5(1.f - cos_theta);
+  // This clamp BS is needed only for ray marching. Remove when proper ray tracing is implemented.
+  return R0 + (1.f - R0) * pow5(1.f - clamp(cosTheta, 0.f, 1.f));
 }
 
 vec3 refract_safe(vec3 I, vec3 N, float eta)
@@ -253,7 +291,7 @@ void main()
     color += energyLeft * R * colorReflected;
     energyLeft *= T;
     
-    vec3 inRayDirection = refract_safe(rayDirection, normal, 1.f/IOR); // ray dir when entering
+    vec3 inRayDirection = refract_safe(rayDirection, normal, 1.f/IOR); // ray direction when entering
     
     vec3 enterPoint = pos - normal * SURF_DIST * 3.f;
 
@@ -270,9 +308,9 @@ void main()
       if (renderParams.distanceCalculationMode == 1)
         distanceInside = ray_march(exitPoint, inRayDirection, -1.f);
       else if (renderParams.distanceCalculationMode == 2)
-        distanceInside = sh_distance(inRayDirection, exitNormal);
+        distanceInside = sh_exact_distance(inRayDirection, exitNormal);
       else if (renderParams.distanceCalculationMode == 3)
-        distanceInside = constant_distance(inRayDirection, exitNormal);
+        distanceInside = sh_numeric_distance(inRayDirection, exitNormal);
       totalDistanceInside += distanceInside;
       exitPoint += inRayDirection * distanceInside; 
       exitNormal = -get_normal(exitPoint);
