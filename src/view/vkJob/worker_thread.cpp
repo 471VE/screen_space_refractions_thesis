@@ -1,12 +1,12 @@
 #include "worker_thread.h"
 
-vkJob::WorkerThread::WorkerThread(WorkQueue& workQueue, bool& done, vk::CommandBuffer commandBuffer, vk::Queue queue):
+vkjob::WorkerThread::WorkerThread(WorkQueue& workQueue, bool& done, vk::CommandBuffer commandBuffer, vk::Queue queue):
 workQueue(workQueue), done(done){
 	this->commandBuffer = commandBuffer;
 	this->queue = queue;
 }
 
-void vkJob::WorkerThread::operator()()
+void vkjob::WorkerThread::operator()()
 {
 	workQueue.lock.lock();
 #ifndef NDEBUG
@@ -28,7 +28,7 @@ void vkJob::WorkerThread::operator()()
 			continue;
 		}
 
-		vkJob::Job* pendingJob = workQueue.getNext();
+		vkjob::Job* pendingJob = workQueue.getNext();
 
 		if (!pendingJob)
 		{

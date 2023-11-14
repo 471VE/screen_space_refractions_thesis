@@ -1,10 +1,10 @@
 #include "logging.h"
 
-namespace vkLogging {
+namespace vklogging {
 	Logger* Logger::logger;
 }
 
-vkLogging::Logger* vkLogging::Logger::getLogger()
+vklogging::Logger* vklogging::Logger::getLogger()
 {
 	if (logger == nullptr)
 		logger = new Logger();
@@ -12,14 +12,14 @@ vkLogging::Logger* vkLogging::Logger::getLogger()
 	return logger;
 }
 
-void vkLogging::Logger::print(std::string message)
+void vklogging::Logger::print(std::string message)
 {
 #ifndef NDEBUG
 	std::cout << message << std::endl;
 #endif
 }
 
-void vkLogging::Logger::printList(std::vector<std::string> items)
+void vklogging::Logger::printList(std::vector<std::string> items)
 {
 	for (std::string item : items)
 		std::cout << "    " << item << std::endl;
@@ -32,7 +32,7 @@ void vkLogging::Logger::printList(std::vector<std::string> items)
 * @param bits	the bitmask which holds various transforms
 * @return		a vector of strings describing the transforms
 */
-std::vector<std::string> vkLogging::log_transform_bits(vk::SurfaceTransformFlagsKHR bits)
+std::vector<std::string> vklogging::log_transform_bits(vk::SurfaceTransformFlagsKHR bits)
 {
 	std::vector<std::string> result;
 
@@ -87,7 +87,7 @@ std::vector<std::string> vkLogging::log_transform_bits(vk::SurfaceTransformFlags
 	* @return		a vector of strings describing the alpha composite modes
 	*/
 
-	std::vector<std::string> vkLogging::log_alpha_composite_bits(vk::CompositeAlphaFlagsKHR bits)
+	std::vector<std::string> vklogging::log_alpha_composite_bits(vk::CompositeAlphaFlagsKHR bits)
 	{
 		std::vector<std::string> result;
 
@@ -121,7 +121,7 @@ std::vector<std::string> vkLogging::log_transform_bits(vk::SurfaceTransformFlags
 	* @param bits	the bitmask which holds various image usages
 	* @return		a vector of strings describing the image usages
 	*/
-	std::vector<std::string> vkLogging::log_image_usage_bits(vk::ImageUsageFlags bits)
+	std::vector<std::string> vklogging::log_image_usage_bits(vk::ImageUsageFlags bits)
 	{
 		std::vector<std::string> result;
 
@@ -220,7 +220,7 @@ suitable for use as a fragment shading rate attachment or shading rate image");
 	* @param presentMode	an enum which describes the present mode
 	* @return				a description of the present mode
 	*/
-	std::string vkLogging::log_present_mode(vk::PresentModeKHR presentMode)
+	std::string vklogging::log_present_mode(vk::PresentModeKHR presentMode)
 	{
 		/*
 		* // Provided by VK_KHR_surface
@@ -298,7 +298,7 @@ This mode may result in visible tearing if rendering to the image is not timed c
 	*
 	* @param device the physical device
 	*/
-	void vkLogging::log_device_properties(const vk::PhysicalDevice& device)
+	void vklogging::log_device_properties(const vk::PhysicalDevice& device)
 	{
 		/*
 		* void vkGetPhysicalDeviceProperties(
@@ -349,7 +349,7 @@ This mode may result in visible tearing if rendering to the image is not timed c
 /**
 	* Debug call back function, called by validation layers
 	*/
-VKAPI_ATTR VkBool32 VKAPI_CALL vkLogging::debugCallback(
+VKAPI_ATTR VkBool32 VKAPI_CALL vklogging::debugCallback(
 	VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
 	VkDebugUtilsMessageTypeFlagsEXT messageType,
 	const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData,
@@ -402,7 +402,7 @@ VKAPI_ATTR VkBool32 VKAPI_CALL vkLogging::debugCallback(
 * @param dldi		the dispatch loader used to call the creation function
 * @return			the created debug messenger
 */
-vk::DebugUtilsMessengerEXT vkLogging::make_debug_messenger(vk::Instance& instance, vk::DispatchLoaderDynamic& dldi)
+vk::DebugUtilsMessengerEXT vklogging::make_debug_messenger(vk::Instance& instance, vk::DispatchLoaderDynamic& dldi)
 {
 	/*
 	* DebugUtilsMessengerCreateInfoEXT( VULKAN_HPP_NAMESPACE::DebugUtilsMessengerCreateFlagsEXT flags_           = {},

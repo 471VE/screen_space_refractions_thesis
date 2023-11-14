@@ -2,7 +2,7 @@
 #include "../../config.h"
 #include "../vkUtil/frame.h"
 
-namespace vkInit {
+namespace vkinit {
 	/**
 		Data structures involved in making framebuffers for the
 		swapchain.
@@ -19,7 +19,7 @@ namespace vkInit {
 		\param inputChunk required input for creation
 		\param frames the vector to be populated with the created framebuffers
 	*/
-	void make_framebuffers(framebufferInput inputChunk, std::vector<vkUtil::SwapChainFrame>& frames)
+	void make_framebuffers(framebufferInput inputChunk, std::vector<vkutil::SwapChainFrame>& frames)
 	{
 		std::stringstream message;
 
@@ -43,13 +43,13 @@ namespace vkInit {
 				frames[i].framebuffer[pipelineType::SKY] = inputChunk.device.createFramebuffer(framebufferInfo);
 
 				message << "Created sky framebuffer for frame " << i;
-				vkLogging::Logger::getLogger()->print(message.str());
+				vklogging::Logger::getLogger()->print(message.str());
 				message.str("");
 			}
 			catch (vk::SystemError err)
 			{
 				message << "Failed to create sky framebuffer for frame " << i;
-				vkLogging::Logger::getLogger()->print(message.str());
+				vklogging::Logger::getLogger()->print(message.str());
 				message.str("");
 			}
 
@@ -64,13 +64,13 @@ namespace vkInit {
 				frames[i].framebuffer[pipelineType::STANDARD] = inputChunk.device.createFramebuffer(framebufferInfo);
 
 				message  << "Created standard framebuffer for frame " << i;
-				vkLogging::Logger::getLogger()->print(message.str());
+				vklogging::Logger::getLogger()->print(message.str());
 				message.str("");
 			}
 			catch (vk::SystemError err)
 			{
 				message << "Failed to create standard framebuffer for frame " << i;
-				vkLogging::Logger::getLogger()->print(message.str());
+				vklogging::Logger::getLogger()->print(message.str());
 				message.str("");
 			}
 		}

@@ -13,7 +13,7 @@
   with its own state and resources independent of other logical devices.
 */
 
-namespace vkInit {
+namespace vkinit {
 
 	/**
 		Check whether the physical device can support the given extensions.
@@ -32,7 +32,7 @@ namespace vkInit {
 		*/
 
 		std::set<std::string> requiredExtensions(requestedExtensions.begin(), requestedExtensions.end());
-		vkLogging::Logger::getLogger()->print("Device can support extensions:");
+		vklogging::Logger::getLogger()->print("Device can support extensions:");
 
 		for (vk::ExtensionProperties& extension : device.enumerateDeviceExtensionProperties())
 		{
@@ -58,7 +58,7 @@ namespace vkInit {
 	*/
 	bool is_suitable(const vk::PhysicalDevice& device)
 	{
-		vkLogging::Logger::getLogger()->print("Checking if device is suitable");
+		vklogging::Logger::getLogger()->print("Checking if device is suitable");
 
 		/*
 		* A device is suitable if it can present to the screen, ie support
@@ -68,7 +68,7 @@ namespace vkInit {
 			VK_KHR_SWAPCHAIN_EXTENSION_NAME
 		};
 
-		vkLogging::Logger::getLogger()->print("We are requesting device extensions:");
+		vklogging::Logger::getLogger()->print("We are requesting device extensions:");
 #ifndef NDEBUG
 		for (const char* extension : requestedExtensions)
 			std::cout << "  \"" << extension << "\"\n";
@@ -76,9 +76,9 @@ namespace vkInit {
 #endif
 
 		if (check_device_extension_support(device, requestedExtensions))
-			vkLogging::Logger::getLogger()->print("Device can support the requested extensions!");
+			vklogging::Logger::getLogger()->print("Device can support the requested extensions!");
 		else {
-			vkLogging::Logger::getLogger()->print("Device can't support the requested extensions!");
+			vklogging::Logger::getLogger()->print("Device can't support the requested extensions!");
 			return false;
 		}
 		return true;
@@ -98,7 +98,7 @@ namespace vkInit {
 		* independently to the program.
 		*/
 
-		vkLogging::Logger::getLogger()->print("Choosing Physical Device");
+		vklogging::Logger::getLogger()->print("Choosing Physical Device");
 
 		/*
 		* ResultValueType<std::vector<PhysicalDevice, PhysicalDeviceAllocator>>::type
@@ -110,7 +110,7 @@ namespace vkInit {
 
 		std::stringstream message;
 		message << "There are " << availableDevices.size() << " physical devices available on this system";
-		vkLogging::Logger::getLogger()->print(message.str());
+		vklogging::Logger::getLogger()->print(message.str());
 
 		/*
 		* check if a suitable device can be found
@@ -118,7 +118,7 @@ namespace vkInit {
 		for (vk::PhysicalDevice device : availableDevices)
 		{
 #ifndef NDEBUG
-			vkLogging::log_device_properties(device);
+			vklogging::log_device_properties(device);
 #endif
 			if (is_suitable(device))
 				return device;
@@ -145,7 +145,7 @@ namespace vkInit {
 		* so queue create info must be passed in.
 		*/
 
-		vkUtil::QueueFamilyIndices indices = vkUtil::find_queue_families(physicalDevice, surface);
+		vkutil::QueueFamilyIndices indices = vkutil::find_queue_families(physicalDevice, surface);
 		std::vector<uint32_t> uniqueIndices;
 		uniqueIndices.push_back(indices.graphicsFamily.value());
 		if (indices.graphicsFamily.value() != indices.presentFamily.value())
@@ -204,12 +204,12 @@ namespace vkInit {
 		try
 		{
 			vk::Device device = physicalDevice.createDevice(deviceInfo);
-			vkLogging::Logger::getLogger()->print("GPU has been successfully abstracted!\n");
+			vklogging::Logger::getLogger()->print("GPU has been successfully abstracted!\n");
 			return device;
 		}
 		catch (vk::SystemError err)
 		{
-			vkLogging::Logger::getLogger()->print("Device creation failed!");
+			vklogging::Logger::getLogger()->print("Device creation failed!");
 			return nullptr;
 		}
 		return nullptr;
@@ -225,7 +225,7 @@ namespace vkInit {
 	*/
 	std::array<vk::Queue,2> get_queues(vk::PhysicalDevice physicalDevice, vk::Device device, vk::SurfaceKHR surface)
 	{
-		vkUtil::QueueFamilyIndices indices = vkUtil::find_queue_families(physicalDevice, surface);
+		vkutil::QueueFamilyIndices indices = vkutil::find_queue_families(physicalDevice, surface);
 		return { {
 				device.getQueue(indices.graphicsFamily.value(), 0),
 				device.getQueue(indices.presentFamily.value(), 0),

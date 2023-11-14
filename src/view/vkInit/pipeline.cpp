@@ -1,7 +1,7 @@
 #include "pipeline.h"
 #include "../../control/logging.h"
 
-vkInit::PipelineBuilder::PipelineBuilder(vk::Device device)
+vkinit::PipelineBuilder::PipelineBuilder(vk::Device device)
 {
 	this->device = device;
 	reset();
@@ -15,9 +15,9 @@ vkInit::PipelineBuilder::PipelineBuilder(vk::Device device)
 	pipelineInfo.basePipelineHandle = nullptr;
 }
 
-vkInit::PipelineBuilder::~PipelineBuilder() { reset(); }
+vkinit::PipelineBuilder::~PipelineBuilder() { reset(); }
 
-void vkInit::PipelineBuilder::reset()
+void vkinit::PipelineBuilder::reset()
 {
 	pipelineInfo.flags = vk::PipelineCreateFlags();
 
@@ -27,7 +27,7 @@ void vkInit::PipelineBuilder::reset()
 	resetDescriptorSetLayouts();
 }
 
-void vkInit::PipelineBuilder::resetVertexFormat()
+void vkinit::PipelineBuilder::resetVertexFormat()
 {
 	vertexInputInfo.flags = vk::PipelineVertexInputStateCreateFlags();
 	vertexInputInfo.vertexBindingDescriptionCount = 0;
@@ -37,13 +37,13 @@ void vkInit::PipelineBuilder::resetVertexFormat()
 
 }
 
-void vkInit::PipelineBuilder::resetRenderpassAttachments()
+void vkinit::PipelineBuilder::resetRenderpassAttachments()
 {
 	attachmentDescriptions.clear();
 	attachmentReferences.clear();
 }
 
-void vkInit::PipelineBuilder::specifyVertexFormat (
+void vkinit::PipelineBuilder::specifyVertexFormat (
 	vk::VertexInputBindingDescription bindingDescription,
 	std::vector<vk::VertexInputAttributeDescription> attributeDescriptions)
 {
@@ -57,9 +57,9 @@ void vkInit::PipelineBuilder::specifyVertexFormat (
 	
 }
 
-void vkInit::PipelineBuilder::setOverwriteMode(bool mode) {	overwrite = mode; }
+void vkinit::PipelineBuilder::setOverwriteMode(bool mode) {	overwrite = mode; }
 
-void vkInit::PipelineBuilder::resetShaderModules()
+void vkinit::PipelineBuilder::resetShaderModules()
 {
 	if (vertexShader)
 	{
@@ -74,7 +74,7 @@ void vkInit::PipelineBuilder::resetShaderModules()
 	shaderStages.clear();
 }
 
-void vkInit::PipelineBuilder::specifyVertexShader(const char* filename)
+void vkinit::PipelineBuilder::specifyVertexShader(const char* filename)
 {
 	if (vertexShader)
 	{
@@ -82,13 +82,13 @@ void vkInit::PipelineBuilder::specifyVertexShader(const char* filename)
 		vertexShader = nullptr;
 	}
 
-	vkLogging::Logger::getLogger()->print("Create vertex shader module");
-	vertexShader = vkUtil::create_module(filename, device);
+	vklogging::Logger::getLogger()->print("Create vertex shader module");
+	vertexShader = vkutil::create_module(filename, device);
 	vertexShaderInfo = makeShaderInfo(vertexShader, vk::ShaderStageFlagBits::eVertex);
 	shaderStages.push_back(vertexShaderInfo);
 }
 
-void vkInit::PipelineBuilder::specifyFragmentShader(const char* filename)
+void vkinit::PipelineBuilder::specifyFragmentShader(const char* filename)
 {
 	if (fragmentShader)
 	{	
@@ -96,13 +96,13 @@ void vkInit::PipelineBuilder::specifyFragmentShader(const char* filename)
 		fragmentShader = nullptr;
 	}
 
-	vkLogging::Logger::getLogger()->print("Create fragment shader module");
-	fragmentShader = vkUtil::create_module(filename, device);
+	vklogging::Logger::getLogger()->print("Create fragment shader module");
+	fragmentShader = vkutil::create_module(filename, device);
 	fragmentShaderInfo = makeShaderInfo(fragmentShader, vk::ShaderStageFlagBits::eFragment);
 	shaderStages.push_back(fragmentShaderInfo);
 }
 
-vk::PipelineShaderStageCreateInfo vkInit::PipelineBuilder::makeShaderInfo(
+vk::PipelineShaderStageCreateInfo vkinit::PipelineBuilder::makeShaderInfo(
 	const vk::ShaderModule& shaderModule, const vk::ShaderStageFlagBits& stage
 ) {
 	vk::PipelineShaderStageCreateInfo shaderInfo = {};
@@ -113,9 +113,9 @@ vk::PipelineShaderStageCreateInfo vkInit::PipelineBuilder::makeShaderInfo(
 	return shaderInfo;
 }
 
-void vkInit::PipelineBuilder::specifySwapchainExtent(vk::Extent2D screen_size) { swapchainExtent = screen_size; }
+void vkinit::PipelineBuilder::specifySwapchainExtent(vk::Extent2D screen_size) { swapchainExtent = screen_size; }
 
-void vkInit::PipelineBuilder::specifyDepthAttachment(
+void vkinit::PipelineBuilder::specifyDepthAttachment(
 	const vk::Format& depthFormat, uint32_t attachment_index
 ) {
 	depthState.flags = vk::PipelineDepthStencilStateCreateFlags();
@@ -141,7 +141,7 @@ void vkInit::PipelineBuilder::specifyDepthAttachment(
 	);
 }
 
-void vkInit::PipelineBuilder::addColorAttachment(
+void vkinit::PipelineBuilder::addColorAttachment(
 	const vk::Format& format, uint32_t attachment_index
 ) {
 	vk::AttachmentLoadOp loadOp = vk::AttachmentLoadOp::eDontCare;
@@ -168,7 +168,7 @@ void vkInit::PipelineBuilder::addColorAttachment(
 	);
 }
 
-vk::AttachmentDescription vkInit::PipelineBuilder::makeRenderpassAttachment(
+vk::AttachmentDescription vkinit::PipelineBuilder::makeRenderpassAttachment(
 	const vk::Format& format, vk::AttachmentLoadOp loadOp, 
 	vk::AttachmentStoreOp storeOp, vk::ImageLayout initialLayout, vk::ImageLayout finalLayout
 ) {
@@ -186,7 +186,7 @@ vk::AttachmentDescription vkInit::PipelineBuilder::makeRenderpassAttachment(
 	return attachment;
 }
 
-vk::AttachmentReference vkInit::PipelineBuilder::makeAttachmentReference(
+vk::AttachmentReference vkinit::PipelineBuilder::makeAttachmentReference(
 	uint32_t attachment_index, vk::ImageLayout layout
 ) {
 	vk::AttachmentReference attachmentRef = {};
@@ -196,16 +196,16 @@ vk::AttachmentReference vkInit::PipelineBuilder::makeAttachmentReference(
 	return attachmentRef;
 }
 
-void vkInit::PipelineBuilder::clearDepthAttachment() { pipelineInfo.pDepthStencilState = nullptr; }
+void vkinit::PipelineBuilder::clearDepthAttachment() { pipelineInfo.pDepthStencilState = nullptr; }
 
-void vkInit::PipelineBuilder::addDescriptorSetLayout(vk::DescriptorSetLayout descriptorSetLayout)
+void vkinit::PipelineBuilder::addDescriptorSetLayout(vk::DescriptorSetLayout descriptorSetLayout)
 {
 	descriptorSetLayouts.push_back(descriptorSetLayout);
 }
 
-void vkInit::PipelineBuilder::resetDescriptorSetLayouts() {	descriptorSetLayouts.clear(); }
+void vkinit::PipelineBuilder::resetDescriptorSetLayouts() {	descriptorSetLayouts.clear(); }
 
-vkInit::GraphicsPipelineOutBundle vkInit::PipelineBuilder::build()
+vkinit::GraphicsPipelineOutBundle vkinit::PipelineBuilder::build()
 {
 		//Vertex Input
 		pipelineInfo.pVertexInputState = &vertexInputInfo;
@@ -233,18 +233,18 @@ vkInit::GraphicsPipelineOutBundle vkInit::PipelineBuilder::build()
 		pipelineInfo.pColorBlendState = &colorBlending;
 
 		//Pipeline Layout
-		vkLogging::Logger::getLogger()->print("Create Pipeline Layout");
+		vklogging::Logger::getLogger()->print("Create Pipeline Layout");
 		vk::PipelineLayout pipelineLayout = makePipelineLayout();
 		pipelineInfo.layout = pipelineLayout;
 
 		//Renderpass
-		vkLogging::Logger::getLogger()->print("Create RenderPass");
+		vklogging::Logger::getLogger()->print("Create RenderPass");
 		vk::RenderPass renderpass = makeRenderpass();
 		pipelineInfo.renderPass = renderpass;
 		pipelineInfo.subpass = 0;
 
 		//Make the Pipeline
-		vkLogging::Logger::getLogger()->print("Create Graphics Pipeline");
+		vklogging::Logger::getLogger()->print("Create Graphics Pipeline");
 		vk::Pipeline graphicsPipeline;
 		try
 		{
@@ -252,7 +252,7 @@ vkInit::GraphicsPipelineOutBundle vkInit::PipelineBuilder::build()
 		}
 		catch (vk::SystemError err)
 		{
-			vkLogging::Logger::getLogger()->print("Failed to create Pipeline");
+			vklogging::Logger::getLogger()->print("Failed to create Pipeline");
 		}
 
 		GraphicsPipelineOutBundle output;
@@ -263,13 +263,13 @@ vkInit::GraphicsPipelineOutBundle vkInit::PipelineBuilder::build()
 		return output;
 	}
 
-void vkInit::PipelineBuilder::configureInputAssembly()
+void vkinit::PipelineBuilder::configureInputAssembly()
 {
 	inputAssemblyInfo.flags = vk::PipelineInputAssemblyStateCreateFlags();
 	inputAssemblyInfo.topology = vk::PrimitiveTopology::eTriangleList;
 }
 
-vk::PipelineViewportStateCreateInfo vkInit::PipelineBuilder::makeViewportState()
+vk::PipelineViewportStateCreateInfo vkinit::PipelineBuilder::makeViewportState()
 {
 	viewport.x = 0.f;
 	viewport.y = 0.f;
@@ -291,7 +291,7 @@ vk::PipelineViewportStateCreateInfo vkInit::PipelineBuilder::makeViewportState()
 	return viewportState;
 }
 
-void vkInit::PipelineBuilder::makeRasterizerInfo()
+void vkinit::PipelineBuilder::makeRasterizerInfo()
 {
 	rasterizer.flags = vk::PipelineRasterizationStateCreateFlags();
 	rasterizer.depthClampEnable = VK_FALSE; //discard out of bounds fragments, don't clamp them
@@ -304,14 +304,14 @@ void vkInit::PipelineBuilder::makeRasterizerInfo()
 
 }
 
-void vkInit::PipelineBuilder::configureMultisampling()
+void vkinit::PipelineBuilder::configureMultisampling()
 {
 	multisampling.flags = vk::PipelineMultisampleStateCreateFlags();
 	multisampling.sampleShadingEnable = VK_FALSE;
 	multisampling.rasterizationSamples = vk::SampleCountFlagBits::e1;
 }
 
-void vkInit::PipelineBuilder::configureColorBlending()
+void vkinit::PipelineBuilder::configureColorBlending()
 {
 	colorBlendAttachment.colorWriteMask = vk::ColorComponentFlagBits::eR | vk::ColorComponentFlagBits::eG | vk::ColorComponentFlagBits::eB | vk::ColorComponentFlagBits::eA;
 	colorBlendAttachment.blendEnable = VK_FALSE;
@@ -328,7 +328,7 @@ void vkInit::PipelineBuilder::configureColorBlending()
 
 }
 
-vk::PipelineLayout vkInit::PipelineBuilder::makePipelineLayout()
+vk::PipelineLayout vkinit::PipelineBuilder::makePipelineLayout()
 {
 	/*
 	typedef struct VkPipelineLayoutCreateInfo {
@@ -356,12 +356,12 @@ vk::PipelineLayout vkInit::PipelineBuilder::makePipelineLayout()
 	}
 	catch (vk::SystemError err)
 	{
-		vkLogging::Logger::getLogger()->print("Failed to create pipeline layout!");
+		vklogging::Logger::getLogger()->print("Failed to create pipeline layout!");
 	}
 	return nullptr;
 }
 
-vk::RenderPass vkInit::PipelineBuilder::makeRenderpass()
+vk::RenderPass vkinit::PipelineBuilder::makeRenderpass()
 {
 	flattenedAttachmentDescriptions.clear();
 	flattenedAttachmentReferences.clear();
@@ -385,12 +385,12 @@ vk::RenderPass vkInit::PipelineBuilder::makeRenderpass()
 	}
 	catch (vk::SystemError err)
 	{
-		vkLogging::Logger::getLogger()->print("Failed to create renderpass!");
+		vklogging::Logger::getLogger()->print("Failed to create renderpass!");
 	}
 	return nullptr;
 }
 
-vk::SubpassDescription vkInit::PipelineBuilder::makeSubpass(
+vk::SubpassDescription vkinit::PipelineBuilder::makeSubpass(
 	const std::vector<vk::AttachmentReference>& attachments
 ) {
 	vk::SubpassDescription subpass = {};
@@ -406,7 +406,7 @@ vk::SubpassDescription vkInit::PipelineBuilder::makeSubpass(
 	return subpass;
 }
 
-vk::RenderPassCreateInfo vkInit::PipelineBuilder::makeRenderpassInfo(
+vk::RenderPassCreateInfo vkinit::PipelineBuilder::makeRenderpassInfo(
 	const std::vector<vk::AttachmentDescription>& attachments,
 	const vk::SubpassDescription& subpass
 ) {

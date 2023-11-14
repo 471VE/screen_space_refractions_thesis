@@ -2,7 +2,7 @@
 #include "../../config.h"
 #include "image.h"
 
-namespace vkImage {
+namespace vkimage {
 
 	class CubeMap {
 

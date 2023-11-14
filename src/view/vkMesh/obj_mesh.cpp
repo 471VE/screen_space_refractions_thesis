@@ -17,7 +17,7 @@ static std::vector<std::string> split(std::string line, std::string delimiter)
 	return split_line;
 }
 
-void vkMesh::ObjMesh::load(const char* objFilepath, const char* mtlFilepath, glm::mat4 preTransform)
+void vkmesh::ObjMesh::load(const char* objFilepath, const char* mtlFilepath, glm::mat4 preTransform)
 {
 	this->preTransform = preTransform;
 
@@ -106,28 +106,28 @@ void vkMesh::ObjMesh::load(const char* objFilepath, const char* mtlFilepath, glm
 	file.close();
 }
 
-void vkMesh::ObjMesh::readVertexData(const std::vector<std::string>& words)
+void vkmesh::ObjMesh::readVertexData(const std::vector<std::string>& words)
 {
 	glm::vec4 new_vertex = glm::vec4(std::stof(words[1]), std::stof(words[2]), std::stof(words[3]), 1.f);
 	glm::vec3 transformed_vertex = glm::vec3(preTransform * new_vertex);
 	v.push_back(transformed_vertex);
 }
 
-void vkMesh::ObjMesh::readTexcoordData(const std::vector<std::string>& words)
+void vkmesh::ObjMesh::readTexcoordData(const std::vector<std::string>& words)
 {
 	// To account for difference between Vulkan and OBJ coordinate systems, we need to flip Y coordinates
 	glm::vec2 new_texcoord = glm::vec2(std::stof(words[1]), 1.f - std::stof(words[2]));
 	vt.push_back(new_texcoord);
 }
 
-void vkMesh::ObjMesh::readNormalData(const std::vector<std::string>& words)
+void vkmesh::ObjMesh::readNormalData(const std::vector<std::string>& words)
 {
 	glm::vec4 new_normal = glm::vec4(std::stof(words[1]), std::stof(words[2]), std::stof(words[3]), 0.f);
 	glm::vec3 transformed_normal = glm::vec3(preTransform * new_normal);
 	vn.push_back(transformed_normal);
 }
 
-void vkMesh::ObjMesh::readFaceData(const std::vector<std::string>& words)
+void vkmesh::ObjMesh::readFaceData(const std::vector<std::string>& words)
 {
 	size_t triangleCount = words.size() - 3;
 
@@ -139,7 +139,7 @@ void vkMesh::ObjMesh::readFaceData(const std::vector<std::string>& words)
 	}
 }
 
-void vkMesh::ObjMesh::readCorner(const std::string& vertex_description)
+void vkmesh::ObjMesh::readCorner(const std::string& vertex_description)
 {
 	if (history.contains(vertex_description))
 	{

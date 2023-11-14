@@ -1,6 +1,6 @@
 #pragma once
 #include "../../config.h"
-namespace vkUtil {
+namespace vkutil {
 
 	/**
 		Begin recording a command buffer intended for a single submit.

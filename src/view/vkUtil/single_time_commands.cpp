@@ -1,6 +1,6 @@
 #include "single_time_commands.h"
 
-void vkUtil::start_job(vk::CommandBuffer commandBuffer)
+void vkutil::start_job(vk::CommandBuffer commandBuffer)
 {
 	commandBuffer.reset();
 
@@ -9,7 +9,7 @@ void vkUtil::start_job(vk::CommandBuffer commandBuffer)
 	commandBuffer.begin(beginInfo);
 }
 
-void vkUtil::end_job(vk::CommandBuffer commandBuffer, vk::Queue submissionQueue)
+void vkutil::end_job(vk::CommandBuffer commandBuffer, vk::Queue submissionQueue)
 {
 	commandBuffer.end();
 

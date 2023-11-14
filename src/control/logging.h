@@ -1,7 +1,7 @@
 #pragma once
 #include "../config.h"
 
-namespace vkLogging {
+namespace vklogging {
 
 	class Logger {
 	public:

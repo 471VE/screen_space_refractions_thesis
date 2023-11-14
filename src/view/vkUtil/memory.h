@@ -1,7 +1,7 @@
 #pragma once
 #include "../../config.h"
 
-namespace vkUtil {
+namespace vkutil {
 
 	/**
 		Find the index of a memory type on the GPU satisfying the given properties

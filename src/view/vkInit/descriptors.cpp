@@ -2,7 +2,7 @@
 #include "../../control/logging.h"
 
 	
-vk::DescriptorSetLayout vkInit::makeDescriptorSetLayout(
+vk::DescriptorSetLayout vkinit::makeDescriptorSetLayout(
 	vk::Device device, const descriptorSetLayoutData &bindings
 ) {
 	/*
@@ -25,12 +25,12 @@ vk::DescriptorSetLayout vkInit::makeDescriptorSetLayout(
 	}
 	catch (vk::SystemError err)
 	{
-		vkLogging::Logger::getLogger()->print("Failed to create descriptor set layout");
+		vklogging::Logger::getLogger()->print("Failed to create descriptor set layout");
 		return nullptr;
 	}
 }
 
-vk::DescriptorPool vkInit::make_descriptor_pool(
+vk::DescriptorPool vkinit::make_descriptor_pool(
 	vk::Device device, uint32_t size, const std::vector<vk::DescriptorType> &descriptorTypes
 ) {
 	std::vector<vk::DescriptorPoolSize> poolSizes;
@@ -72,12 +72,12 @@ vk::DescriptorPool vkInit::make_descriptor_pool(
 	}
 	catch (vk::SystemError err)
 	{
-		vkLogging::Logger::getLogger()->print("Failed to make descriptor pool");
+		vklogging::Logger::getLogger()->print("Failed to make descriptor pool");
 		return nullptr;
 	}
 }
 
-vk::DescriptorSet vkInit::allocate_descriptor_set(
+vk::DescriptorSet vkinit::allocate_descriptor_set(
 	vk::Device device, vk::DescriptorPool descriptorPool,
 	vk::DescriptorSetLayout layout
 ) {
@@ -102,7 +102,7 @@ vk::DescriptorSet vkInit::allocate_descriptor_set(
 	}
 	catch (vk::SystemError err)
 	{
-		vkLogging::Logger::getLogger()->print("Failed to allocate descriptor set from pool");
+		vklogging::Logger::getLogger()->print("Failed to allocate descriptor set from pool");
 		return nullptr;
 	}
 }

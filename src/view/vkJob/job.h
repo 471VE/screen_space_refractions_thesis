@@ -4,7 +4,7 @@
 #include "../vkImage/image.h"
 #include "../vkImage/texture.h"
 
-namespace vkJob {
+namespace vkjob {
 
 	enum class JobStatus {
 		PENDING,
@@ -24,16 +24,16 @@ namespace vkJob {
 		const char* objFilepath;
 		const char* mtlFilepath;
 		glm::mat4 preTransform;
-		vkMesh::ObjMesh& mesh;
-		MakeModel(vkMesh::ObjMesh& mesh, const char* objFilepath, const char* mtlFilepath, glm::mat4 preTransform);
+		vkmesh::ObjMesh& mesh;
+		MakeModel(vkmesh::ObjMesh& mesh, const char* objFilepath, const char* mtlFilepath, glm::mat4 preTransform);
 		virtual void execute(vk::CommandBuffer commandBuffer, vk::Queue queue) final;
 	};
 
 	class MakeTexture : public Job {
 	public:
-		vkImage::TextureInputChunk textureInfo;
-		vkImage::Texture* texture;
-		MakeTexture(vkImage::Texture* texture, vkImage::TextureInputChunk textureInfo);
+		vkimage::TextureInputChunk textureInfo;
+		vkimage::Texture* texture;
+		MakeTexture(vkimage::Texture* texture, vkimage::TextureInputChunk textureInfo);
 		virtual void execute(vk::CommandBuffer commandBuffer, vk::Queue queue) final;
 	};
 

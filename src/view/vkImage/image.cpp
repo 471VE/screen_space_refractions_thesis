@@ -6,7 +6,7 @@
 #include "../vkUtil/single_time_commands.h"
 #include "../vkInit/descriptors.h"
 
-vk::Image vkImage::make_image(ImageInputChunk input)
+vk::Image vkimage::make_image(ImageInputChunk input)
 {
 	/*
 	typedef struct VkImageCreateInfo {
@@ -47,18 +47,18 @@ vk::Image vkImage::make_image(ImageInputChunk input)
 	}
 	catch (vk::SystemError err)
 	{
-		vkLogging::Logger::getLogger()->print("Unable to make image");
+		vklogging::Logger::getLogger()->print("Unable to make image");
 	}
 	return nullptr;
 }
 
-vk::DeviceMemory vkImage::make_image_memory(ImageInputChunk input, vk::Image image)
+vk::DeviceMemory vkimage::make_image_memory(ImageInputChunk input, vk::Image image)
 {
 	vk::MemoryRequirements requirements = input.logicalDevice.getImageMemoryRequirements(image);
 
 	vk::MemoryAllocateInfo allocation;
 	allocation.allocationSize = requirements.size;
-	allocation.memoryTypeIndex = vkUtil::find_memory_type_index(
+	allocation.memoryTypeIndex = vkutil::find_memory_type_index(
 		input.physicalDevice, requirements.memoryTypeBits, input.memoryProperties
 	);
 
@@ -70,14 +70,14 @@ vk::DeviceMemory vkImage::make_image_memory(ImageInputChunk input, vk::Image ima
 	}
 	catch (vk::SystemError err)
 	{
-		vkLogging::Logger::getLogger()->print("Unable to allocate memory for image");
+		vklogging::Logger::getLogger()->print("Unable to allocate memory for image");
 	}
 	return nullptr;
 }
 
-void vkImage::transition_image_layout(ImageLayoutTransitionJob transitionJob)
+void vkimage::transition_image_layout(ImageLayoutTransitionJob transitionJob)
 {
-	vkUtil::start_job(transitionJob.commandBuffer);
+	vkutil::start_job(transitionJob.commandBuffer);
 
 	/*
 	typedef struct VkImageSubresourceRange {
@@ -140,12 +140,12 @@ void vkImage::transition_image_layout(ImageLayoutTransitionJob transitionJob)
 	
 	transitionJob.commandBuffer.pipelineBarrier(sourceStage, destinationStage, vk::DependencyFlags(), nullptr, nullptr, barrier);
 
-	vkUtil::end_job(transitionJob.commandBuffer, transitionJob.queue);
+	vkutil::end_job(transitionJob.commandBuffer, transitionJob.queue);
 }
 
-void vkImage::copy_buffer_to_image(BufferImageCopyJob copyJob)
+void vkimage::copy_buffer_to_image(BufferImageCopyJob copyJob)
 {
-	vkUtil::start_job(copyJob.commandBuffer);
+	vkutil::start_job(copyJob.commandBuffer);
 
 	/*
 	typedef struct VkBufferImageCopy {
@@ -180,10 +180,10 @@ void vkImage::copy_buffer_to_image(BufferImageCopyJob copyJob)
 		copyJob.srcBuffer, copyJob.dstImage, vk::ImageLayout::eTransferDstOptimal, copy
 	);
 
-	vkUtil::end_job(copyJob.commandBuffer, copyJob.queue);
+	vkutil::end_job(copyJob.commandBuffer, copyJob.queue);
 }
 
-vk::ImageView vkImage::make_image_view(
+vk::ImageView vkimage::make_image_view(
 	vk::Device logicalDevice, vk::Image image, vk::Format format,
 	vk::ImageAspectFlags aspect, vk::ImageViewType type, uint32_t arrayCount)
 {
@@ -213,7 +213,7 @@ vk::ImageView vkImage::make_image_view(
 	return logicalDevice.createImageView(createInfo);
 }
 
-vk::Format vkImage::find_supported_format(
+vk::Format vkimage::find_supported_format(
 	vk::PhysicalDevice physicalDevice,
 	const std::vector<vk::Format>& candidates,
 	vk::ImageTiling tiling, vk::FormatFeatureFlags features)

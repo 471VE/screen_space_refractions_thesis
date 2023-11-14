@@ -3,7 +3,7 @@
 #include "../vkUtil/queue_families.h"
 #include "../vkUtil/frame.h"
 
-namespace vkInit {
+namespace vkinit {
 
 	/**
 		Data structures used in creating command buffers
@@ -11,7 +11,7 @@ namespace vkInit {
 	struct commandBufferInputChunk {
 		vk::Device device; 
 		vk::CommandPool commandPool;
-		std::vector<vkUtil::SwapChainFrame>& frames;
+		std::vector<vkutil::SwapChainFrame>& frames;
 	};
 
 	/**
@@ -24,7 +24,7 @@ namespace vkInit {
 	*/
 	vk::CommandPool make_command_pool(vk::Device device, vk::PhysicalDevice physicalDevice, vk::SurfaceKHR surface)
 	{
-		vkUtil::QueueFamilyIndices queueFamilyIndices = vkUtil::find_queue_families(physicalDevice, surface);
+		vkutil::QueueFamilyIndices queueFamilyIndices = vkutil::find_queue_families(physicalDevice, surface);
 
 		vk::CommandPoolCreateInfo poolInfo;
 		poolInfo.flags = vk::CommandPoolCreateFlags() | vk::CommandPoolCreateFlagBits::eResetCommandBuffer;
@@ -36,7 +36,7 @@ namespace vkInit {
 		}
 		catch (vk::SystemError err)
 		{
-			vkLogging::Logger::getLogger()->print("Failed to create Command Pool");
+			vklogging::Logger::getLogger()->print("Failed to create Command Pool");
 			return nullptr;
 		}
 	}
@@ -59,12 +59,12 @@ namespace vkInit {
 		try
 		{
 			vk::CommandBuffer commandBuffer = inputChunk.device.allocateCommandBuffers(allocInfo)[0];
-			vkLogging::Logger::getLogger()->print("Allocated main command buffer ");
+			vklogging::Logger::getLogger()->print("Allocated main command buffer ");
 			return commandBuffer;
 		}
 		catch (vk::SystemError err)
 		{
-			vkLogging::Logger::getLogger()->print("Failed to allocate main command buffer ");
+			vklogging::Logger::getLogger()->print("Failed to allocate main command buffer ");
 			return nullptr;
 		}
 	}
@@ -91,13 +91,13 @@ namespace vkInit {
 				inputChunk.frames[i].commandBuffer = inputChunk.device.allocateCommandBuffers(allocInfo)[0];
 
 				message << "Allocated command buffer for frame " << i;
-				vkLogging::Logger::getLogger()->print(message.str());
+				vklogging::Logger::getLogger()->print(message.str());
 				message.str("");
 			}
 			catch (vk::SystemError err)
 			{
 				message << "Failed to allocate command buffer for frame " << i;
-				vkLogging::Logger::getLogger()->print(message.str());
+				vklogging::Logger::getLogger()->print(message.str());
 				message.str("");
 			}
 		}

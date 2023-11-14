@@ -1,7 +1,7 @@
 #pragma once
 #include "../../config.h"
 
-namespace vkInit {
+namespace vkinit {
 
 	// Describes the bindings of a descriptor set layout
 	struct descriptorSetLayoutData {

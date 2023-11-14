@@ -1,7 +1,7 @@
 #pragma once
 #include "../../config.h"
 
-namespace vkMesh {
+namespace vkmesh {
 
 	class ObjMesh {
 	public:

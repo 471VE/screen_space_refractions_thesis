@@ -41,7 +41,7 @@ private:
 	vk::Queue graphicsQueue{ nullptr };
 	vk::Queue presentQueue{ nullptr };
 	vk::SwapchainKHR swapchain{ nullptr };
-	std::vector<vkUtil::SwapChainFrame> swapchainFrames;
+	std::vector<vkutil::SwapChainFrame> swapchainFrames;
 	vk::Format swapchainFormat;
 	vk::Extent2D swapchainExtent;
 
@@ -66,12 +66,12 @@ private:
 
 	//asset pointers
 	VertexMenagerie* meshes;
-	std::unordered_map<meshTypes, vkImage::Texture*> materials;
-	vkImage::CubeMap* cubemap;
+	std::unordered_map<meshTypes, vkimage::Texture*> materials;
+	vkimage::CubeMap* cubemap;
 
 	//Job System
 	bool done = false;
-	vkJob::WorkQueue workQueue;
+	vkjob::WorkQueue workQueue;
 	std::vector<std::thread> workers;
 
 	//Camera-related variables

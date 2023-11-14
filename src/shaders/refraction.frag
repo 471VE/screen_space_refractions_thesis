@@ -24,7 +24,7 @@ layout(location = 0) out vec4 outColor;
 #define MAX_STEPS 100
 #define MAX_DIST 100.f
 #define SURF_DIST 0.001f
-#define MAX_INTERNAL_REFLECTION_COUNT 1 // seems to be enough
+#define MAX_INTERNAL_REFLECTION_COUNT 10 // seems to be enough
 #define GAMMA 2.2f
 #define IOR 1.45f // index of refraction
 #define M_PI 3.1415926535897932384626433832795f

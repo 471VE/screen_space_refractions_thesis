@@ -3,7 +3,7 @@
 #include "../vkUtil/shaders.h"
 #include "../vkUtil/render_structs.h"
 
-namespace vkInit {
+namespace vkinit {
 
 	/**
 		Used for returning the pipeline, along with associated data structures,

@@ -16,7 +16,7 @@ Engine::Engine(int width, int height, GLFWwindow* window)
 	this->height = height;
 	this->window = window;
 
-	vkLogging::Logger::getLogger()->print("Making a graphics engine...");
+	vklogging::Logger::getLogger()->print("Making a graphics engine...");
 
 	makeInstance();
 
@@ -34,18 +34,18 @@ Engine::Engine(int width, int height, GLFWwindow* window)
 
 void Engine::makeInstance()
 {
-	instance = vkInit::make_instance("ID Tech 12");
+	instance = vkinit::make_instance("ID Tech 12");
 	dldi = vk::DispatchLoaderDynamic(instance, vkGetInstanceProcAddr);
 
 #ifndef NDEBUG
-	debugMessenger = vkLogging::make_debug_messenger(instance, dldi);
+	debugMessenger = vklogging::make_debug_messenger(instance, dldi);
 #endif
 
 	VkSurfaceKHR c_style_surface;
 	if (glfwCreateWindowSurface(instance, window, nullptr, &c_style_surface) != VK_SUCCESS)
-		vkLogging::Logger::getLogger()->print("Failed to abstract glfw surface for Vulkan.");
+		vklogging::Logger::getLogger()->print("Failed to abstract glfw surface for Vulkan.");
 	else
-		vkLogging::Logger::getLogger()->print(
+		vklogging::Logger::getLogger()->print(
 			"Successfully abstracted glfw surface for Vulkan.");
 
 	//copy constructor converts to hpp convention
@@ -54,9 +54,9 @@ void Engine::makeInstance()
 
 void Engine::makeDevice()
 {
-	physicalDevice = vkInit::choose_physical_device(instance);
-	device = vkInit::create_logical_device(physicalDevice, surface);
-	std::array<vk::Queue,2> queues = vkInit::get_queues(physicalDevice, device, surface);
+	physicalDevice = vkinit::choose_physical_device(instance);
+	device = vkinit::create_logical_device(physicalDevice, surface);
+	std::array<vk::Queue,2> queues = vkinit::get_queues(physicalDevice, device, surface);
 	graphicsQueue = queues[0];
 	presentQueue = queues[1];
 	makeSwapchain();
@@ -66,7 +66,7 @@ void Engine::makeDevice()
 // Make a swapchain
 void Engine::makeSwapchain()
 {
-	vkInit::SwapChainBundle bundle = vkInit::create_swapchain(
+	vkinit::SwapChainBundle bundle = vkinit::create_swapchain(
 		device, physicalDevice, surface, width, height
 	);
 	swapchain = bundle.swapchain;
@@ -75,7 +75,7 @@ void Engine::makeSwapchain()
 	swapchainExtent = bundle.extent;
 	maxFramesInFlight = static_cast<int>(swapchainFrames.size());
 
-	for (vkUtil::SwapChainFrame& frame : swapchainFrames)
+	for (vkutil::SwapChainFrame& frame : swapchainFrames)
 	{
 		frame.logicalDevice = device;
 		frame.physicalDevice = physicalDevice;
@@ -104,8 +104,8 @@ void Engine::recreateSwapchain()
 	makeSwapchain();
 	make_framebuffers();
 	makeFrameResources();
-	vkInit::commandBufferInputChunk commandBufferInput = { device, commandPool, swapchainFrames };
-	vkInit::make_frame_command_buffers(commandBufferInput);
+	vkinit::commandBufferInputChunk commandBufferInput = { device, commandPool, swapchainFrames };
+	vkinit::make_frame_command_buffers(commandBufferInput);
 	makePipelines();
 }
 
@@ -114,9 +114,9 @@ void Engine::makeDescriptorSetLayouts()
 	// DON'T FORGET TO SET BINDINGS HERE!!!
 
 	// Binding once per frame
-	vkInit::descriptorSetLayoutData skyPipelineBindings;
-	vkInit::descriptorSetLayoutData standardPipelineBindings;
-	vkInit::descriptorSetLayoutData individualDrawCallBindings;
+	vkinit::descriptorSetLayoutData skyPipelineBindings;
+	vkinit::descriptorSetLayoutData standardPipelineBindings;
+	vkinit::descriptorSetLayoutData individualDrawCallBindings;
 
 	// Ideally, this should be automatic, it is impossible not to forget about this
 	// Sky pipeline bindings
@@ -132,7 +132,7 @@ void Engine::makeDescriptorSetLayouts()
 		vk::DescriptorType::eUniformBuffer,
 		vk::ShaderStageFlagBits::eFragment
 	);
-	frameSetLayout[pipelineType::SKY] = vkInit::makeDescriptorSetLayout(device, skyPipelineBindings);
+	frameSetLayout[pipelineType::SKY] = vkinit::makeDescriptorSetLayout(device, skyPipelineBindings);
 
 	// Standard pipeline bindings
 	standardPipelineBindings.emplace_back(
@@ -142,19 +142,19 @@ void Engine::makeDescriptorSetLayouts()
 	standardPipelineBindings.emplace_back(
 		vk::DescriptorType::eStorageBuffer, vk::ShaderStageFlagBits::eVertex
 	);
-	frameSetLayout[pipelineType::STANDARD] = vkInit::makeDescriptorSetLayout(device, standardPipelineBindings);
+	frameSetLayout[pipelineType::STANDARD] = vkinit::makeDescriptorSetLayout(device, standardPipelineBindings);
 
 	//Binding for individual draw calls
 	individualDrawCallBindings.emplace_back(
 		vk::DescriptorType::eCombinedImageSampler, vk::ShaderStageFlagBits::eFragment
 	);
-	meshSetLayout[pipelineType::SKY] = vkInit::makeDescriptorSetLayout(device, individualDrawCallBindings);
-	meshSetLayout[pipelineType::STANDARD] = vkInit::makeDescriptorSetLayout(device, individualDrawCallBindings);
+	meshSetLayout[pipelineType::SKY] = vkinit::makeDescriptorSetLayout(device, individualDrawCallBindings);
+	meshSetLayout[pipelineType::STANDARD] = vkinit::makeDescriptorSetLayout(device, individualDrawCallBindings);
 }
 
 void Engine::makePipelines()
 {
-	vkInit::PipelineBuilder pipelineBuilder(device);
+	vkinit::PipelineBuilder pipelineBuilder(device);
 
 	// Sky
 	pipelineBuilder.setOverwriteMode(false);
@@ -166,7 +166,7 @@ void Engine::makePipelines()
 	pipelineBuilder.addDescriptorSetLayout(meshSetLayout[pipelineType::SKY]);
 	pipelineBuilder.addColorAttachment(swapchainFormat, 0);
 
-	vkInit::GraphicsPipelineOutBundle output = pipelineBuilder.build();
+	vkinit::GraphicsPipelineOutBundle output = pipelineBuilder.build();
 
 	pipelineLayout[pipelineType::SKY] = output.layout;
 	renderpass[pipelineType::SKY] = output.renderpass;
@@ -176,8 +176,8 @@ void Engine::makePipelines()
 	// Standard
 	pipelineBuilder.setOverwriteMode(true);
 	pipelineBuilder.specifyVertexFormat(
-		vkMesh::get_pos_color_binding_description(), 
-		vkMesh::get_pos_color_attribute_descriptions()
+		vkmesh::get_pos_color_binding_description(), 
+		vkmesh::get_pos_color_attribute_descriptions()
 	);
 	pipelineBuilder.specifyVertexShader("resources/shaders/model.vert.spv");
 	pipelineBuilder.specifyFragmentShader("resources/shaders/model.frag.spv");
@@ -197,22 +197,22 @@ void Engine::makePipelines()
 // Make a framebuffer for each frame
 void Engine::make_framebuffers()
 {
-	vkInit::framebufferInput frameBufferInput;
+	vkinit::framebufferInput frameBufferInput;
 	frameBufferInput.device = device;
 	frameBufferInput.renderpass = renderpass;
 	frameBufferInput.swapchainExtent = swapchainExtent;
-	vkInit::make_framebuffers(frameBufferInput, swapchainFrames);
+	vkinit::make_framebuffers(frameBufferInput, swapchainFrames);
 }
 
 void Engine::finalizeSetup()
 {
 	make_framebuffers();
 
-	commandPool = vkInit::make_command_pool(device, physicalDevice, surface);
+	commandPool = vkinit::make_command_pool(device, physicalDevice, surface);
 
-	vkInit::commandBufferInputChunk commandBufferInput = { device, commandPool, swapchainFrames };
-	mainCommandBuffer = vkInit::make_command_buffer(commandBufferInput);
-	vkInit::make_frame_command_buffers(commandBufferInput);
+	vkinit::commandBufferInputChunk commandBufferInput = { device, commandPool, swapchainFrames };
+	mainCommandBuffer = vkinit::make_command_buffer(commandBufferInput);
+	vkinit::make_frame_command_buffers(commandBufferInput);
 
 	makeFrameResources();
 }
@@ -220,22 +220,22 @@ void Engine::finalizeSetup()
 void Engine::makeFrameResources()
 {
 	uint32_t descriptor_sets_per_frame = 2;
-	frameDescriptorPool = vkInit::make_descriptor_pool(
+	frameDescriptorPool = vkinit::make_descriptor_pool(
 		device, static_cast<uint32_t>(swapchainFrames.size() * descriptor_sets_per_frame),
 		{vk::DescriptorType::eUniformBuffer, vk::DescriptorType::eStorageBuffer}
 	);
 
-	for (vkUtil::SwapChainFrame& frame : swapchainFrames)
+	for (vkutil::SwapChainFrame& frame : swapchainFrames)
 	{
-		frame.imageAvailable = vkInit::make_semaphore(device);
-		frame.renderFinished = vkInit::make_semaphore(device);
-		frame.inFlight = vkInit::make_fence(device);
+		frame.imageAvailable = vkinit::make_semaphore(device);
+		frame.renderFinished = vkinit::make_semaphore(device);
+		frame.inFlight = vkinit::make_fence(device);
 
 		frame.makeDescriptorResources();
 
-		frame.descriptorSet[pipelineType::SKY] = vkInit::allocate_descriptor_set(
+		frame.descriptorSet[pipelineType::SKY] = vkinit::allocate_descriptor_set(
 			device, frameDescriptorPool, frameSetLayout[pipelineType::SKY]);
-		frame.descriptorSet[pipelineType::STANDARD] = vkInit::allocate_descriptor_set(
+		frame.descriptorSet[pipelineType::STANDARD] = vkinit::allocate_descriptor_set(
 			device, frameDescriptorPool, frameSetLayout[pipelineType::STANDARD]);
 
 		frame.recordWriteOperations();
@@ -248,13 +248,13 @@ void Engine::makeWorkerThreads()
 	size_t threadCount = std::thread::hardware_concurrency() - 1;
 
 	workers.reserve(threadCount);
-	vkInit::commandBufferInputChunk commandBufferInput = { device, commandPool, swapchainFrames };
+	vkinit::commandBufferInputChunk commandBufferInput = { device, commandPool, swapchainFrames };
 	for (size_t i = 0; i < threadCount; ++i)
 	{
-		vk::CommandBuffer commandBuffer = vkInit::make_command_buffer(commandBufferInput);
+		vk::CommandBuffer commandBuffer = vkinit::make_command_buffer(commandBufferInput);
 		workers.push_back(
 			std::thread(
-				vkJob::WorkerThread(workQueue, done, commandBuffer, graphicsQueue)
+				vkjob::WorkerThread(workQueue, done, commandBuffer, graphicsQueue)
 			)
 		);
 	}
@@ -284,7 +284,7 @@ void Engine::makeAssets()
 		// 	glm::vec3(0.f, 0.f, 1.f)
 		// )}
 	};
-	std::unordered_map<meshTypes, vkMesh::ObjMesh> loaded_models;
+	std::unordered_map<meshTypes, vkmesh::ObjMesh> loaded_models;
 
 	//Materials
 
@@ -296,7 +296,7 @@ void Engine::makeAssets()
 	};
 
 	//Make a descriptor pool to allocate sets.
-	meshDescriptorPool = vkInit::make_descriptor_pool(
+	meshDescriptorPool = vkinit::make_descriptor_pool(
 		device, static_cast<uint32_t>(filenames.size()) + 1, {vk::DescriptorType::eCombinedImageSampler}
 	);
 
@@ -307,19 +307,19 @@ void Engine::makeAssets()
 	};
 	for (meshTypes type : mesh_types)
 	{
-		vkImage::TextureInputChunk textureInfo;
+		vkimage::TextureInputChunk textureInfo;
 		textureInfo.logicalDevice = device;
 		textureInfo.physicalDevice = physicalDevice;
 		textureInfo.layout = meshSetLayout[pipelineType::STANDARD];
 		textureInfo.descriptorPool = meshDescriptorPool;
 		textureInfo.filenames = filenames[type];
-		materials[type] = new vkImage::Texture();
-		loaded_models[type] = vkMesh::ObjMesh();
+		materials[type] = new vkimage::Texture();
+		loaded_models[type] = vkmesh::ObjMesh();
 		workQueue.add(
-			new vkJob::MakeTexture(materials[type], textureInfo)
+			new vkjob::MakeTexture(materials[type], textureInfo)
 		);
 		workQueue.add(
-			new vkJob::MakeModel(loaded_models[type], 
+			new vkjob::MakeModel(loaded_models[type], 
 				model_filenames[type][0], model_filenames[type][1], 
 				preTransforms[type])
 		);
@@ -352,7 +352,7 @@ void Engine::makeAssets()
 	}
 
 	//Consume loaded meshes
-	for (std::pair<meshTypes, vkMesh::ObjMesh> pair : loaded_models)
+	for (std::pair<meshTypes, vkmesh::ObjMesh> pair : loaded_models)
 		meshes->consume(pair.first, pair.second.vertices, pair.second.indices);
 
 	vertexBufferFinalizationChunk finalizationInfo;
@@ -364,7 +364,7 @@ void Engine::makeAssets()
 
 	//Proceed when work is done
 
-	vkImage::TextureInputChunk textureInfo;
+	vkimage::TextureInputChunk textureInfo;
 	textureInfo.commandBuffer = mainCommandBuffer;
 	textureInfo.queue = graphicsQueue;
 	textureInfo.logicalDevice = device;
@@ -379,7 +379,7 @@ void Engine::makeAssets()
 			"resources/textures/skybox/posz.jpg", //z+
 			"resources/textures/skybox/negz.jpg", //z-
 	};
-	cubemap = new vkImage::CubeMap(textureInfo);
+	cubemap = new vkimage::CubeMap(textureInfo);
 }
 
 void Engine::endWorkerThreads()
@@ -414,7 +414,7 @@ void Engine::setSphereShTerms(const std::vector<float> &sphereShTerms_)
 
 void Engine::prepareFrame(uint32_t imageIndex, Scene* scene)
 {
-	vkUtil::SwapChainFrame& _frame = swapchainFrames[imageIndex];
+	vkutil::SwapChainFrame& _frame = swapchainFrames[imageIndex];
 
 	_frame.cameraVectorData.forwards = camVecForwards;
 	_frame.cameraVectorData.right = camVecRight;
@@ -574,7 +574,7 @@ void Engine::render(Scene* scene)
 	}
 	catch (vk::SystemError err)
 	{
-		vkLogging::Logger::getLogger()->print("Failed to begin recording command buffer!");
+		vklogging::Logger::getLogger()->print("Failed to begin recording command buffer!");
 	}
 
 	recordDrawCommandsSky(commandBuffer, imageIndex, scene);
@@ -586,7 +586,7 @@ void Engine::render(Scene* scene)
 	}
 	catch (vk::SystemError err)
 	{
-		vkLogging::Logger::getLogger()->print("failed to record command buffer!");
+		vklogging::Logger::getLogger()->print("failed to record command buffer!");
 	}
 
 	vk::SubmitInfo submitInfo = {};
@@ -610,7 +610,7 @@ void Engine::render(Scene* scene)
 	}
 	catch (vk::SystemError err)
 	{
-		vkLogging::Logger::getLogger()->print("failed to submit draw command buffer!");
+		vklogging::Logger::getLogger()->print("failed to submit draw command buffer!");
 	}
 
 	vk::PresentInfoKHR presentInfo = {};
@@ -647,7 +647,7 @@ void Engine::render(Scene* scene)
 // Free the memory associated with the swapchain objects
 void Engine::cleanupSwapchain()
 {
-	for (vkUtil::SwapChainFrame& frame : swapchainFrames)
+	for (vkutil::SwapChainFrame& frame : swapchainFrames)
 		frame.destroy();
 
 	device.destroySwapchainKHR(swapchain);
@@ -658,7 +658,7 @@ Engine::~Engine()
 {
 	device.waitIdle();
 
-	vkLogging::Logger::getLogger()->print("The app has been closed.");
+	vklogging::Logger::getLogger()->print("The app has been closed.");
 
 	device.destroyCommandPool(commandPool);
 

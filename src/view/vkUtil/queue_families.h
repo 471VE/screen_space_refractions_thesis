@@ -1,7 +1,7 @@
 #pragma once
 #include "../../config.h"
 
-namespace vkUtil {
+namespace vkutil {
 
 	/**
 		Holds the indices of the graphics and presentation queue families.
@@ -28,7 +28,7 @@ namespace vkUtil {
 
 		std::stringstream message;
 		message << "There are " << queueFamilies.size() << " queue families available on the system.";
-		vkLogging::Logger::getLogger()->print(message.str());
+		vklogging::Logger::getLogger()->print(message.str());
 		message.str("");
 
 		int i = 0;
@@ -71,7 +71,7 @@ namespace vkUtil {
 				indices.graphicsFamily = i;
 
 				message << "Queue Family " << i << " is suitable for graphics.";
-				vkLogging::Logger::getLogger()->print(message.str());
+				vklogging::Logger::getLogger()->print(message.str());
 				message.str("");
 			}
 
@@ -80,7 +80,7 @@ namespace vkUtil {
 				indices.presentFamily = i;
 
 				message << "Queue Family " << i << " is suitable for presenting.";
-				vkLogging::Logger::getLogger()->print(message.str());
+				vklogging::Logger::getLogger()->print(message.str());
 				message.str("");
 			}
 

@@ -1,7 +1,7 @@
 #pragma once
 #include "job.h"
 
-namespace vkJob {
+namespace vkjob {
 	class WorkerThread {
 	public:
 		bool& done;

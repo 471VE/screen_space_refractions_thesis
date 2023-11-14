@@ -2,7 +2,7 @@
 #include "memory.h"
 #include "../vkImage/image.h"
 
-void vkUtil::SwapChainFrame::makeDescriptorResources()
+void vkutil::SwapChainFrame::makeDescriptorResources()
 {
 	BufferInputChunk input;
 	input.logicalDevice = logicalDevice;
@@ -72,16 +72,16 @@ void vkUtil::SwapChainFrame::makeDescriptorResources()
 
 }
 
-void vkUtil::SwapChainFrame::makeDepthResources()
+void vkutil::SwapChainFrame::makeDepthResources()
 {
-	depthFormat = vkImage::find_supported_format(
+	depthFormat = vkimage::find_supported_format(
 		physicalDevice,
 		{ vk::Format::eD32Sfloat, vk::Format::eD24UnormS8Uint },
 		vk::ImageTiling::eOptimal,
 		vk::FormatFeatureFlagBits::eDepthStencilAttachment
 	);
 
-	vkImage::ImageInputChunk imageInfo;
+	vkimage::ImageInputChunk imageInfo;
 	imageInfo.logicalDevice = logicalDevice;
 	imageInfo.physicalDevice = physicalDevice;
 	imageInfo.tiling = vk::ImageTiling::eOptimal;
@@ -91,15 +91,15 @@ void vkUtil::SwapChainFrame::makeDepthResources()
 	imageInfo.height = height;
 	imageInfo.format = depthFormat;
 	imageInfo.arrayCount = 1;
-	depthBuffer = vkImage::make_image(imageInfo);
-	depthBufferMemory = vkImage::make_image_memory(imageInfo, depthBuffer);
-	depthBufferView = vkImage::make_image_view(
+	depthBuffer = vkimage::make_image(imageInfo);
+	depthBufferMemory = vkimage::make_image_memory(imageInfo, depthBuffer);
+	depthBufferView = vkimage::make_image_view(
 		logicalDevice, depthBuffer, depthFormat, vk::ImageAspectFlagBits::eDepth,
 		vk::ImageViewType::e2D, 1
 	);
 }
 
-void vkUtil::SwapChainFrame::recordWriteOperations()
+void vkutil::SwapChainFrame::recordWriteOperations()
 {
 	/*
 	typedef struct VkWriteDescriptorSet {
@@ -159,16 +159,16 @@ void vkUtil::SwapChainFrame::recordWriteOperations()
 
 }
 
-void vkUtil::SwapChainFrame::writeDescriptorSet() { logicalDevice.updateDescriptorSets(writeOps, nullptr); }
+void vkutil::SwapChainFrame::writeDescriptorSet() { logicalDevice.updateDescriptorSets(writeOps, nullptr); }
 
-void vkUtil::SwapChainFrame::destroyBufferAndFreeMemory(Buffer buffer)
+void vkutil::SwapChainFrame::destroyBufferAndFreeMemory(Buffer buffer)
 {
 	logicalDevice.unmapMemory(buffer.bufferMemory);
 	logicalDevice.freeMemory(buffer.bufferMemory);
 	logicalDevice.destroyBuffer(buffer.buffer);
 }
 
-void vkUtil::SwapChainFrame::destroy()
+void vkutil::SwapChainFrame::destroy()
 {
 	logicalDevice.destroyImageView(imageView);
 	logicalDevice.destroyFramebuffer(framebuffer[pipelineType::SKY]);

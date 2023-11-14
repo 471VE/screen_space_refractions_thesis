@@ -1,7 +1,7 @@
 #include "memory.h"
 #include "single_time_commands.h"
 
-uint32_t vkUtil::find_memory_type_index(vk::PhysicalDevice physicalDevice, uint32_t supportedMemoryIndices, vk::MemoryPropertyFlags requestedProperties)
+uint32_t vkutil::find_memory_type_index(vk::PhysicalDevice physicalDevice, uint32_t supportedMemoryIndices, vk::MemoryPropertyFlags requestedProperties)
 {
 	/*
 	* // Provided by VK_VERSION_1_0
@@ -28,7 +28,7 @@ uint32_t vkUtil::find_memory_type_index(vk::PhysicalDevice physicalDevice, uint3
 	return 0;
 }
 
-void vkUtil::allocate_buffer_memory(Buffer& buffer, const BufferInputChunk& input)
+void vkutil::allocate_buffer_memory(Buffer& buffer, const BufferInputChunk& input)
 {
 	/*
 	// Provided by VK_VERSION_1_0
@@ -60,7 +60,7 @@ void vkUtil::allocate_buffer_memory(Buffer& buffer, const BufferInputChunk& inpu
 	input.logicalDevice.bindBufferMemory(buffer.buffer, buffer.bufferMemory, 0);
 }
 
-Buffer vkUtil::create_buffer(BufferInputChunk input)
+Buffer vkutil::create_buffer(BufferInputChunk input)
 {
 	/*
 	* // Provided by VK_VERSION_1_0
@@ -88,9 +88,9 @@ Buffer vkUtil::create_buffer(BufferInputChunk input)
 	return buffer;
 }
 
-void vkUtil::copy_buffer(Buffer& srcBuffer, Buffer& dstBuffer, vk::DeviceSize size, vk::Queue queue, vk::CommandBuffer commandBuffer)
+void vkutil::copy_buffer(Buffer& srcBuffer, Buffer& dstBuffer, vk::DeviceSize size, vk::Queue queue, vk::CommandBuffer commandBuffer)
 {
-	vkUtil::start_job(commandBuffer);
+	vkutil::start_job(commandBuffer);
 
 	/*
 	* // Provided by VK_VERSION_1_0
@@ -106,5 +106,5 @@ void vkUtil::copy_buffer(Buffer& srcBuffer, Buffer& dstBuffer, vk::DeviceSize si
 	copyRegion.size = size;
 	commandBuffer.copyBuffer(srcBuffer.buffer, dstBuffer.buffer, 1, &copyRegion);
 
-	vkUtil::end_job(commandBuffer, queue);
+	vkutil::end_job(commandBuffer, queue);
 }

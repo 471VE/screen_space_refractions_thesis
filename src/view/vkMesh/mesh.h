@@ -1,7 +1,7 @@
 #pragma once
 #include "../../config.h"
 
-namespace vkMesh {
+namespace vkmesh {
 
 	/**
 		\returns the input binding description for a (vec2 pos, vec3 color, vec2 texcoords) vertex format.

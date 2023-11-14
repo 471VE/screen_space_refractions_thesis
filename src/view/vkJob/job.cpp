@@ -1,24 +1,24 @@
 #include "job.h"
 
-vkJob::MakeModel::MakeModel(vkMesh::ObjMesh& mesh, const char* objFilepath, const char* mtlFilepath, glm::mat4 preTransform)
+vkjob::MakeModel::MakeModel(vkmesh::ObjMesh& mesh, const char* objFilepath, const char* mtlFilepath, glm::mat4 preTransform)
 	: mesh(mesh)
 	, objFilepath(objFilepath)
 	, mtlFilepath(mtlFilepath)
 	, preTransform(preTransform)
 {}
 
-void vkJob::MakeModel::execute(vk::CommandBuffer commandBuffer, vk::Queue queue)
+void vkjob::MakeModel::execute(vk::CommandBuffer commandBuffer, vk::Queue queue)
 {
 	mesh.load(objFilepath, mtlFilepath, preTransform);
 	status = JobStatus::COMPLETE;
 }
 
-vkJob::MakeTexture::MakeTexture(vkImage::Texture* texture, vkImage::TextureInputChunk textureInfo)
+vkjob::MakeTexture::MakeTexture(vkimage::Texture* texture, vkimage::TextureInputChunk textureInfo)
 	: texture(texture)
 	, textureInfo(textureInfo)
 {}
 
-void vkJob::MakeTexture::execute(vk::CommandBuffer commandBuffer, vk::Queue queue)
+void vkjob::MakeTexture::execute(vk::CommandBuffer commandBuffer, vk::Queue queue)
 {
 	textureInfo.commandBuffer = commandBuffer;
 	textureInfo.queue = queue;
@@ -26,7 +26,7 @@ void vkJob::MakeTexture::execute(vk::CommandBuffer commandBuffer, vk::Queue queu
 	status = JobStatus::COMPLETE;
 }
 
-void vkJob::WorkQueue::add(Job* job)
+void vkjob::WorkQueue::add(Job* job)
 {
 	if (length == 0)
 	{
@@ -41,7 +41,7 @@ void vkJob::WorkQueue::add(Job* job)
 	length += 1;
 }
 
-vkJob::Job* vkJob::WorkQueue::getNext()
+vkjob::Job* vkjob::WorkQueue::getNext()
 {
 	Job* current = first;
 	while (current)
@@ -54,7 +54,7 @@ vkJob::Job* vkJob::WorkQueue::getNext()
 	return nullptr;
 }
 
-bool vkJob::WorkQueue::done()
+bool vkjob::WorkQueue::done()
 {
 	Job* current = first;
 	while (current)
@@ -67,7 +67,7 @@ bool vkJob::WorkQueue::done()
 	return true;
 }
 
-void vkJob::WorkQueue::clear()
+void vkjob::WorkQueue::clear()
 {
 	if (length == 0)
 		return;

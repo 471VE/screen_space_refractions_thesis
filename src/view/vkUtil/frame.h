@@ -2,7 +2,7 @@
 #include "../../config.h"
 #include "../../common/common_definitions.h"
 
-namespace vkUtil
+namespace vkutil
 {
 	// Holds the data structures associated with a "Frame"
 	class SwapChainFrame {

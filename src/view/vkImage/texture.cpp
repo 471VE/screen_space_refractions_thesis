@@ -4,7 +4,7 @@
 #include "../../control/logging.h"
 #include "../vkInit/descriptors.h"
 
-void vkImage::Texture::load(TextureInputChunk input)
+void vkimage::Texture::load(TextureInputChunk input)
 {
 	logicalDevice = input.logicalDevice;
 	physicalDevice = input.physicalDevice;
@@ -40,7 +40,7 @@ void vkImage::Texture::load(TextureInputChunk input)
 	makeDescriptorSet();
 }
 
-vkImage::Texture::~Texture()
+vkimage::Texture::~Texture()
 {
 	logicalDevice.freeMemory(imageMemory);
 	logicalDevice.destroyImage(image);
@@ -48,14 +48,14 @@ vkImage::Texture::~Texture()
 	logicalDevice.destroySampler(sampler);
 }
 
-void vkImage::Texture::load()
+void vkimage::Texture::load()
 {
 	pixels = stbi_load(filename, &width, &height, &channels, STBI_rgb_alpha);
 	if (!pixels)
-		vkLogging::Logger::getLogger()->printList({ "Unable to load: ", filename });
+		vklogging::Logger::getLogger()->printList({ "Unable to load: ", filename });
 }
 
-void vkImage::Texture::populate()
+void vkimage::Texture::populate()
 {
 	//First create a CPU-visible buffer...
 	BufferInputChunk input;
@@ -65,7 +65,7 @@ void vkImage::Texture::populate()
 	input.usage = vk::BufferUsageFlagBits::eTransferSrc;
 	input.size = width * height * 4;
 
-	Buffer stagingBuffer = vkUtil::create_buffer(input);
+	Buffer stagingBuffer = vkutil::create_buffer(input);
 
 	//...then fill it,
 	void* writeLocation = logicalDevice.mapMemory(stagingBuffer.bufferMemory, 0, input.size);
@@ -101,7 +101,7 @@ void vkImage::Texture::populate()
 	logicalDevice.destroyBuffer(stagingBuffer.buffer);
 }
 
-void vkImage::Texture::makeView()
+void vkimage::Texture::makeView()
 {
 	imageView = make_image_view(
 		logicalDevice, image, vk::Format::eR8G8B8A8Unorm, vk::ImageAspectFlagBits::eColor,
@@ -109,7 +109,7 @@ void vkImage::Texture::makeView()
 	);
 }
 
-void vkImage::Texture::makeSampler()
+void vkimage::Texture::makeSampler()
 {
 	/*
 	typedef struct VkSamplerCreateInfo {
@@ -160,14 +160,14 @@ void vkImage::Texture::makeSampler()
 	}
 	catch (vk::SystemError err)
 	{
-		vkLogging::Logger::getLogger()->print("Failed to make sampler.");
+		vklogging::Logger::getLogger()->print("Failed to make sampler.");
 	}
 
 }
 
-void vkImage::Texture::makeDescriptorSet()
+void vkimage::Texture::makeDescriptorSet()
 {
-	descriptorSet = vkInit::allocate_descriptor_set(logicalDevice, descriptorPool, layout);
+	descriptorSet = vkinit::allocate_descriptor_set(logicalDevice, descriptorPool, layout);
 
 	vk::DescriptorImageInfo imageDescriptor;
 	imageDescriptor.imageLayout = vk::ImageLayout::eShaderReadOnlyOptimal;
@@ -185,7 +185,7 @@ void vkImage::Texture::makeDescriptorSet()
 	logicalDevice.updateDescriptorSets(descriptorWrite, nullptr);
 }
 
-void vkImage::Texture::use(vk::CommandBuffer commandBuffer, vk::PipelineLayout pipelineLayout)
+void vkimage::Texture::use(vk::CommandBuffer commandBuffer, vk::PipelineLayout pipelineLayout)
 {
 	commandBuffer.bindDescriptorSets(
 		vk::PipelineBindPoint::eGraphics, pipelineLayout, 1, descriptorSet, nullptr);

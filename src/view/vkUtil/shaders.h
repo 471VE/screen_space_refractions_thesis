@@ -1,7 +1,7 @@
 #pragma once
 #include "../../config.h"
 
-namespace vkUtil {
+namespace vkutil {
 
 	/**
 		Read a file.

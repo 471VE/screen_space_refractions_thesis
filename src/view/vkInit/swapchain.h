@@ -4,7 +4,7 @@
 #include "../vkUtil/frame.h"
 #include "../vkImage/image.h"
 
-namespace vkInit {
+namespace vkinit {
 
 	/**
 		Holds properties of the swapchain
@@ -23,7 +23,7 @@ namespace vkInit {
 	*/
 	struct SwapChainBundle {
 		vk::SwapchainKHR swapchain;
-		std::vector<vkUtil::SwapChainFrame> frames;
+		std::vector<vkutil::SwapChainFrame> frames;
 		vk::Format format;
 		vk::Extent2D extent;
 	};
@@ -82,20 +82,20 @@ namespace vkInit {
 
 
 		std::cout << "  supported transforms:\n";
-		std::vector<std::string> stringList = vkLogging::log_transform_bits(support.capabilities.supportedTransforms);
-		vkLogging::Logger::getLogger()->printList(stringList);
+		std::vector<std::string> stringList = vklogging::log_transform_bits(support.capabilities.supportedTransforms);
+		vklogging::Logger::getLogger()->printList(stringList);
 
 		std::cout << "  current transform:\n";
-		stringList = vkLogging::log_transform_bits(support.capabilities.currentTransform);
-		vkLogging::Logger::getLogger()->printList(stringList);
+		stringList = vklogging::log_transform_bits(support.capabilities.currentTransform);
+		vklogging::Logger::getLogger()->printList(stringList);
 
 		std::cout << "  supported alpha operations:\n";
-		stringList = vkLogging::log_alpha_composite_bits(support.capabilities.supportedCompositeAlpha);
-		vkLogging::Logger::getLogger()->printList(stringList);
+		stringList = vklogging::log_alpha_composite_bits(support.capabilities.supportedCompositeAlpha);
+		vklogging::Logger::getLogger()->printList(stringList);
 
 		std::cout << "  supported image usage:\n";
-		stringList = vkLogging::log_image_usage_bits(support.capabilities.supportedUsageFlags);
-		vkLogging::Logger::getLogger()->printList(stringList);
+		stringList = vklogging::log_image_usage_bits(support.capabilities.supportedUsageFlags);
+		vklogging::Logger::getLogger()->printList(stringList);
 
 		std::cout << std::endl;
 #endif
@@ -122,7 +122,7 @@ namespace vkInit {
 
 #ifndef NDEBUG
 		for (vk::PresentModeKHR presentMode : support.presentModes)
-			std::cout << "  " << vkLogging::log_present_mode(presentMode) << '\n';
+			std::cout << "  " << vklogging::log_present_mode(presentMode) << '\n';
 		std::cout << std::endl;
 #endif
 		return support;
@@ -240,7 +240,7 @@ namespace vkInit {
 		);
 
 
-		vkUtil::QueueFamilyIndices indices = vkUtil::find_queue_families(physicalDevice, surface);
+		vkutil::QueueFamilyIndices indices = vkutil::find_queue_families(physicalDevice, surface);
 		uint32_t queueFamilyIndices[] = { indices.graphicsFamily.value(), indices.presentFamily.value() };
 
 		if (indices.graphicsFamily != indices.presentFamily)
@@ -276,7 +276,7 @@ namespace vkInit {
 		for (size_t i = 0; i < images.size(); ++i)
 		{
 			bundle.frames[i].image = images[i];
-			bundle.frames[i].imageView = vkImage::make_image_view(
+			bundle.frames[i].imageView = vkimage::make_image_view(
 				logicalDevice, images[i], format.format, vk::ImageAspectFlagBits::eColor,
 				vk::ImageViewType::e2D, 1
 			);

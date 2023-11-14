@@ -1,7 +1,7 @@
 #pragma once
 #include "../../config.h"
 
-namespace vkInit {
+namespace vkinit {
 
 	/**
 		Make a semaphore.
@@ -20,7 +20,7 @@ namespace vkInit {
 		}
 		catch (vk::SystemError err)
 		{
-			vkLogging::Logger::getLogger()->print("Failed to create semaphore ");
+			vklogging::Logger::getLogger()->print("Failed to create semaphore ");
 			return nullptr;
 		}
 	}
@@ -42,7 +42,7 @@ namespace vkInit {
 		}
 		catch (vk::SystemError err)
 		{
-			vkLogging::Logger::getLogger()->print("Failed to create fence ");
+			vklogging::Logger::getLogger()->print("Failed to create fence ");
 			return nullptr;
 		}
 	}

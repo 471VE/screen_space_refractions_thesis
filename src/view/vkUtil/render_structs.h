@@ -1,7 +1,7 @@
 #pragma once
 #include "../../config.h"
 
-namespace vkUtil {
+namespace vkutil {
 
 	/**
 		Data structures used in rendering each individual object

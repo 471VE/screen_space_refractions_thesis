@@ -1,7 +1,7 @@
 #include "shaders.h"
 #include "../../control/logging.h"
 
-std::vector<char> vkUtil::read_file(std::string filename)
+std::vector<char> vkutil::read_file(std::string filename)
 {
   std::ifstream file(filename, std::ios::ate | std::ios::binary);
 
@@ -9,7 +9,7 @@ std::vector<char> vkUtil::read_file(std::string filename)
   {
     std::stringstream message;
     message << "Failed to load \"" << filename << "\"";
-    vkLogging::Logger::getLogger()->print(message.str());
+    vklogging::Logger::getLogger()->print(message.str());
   }
 
   size_t filesize{ static_cast<size_t>(file.tellg()) };
@@ -22,7 +22,7 @@ std::vector<char> vkUtil::read_file(std::string filename)
   return buffer;
 }
 
-vk::ShaderModule vkUtil::create_module(std::string filename, vk::Device device)
+vk::ShaderModule vkutil::create_module(std::string filename, vk::Device device)
 {
   std::vector<char> sourceCode = read_file(filename);
 
@@ -39,7 +39,7 @@ vk::ShaderModule vkUtil::create_module(std::string filename, vk::Device device)
   {
     std::stringstream message;
     message << "Failed to create shader module for \"" << filename << "\"";
-    vkLogging::Logger::getLogger()->print(message.str());
+    vklogging::Logger::getLogger()->print(message.str());
   }
   return nullptr;
 }

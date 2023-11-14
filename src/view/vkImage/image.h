@@ -2,7 +2,7 @@
 #include "stb_image.h"
 #include "../../config.h"
 
-namespace vkImage {
+namespace vkimage {
 
 	/**
 		For making the Image class

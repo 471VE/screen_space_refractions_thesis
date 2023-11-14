@@ -36,7 +36,7 @@ void VertexMenagerie::finalize(vertexBufferFinalizationChunk finalizationChunk)
 	inputChunk.usage = vk::BufferUsageFlagBits::eTransferSrc;
 	inputChunk.memoryProperties = vk::MemoryPropertyFlagBits::eHostVisible 
 		| vk::MemoryPropertyFlagBits::eHostCoherent;
-	Buffer stagingBuffer = vkUtil::create_buffer(inputChunk);
+	Buffer stagingBuffer = vkutil::create_buffer(inputChunk);
 
 	//fill it with vertex data
 	void* memoryLocation = logicalDevice.mapMemory(stagingBuffer.bufferMemory, 0, inputChunk.size);
@@ -47,10 +47,10 @@ void VertexMenagerie::finalize(vertexBufferFinalizationChunk finalizationChunk)
 	inputChunk.usage = vk::BufferUsageFlagBits::eTransferDst 
 		| vk::BufferUsageFlagBits::eVertexBuffer;
 	inputChunk.memoryProperties = vk::MemoryPropertyFlagBits::eDeviceLocal;
-	vertexBuffer = vkUtil::create_buffer(inputChunk);
+	vertexBuffer = vkutil::create_buffer(inputChunk);
 
 	//copy to it
-	vkUtil::copy_buffer(
+	vkutil::copy_buffer(
 		stagingBuffer, vertexBuffer, inputChunk.size, 
 		finalizationChunk.queue, finalizationChunk.commandBuffer
 	);
@@ -64,7 +64,7 @@ void VertexMenagerie::finalize(vertexBufferFinalizationChunk finalizationChunk)
 	inputChunk.usage = vk::BufferUsageFlagBits::eTransferSrc;
 	inputChunk.memoryProperties = vk::MemoryPropertyFlagBits::eHostVisible 
 		| vk::MemoryPropertyFlagBits::eHostCoherent;
-	stagingBuffer = vkUtil::create_buffer(inputChunk);
+	stagingBuffer = vkutil::create_buffer(inputChunk);
 
 	//fill it with index data
 	memoryLocation = logicalDevice.mapMemory(stagingBuffer.bufferMemory, 0, inputChunk.size);
@@ -75,10 +75,10 @@ void VertexMenagerie::finalize(vertexBufferFinalizationChunk finalizationChunk)
 	inputChunk.usage = vk::BufferUsageFlagBits::eTransferDst
 		| vk::BufferUsageFlagBits::eIndexBuffer;
 	inputChunk.memoryProperties = vk::MemoryPropertyFlagBits::eDeviceLocal;
-	indexBuffer = vkUtil::create_buffer(inputChunk);
+	indexBuffer = vkutil::create_buffer(inputChunk);
 
 	//copy to it
-	vkUtil::copy_buffer(
+	vkutil::copy_buffer(
 		stagingBuffer, indexBuffer, inputChunk.size, 
 		finalizationChunk.queue, finalizationChunk.commandBuffer
 	);

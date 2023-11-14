@@ -3,7 +3,7 @@
 #include "../../config.h"
 
 //namespace for creation functions/definitions etc.
-namespace vkInit {
+namespace vkinit {
 
 	/**
 		Check whether the requested extensions and layers are supported.
@@ -18,7 +18,7 @@ namespace vkInit {
 		//check extension support
 		std::vector<vk::ExtensionProperties> supportedExtensions = vk::enumerateInstanceExtensionProperties();
 
-		vkLogging::Logger::getLogger()->print("Device can support the following extensions:");
+		vklogging::Logger::getLogger()->print("Device can support the following extensions:");
 #ifndef NDEBUG
 		for (vk::ExtensionProperties supportedExtension : supportedExtensions)
 			std::cout << "  " << supportedExtension.extensionName << '\n';
@@ -35,14 +35,14 @@ namespace vkInit {
 				{
 					found = true;
 					message << "Extension \"" << extension << "\" is supported!";
-					vkLogging::Logger::getLogger()->print(message.str());
+					vklogging::Logger::getLogger()->print(message.str());
 					message.str("");
 				}
 			}
 			if (!found)
 			{
 				message << "Extension \"" << extension << "\" is not supported!";
-				vkLogging::Logger::getLogger()->print(message.str());
+				vklogging::Logger::getLogger()->print(message.str());
 				message.str("");
 				return false;
 			}
@@ -51,7 +51,7 @@ namespace vkInit {
 		//check layer support
 		std::vector<vk::LayerProperties> supportedLayers = vk::enumerateInstanceLayerProperties();
 
-		vkLogging::Logger::getLogger()->print("Device can support the following layers:");
+		vklogging::Logger::getLogger()->print("Device can support the following layers:");
 #ifndef NDEBUG
 		for (vk::LayerProperties supportedLayer : supportedLayers)
 			std::cout << "  " << supportedLayer.layerName << '\n';
@@ -67,14 +67,14 @@ namespace vkInit {
 				{
 					found = true;
 					message << "Layer \"" << layer << "\" is supported!";
-					vkLogging::Logger::getLogger()->print(message.str());
+					vklogging::Logger::getLogger()->print(message.str());
 					message.str("");
 				}
 			}
 			if (!found)
 			{
 				message << "Layer \"" << layer << "\" is not supported!";
-				vkLogging::Logger::getLogger()->print(message.str());
+				vklogging::Logger::getLogger()->print(message.str());
 				message.str("");
 				return false;
 			}
@@ -91,7 +91,7 @@ namespace vkInit {
 	*/
 	vk::Instance make_instance(const char* applicationName)
 	{
-		vkLogging::Logger::getLogger()->print("Making an instance...");
+		vklogging::Logger::getLogger()->print("Making an instance...");
 
 		/*
 		* An instance stores all per-application state info, it is a vulkan handle
@@ -170,7 +170,7 @@ namespace vkInit {
 		extensions.push_back("VK_EXT_debug_utils");
 #endif
 
-		vkLogging::Logger::getLogger()->print("extensions to be requested:");
+		vklogging::Logger::getLogger()->print("extensions to be requested:");
 #ifndef NDEBUG
 		for (const char* extensionName : extensions)
 			std::cout << "  \"" << extensionName << "\"\n";
@@ -218,7 +218,7 @@ namespace vkInit {
 		}
 		catch (vk::SystemError err)
 		{
-			vkLogging::Logger::getLogger()->print("Failed to create Instance!");
+			vklogging::Logger::getLogger()->print("Failed to create Instance!");
 			return nullptr;
 		}
 	}

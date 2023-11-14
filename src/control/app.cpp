@@ -70,10 +70,10 @@ void App::buildGlfwWindow(int width, int height)
 	if (window = glfwCreateWindow(width, height, "Renderer", nullptr, nullptr))
 	{
 		message << "Successfully made a glfw window called \"Renderer\", width: " << width << ", height: " << height;
-		vkLogging::Logger::getLogger()->print(message.str());
+		vklogging::Logger::getLogger()->print(message.str());
 	}
 	else
-		vkLogging::Logger::getLogger()->print("GLFW window creation failed");
+		vklogging::Logger::getLogger()->print("GLFW window creation failed");
 
 	glfwSetKeyCallback(window, on_keyboard_pressed);
 }

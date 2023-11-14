@@ -4,7 +4,7 @@
 #include "../../control/logging.h"
 #include "../vkInit/descriptors.h"
 
-vkImage::CubeMap::CubeMap(TextureInputChunk input)
+vkimage::CubeMap::CubeMap(TextureInputChunk input)
 {
 	logicalDevice = input.logicalDevice;
 	physicalDevice = input.physicalDevice;
@@ -37,7 +37,7 @@ vkImage::CubeMap::CubeMap(TextureInputChunk input)
 	makeDescriptorSet();
 }
 
-vkImage::CubeMap::~CubeMap()
+vkimage::CubeMap::~CubeMap()
 {
 	logicalDevice.freeMemory(imageMemory);
 	logicalDevice.destroyImage(image);
@@ -45,17 +45,17 @@ vkImage::CubeMap::~CubeMap()
 	logicalDevice.destroySampler(sampler);
 }
 
-void vkImage::CubeMap::load()
+void vkimage::CubeMap::load()
 {
 	for (int i = 0; i < 6; ++i)
 	{
 		pixels[i] = stbi_load(filenames[i], &width, &height, &channels, STBI_rgb_alpha);
 		if (!pixels)
-			vkLogging::Logger::getLogger()->printList({ "Unable to load: ", filenames[i]});
+			vklogging::Logger::getLogger()->printList({ "Unable to load: ", filenames[i]});
 	}
 }
 
-void vkImage::CubeMap::populate()
+void vkimage::CubeMap::populate()
 {
 	//First create a CPU-visible buffer...
 	BufferInputChunk input;
@@ -66,7 +66,7 @@ void vkImage::CubeMap::populate()
 	size_t image_size = width * height * 4;
 	input.size = image_size * 6;
 
-	Buffer stagingBuffer = vkUtil::create_buffer(input);
+	Buffer stagingBuffer = vkutil::create_buffer(input);
 
 	//...then fill it,
 	for (int i = 0; i < 6; ++i)
@@ -105,7 +105,7 @@ void vkImage::CubeMap::populate()
 	logicalDevice.destroyBuffer(stagingBuffer.buffer);
 }
 
-void vkImage::CubeMap::makeView()
+void vkimage::CubeMap::makeView()
 {
 	imageView = make_image_view(
 		logicalDevice, image, vk::Format::eR8G8B8A8Unorm, vk::ImageAspectFlagBits::eColor,
@@ -113,7 +113,7 @@ void vkImage::CubeMap::makeView()
 	);
 }
 
-void vkImage::CubeMap::makeSampler()
+void vkimage::CubeMap::makeSampler()
 {
 	/*
 	typedef struct VkSamplerCreateInfo {
@@ -164,14 +164,14 @@ void vkImage::CubeMap::makeSampler()
 	}
 	catch (vk::SystemError err)
 	{
-		vkLogging::Logger::getLogger()->print("Failed to make sampler.");
+		vklogging::Logger::getLogger()->print("Failed to make sampler.");
 	}
 
 }
 
-void vkImage::CubeMap::makeDescriptorSet()
+void vkimage::CubeMap::makeDescriptorSet()
 {
-	descriptorSet = vkInit::allocate_descriptor_set(logicalDevice, descriptorPool, layout);
+	descriptorSet = vkinit::allocate_descriptor_set(logicalDevice, descriptorPool, layout);
 
 	vk::DescriptorImageInfo imageDescriptor;
 	imageDescriptor.imageLayout = vk::ImageLayout::eShaderReadOnlyOptimal;
@@ -189,7 +189,7 @@ void vkImage::CubeMap::makeDescriptorSet()
 	logicalDevice.updateDescriptorSets(descriptorWrite, nullptr);
 }
 
-void vkImage::CubeMap::use(vk::CommandBuffer commandBuffer, vk::PipelineLayout pipelineLayout)
+void vkimage::CubeMap::use(vk::CommandBuffer commandBuffer, vk::PipelineLayout pipelineLayout)
 {
 	commandBuffer.bindDescriptorSets(
 		vk::PipelineBindPoint::eGraphics, pipelineLayout, 1, descriptorSet, nullptr);
