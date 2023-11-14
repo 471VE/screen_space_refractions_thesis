@@ -28,7 +28,6 @@ layout(location = 0) out vec4 outColor;
 #define GAMMA 2.2f
 #define IOR 1.45f // index of refraction
 #define M_PI 3.1415926535897932384626433832795f
-#define STUB 0.f
 #define UP vec3(0.f, 1.f, 0.f)
 
 
