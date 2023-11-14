@@ -2,6 +2,8 @@
 
 #include <glm/ext.hpp>
 
+#define SPHERE_RADIUS 0.5
+
 // Spherical harmonics without constant terms
 static double Y00 (glm::dvec3 dir) { return 1.; }
 
@@ -17,6 +19,18 @@ static double Y22 (glm::dvec3 dir) { return dir.x * dir.x - dir.y * dir.y; }
 
 static const std::vector<std::function<double(glm::dvec3)>> SPHERICAL_HARMONICS = {
   Y00, Y1m1, Y10, Y11, Y2m2, Y2m1, Y20, Y21, Y22 
+};
+
+static const std::vector<float> SH_CONSTANTS_SQUARED = {
+  1.f / (4.f * glm::pi<float>()),
+  3.f / (4.f * glm::pi<float>()),
+  3.f / (4.f * glm::pi<float>()),
+  3.f / (4.f * glm::pi<float>()),
+  15.f / (4.f * glm::pi<float>()),
+  15.f / (4.f * glm::pi<float>()),
+  5.f / (16.f * glm::pi<float>()),
+  15.f / (4.f * glm::pi<float>()),
+  15.f / (16.f * glm::pi<float>())
 };
 
 static double van_der_corput_sequence(uint32_t bits)
@@ -53,17 +67,26 @@ std::vector<glm::dvec3> construct_hemisphere_hammersley_sequence(uint32_t numPoi
   return hammersleySequence;
 }
 
-std::vector<double> calculate_sh_terms(
+std::vector<float> calculate_sh_terms(
   std::vector<glm::dvec3> hammersleySequence, std::function<double(glm::dvec3)> getObjectWidth
 ) {
-  std::vector<double> shTerms(SPHERICAL_HARMONICS.size(), 0.);
+  std::vector<double> shTermsSums(SPHERICAL_HARMONICS.size(), 0.);
   for (const glm::dvec3 &direction : hammersleySequence)
   {
     double width = getObjectWidth(direction);
     for (int i = 0; i < SPHERICAL_HARMONICS.size(); i++)
-      shTerms[i] += SPHERICAL_HARMONICS[i](direction) * width;
+      shTermsSums[i] += SPHERICAL_HARMONICS[i](direction) * width;
   }
-  for (double &term : shTerms)
-    term *= 2. * glm::pi<double>() / double(hammersleySequence.size());
+
+  std::vector<float> shTerms;
+  shTerms.reserve(shTermsSums.size());
+  for (int i = 0; i < shTermsSums.size(); i++)
+    shTerms.push_back(
+      float(shTermsSums[i] * 2. * glm::pi<double>() / double(hammersleySequence.size()))
+      * SH_CONSTANTS_SQUARED[i]
+    );
+
   return shTerms;
 }
+
+double sphere_width(glm::dvec3 direction) { return 2. * SPHERE_RADIUS * direction.z; }

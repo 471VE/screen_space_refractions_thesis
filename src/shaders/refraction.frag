@@ -12,6 +12,10 @@ layout(set = 0, binding = 1) uniform RenderData {
 	RenderParams renderParams;
 };
 
+layout(std140, set = 0, binding = 2) uniform ShData {
+	ShTerms shTerms;
+};
+
 layout(set = 1, binding = 0) uniform samplerCube material;
 
 layout(location = 0) out vec4 outColor;
@@ -20,11 +24,12 @@ layout(location = 0) out vec4 outColor;
 #define MAX_STEPS 100
 #define MAX_DIST 100.f
 #define SURF_DIST 0.001f
-#define MAX_INTERNAL_REFLECTION_COUNT 10 // seems to be enough
+#define MAX_INTERNAL_REFLECTION_COUNT 1 // seems to be enough
 #define GAMMA 2.2f
 #define IOR 1.45f // index of refraction
 #define M_PI 3.1415926535897932384626433832795f
 #define STUB 0.f
+#define UP vec3(0.f, 1.f, 0.f)
 
 
 const float R0 = (IOR - 1.f) * (IOR - 1.f) / ((IOR + 1.f) * (IOR + 1.f));
@@ -59,19 +64,23 @@ const float[9] SH_CONSTANTS_SQUARED = {
 
 float sh_distance(vec3 rd, vec3 n, float terms[9])
 {
-  float cosTheta = dot(rd, n);
-  vec3 direction = vec3(0.f, 0.f, cosTheta);
-  return terms[0] * Y00 (direction)
+  // Constructing right-handed orthonormal basis
+  vec3 x_axis = (abs(dot(UP, n)) == 1.f) ? vec3(1.f, 0.f, 0.f) : cross(UP, n);
+  vec3 y_axis = cross(n, x_axis);
+  mat3 transform = mat3(x_axis, y_axis, n);
+  
+  vec3 localDirection = rd * transform;
+  return terms[0] * Y00 (localDirection)
 
-       + terms[1] * Y1m1(direction)
-       + terms[2] * Y10 (direction)
-       + terms[3] * Y11 (direction)
+       + terms[1] * Y1m1(localDirection)
+       + terms[2] * Y10 (localDirection)
+       + terms[3] * Y11 (localDirection)
 
-       + terms[4] * Y2m2(direction)
-       + terms[5] * Y2m1(direction)
-       + terms[6] * Y20 (direction)
-       + terms[7] * Y21 (direction)
-       + terms[8] * Y22 (direction);
+       + terms[4] * Y2m2(localDirection)
+       + terms[5] * Y2m1(localDirection)
+       + terms[6] * Y20 (localDirection)
+       + terms[7] * Y21 (localDirection)
+       + terms[8] * Y22 (localDirection);
 }
 
 // Calculating sphere width using exact values of integrals
@@ -105,33 +114,20 @@ float sh_exact_distance(vec3 rd, vec3 n)
 }
 
 // Calculating sphere width using calculated numerically values of integrals
-const float[9] SH_SPHERE_NUMERIC_COEFFICIENTS = {
-  6.28319f * SPHERE_RADIUS,
-  1.34716e-10f * SPHERE_RADIUS,
-  4.18879f * SPHERE_RADIUS,
-  -6.97138e-10f * SPHERE_RADIUS,
-  -2.85638e-14f * SPHERE_RADIUS,
-  1.34427e-10f * SPHERE_RADIUS,
-  3.14159f * SPHERE_RADIUS,
-  -6.96829e-10f * SPHERE_RADIUS,
-  -5.69001e-12f * SPHERE_RADIUS,
-};
-
-const float[9] SH_EXPANSION_NUMERIC_CONSTANT_TERMS = {
-  SH_SPHERE_NUMERIC_COEFFICIENTS[0] * SH_CONSTANTS_SQUARED[0],
-  SH_SPHERE_NUMERIC_COEFFICIENTS[1] * SH_CONSTANTS_SQUARED[1],
-  SH_SPHERE_NUMERIC_COEFFICIENTS[2] * SH_CONSTANTS_SQUARED[2],
-  SH_SPHERE_NUMERIC_COEFFICIENTS[3] * SH_CONSTANTS_SQUARED[3],
-  SH_SPHERE_NUMERIC_COEFFICIENTS[4] * SH_CONSTANTS_SQUARED[4],
-  SH_SPHERE_NUMERIC_COEFFICIENTS[5] * SH_CONSTANTS_SQUARED[5],
-  SH_SPHERE_NUMERIC_COEFFICIENTS[6] * SH_CONSTANTS_SQUARED[6],
-  SH_SPHERE_NUMERIC_COEFFICIENTS[7] * SH_CONSTANTS_SQUARED[7],
-  SH_SPHERE_NUMERIC_COEFFICIENTS[8] * SH_CONSTANTS_SQUARED[8]
-};
-
 float sh_numeric_distance(vec3 rd, vec3 n)
 {
-  return sh_distance(rd, n, SH_EXPANSION_NUMERIC_CONSTANT_TERMS);
+  float terms[9] = {
+    shTerms.terms[0].x,
+    shTerms.terms[0].y,
+    shTerms.terms[0].z,
+    shTerms.terms[0].w,
+    shTerms.terms[1].x,
+    shTerms.terms[1].y,
+    shTerms.terms[1].z,
+    shTerms.terms[1].w,
+    shTerms.terms[2].x,
+  };
+  return sh_distance(rd, n, terms);
 }
 
 

@@ -118,6 +118,7 @@ void Engine::makeDescriptorSetLayouts()
 	vkInit::descriptorSetLayoutData standardPipelineBindings;
 	vkInit::descriptorSetLayoutData individualDrawCallBindings;
 
+	// Ideally, this should be automatic, it is impossible not to forget about this
 	// Sky pipeline bindings
 	skyPipelineBindings.emplace_back(
 		vk::DescriptorType::eUniformBuffer,
@@ -126,6 +127,10 @@ void Engine::makeDescriptorSetLayouts()
 	skyPipelineBindings.emplace_back(
 		vk::DescriptorType::eUniformBuffer,
 		vk::ShaderStageFlagBits::eVertex | vk::ShaderStageFlagBits::eFragment
+	);
+	skyPipelineBindings.emplace_back(
+		vk::DescriptorType::eUniformBuffer,
+		vk::ShaderStageFlagBits::eFragment
 	);
 	frameSetLayout[pipelineType::SKY] = vkInit::makeDescriptorSetLayout(device, skyPipelineBindings);
 
@@ -401,6 +406,12 @@ void Engine::setDistanceCalculationMode(int mode)
 	distanceCalculationMode = mode;
 }
 
+void Engine::setSphereShTerms(const std::vector<float> &sphereShTerms_)
+{
+	sphereShTerms.resize(sphereShTerms_.size());
+	std::copy(sphereShTerms_.begin(), sphereShTerms_.end(), sphereShTerms.begin());
+}
+
 void Engine::prepareFrame(uint32_t imageIndex, Scene* scene)
 {
 	vkUtil::SwapChainFrame& _frame = swapchainFrames[imageIndex];
@@ -414,6 +425,9 @@ void Engine::prepareFrame(uint32_t imageIndex, Scene* scene)
 	_frame.renderParamsData.aspectRatio = static_cast<float>(width) / static_cast<float>(height);
 	_frame.renderParamsData.distanceCalculationMode = distanceCalculationMode;
 	memcpy(_frame.renderParamsWriteLocation, &(_frame.renderParamsData), sizeof(RenderParams));
+
+	// Will contain garbage after 9 elements
+	memcpy(_frame.shTermsWriteLocation, sphereShTerms.data(), sizeof(ShTerms));
 
 	glm::mat4 projection = glm::perspective(glm::radians(45.f), static_cast<float>(swapchainExtent.width) / static_cast<float>(swapchainExtent.height), 0.1f, 100.f);
 	projection[1][1] *= -1;

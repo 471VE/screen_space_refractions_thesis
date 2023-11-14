@@ -59,4 +59,9 @@ struct CameraMatrices
   shader_mat4 viewProjection;
 };
 
+struct ShTerms
+{
+  shader_vec4 terms[3];
+};
+
 #endif // COMMON_DEFINITIONS_H

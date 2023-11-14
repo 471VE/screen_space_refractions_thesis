@@ -29,6 +29,7 @@ set(imgui_src
     ${PROJECT_SOURCE_DIR}/3rdParty/include/imgui/misc/cpp/imgui_stdlib.cpp)
 
 file(GLOB_RECURSE rendering_lib_src
+    "src/preprocessing/*.cpp" # temporary, remove when switching to real models
     "src/control/*.cpp"
     "src/model/*.cpp"
     "src/view/*.cpp"

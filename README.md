@@ -21,7 +21,7 @@ Heavily based on the code from "Vulkan with C++" tutorial series: https://github
 - [ ] Implement dynamic viewport and scissor
 - [X] Create separate `descriptorSetLayoutData` for each pipeline
 - [ ] Create a **normal** `Pipeline` class and put `descriptorSetLayoutData` in there
-  - For starters, it may be put into `vkInit::PipelineBuilder` class
+  - [ ] For starters, it may be put into `vkInit::PipelineBuilder` class
 - [X] Make common definitions of uniform data for shaders and C++ (`RenderParams`, for example)
 - [ ] Fix that weird switching between Y- and Z-coordinates
 - [X] Add analytical ray traced refractions with simple geometric shapes
@@ -38,5 +38,7 @@ Heavily based on the code from "Vulkan with C++" tutorial series: https://github
 - [X] Start with spherical harmonics on sphere before raytracing
   - http://holger.dammertz.org/stuff/notes_HammersleyOnHemisphere.html
 - [X] Solve the problem with black hole in the middle of the object when calculating even number of refractions with SDF (hopefully, this just wouldn't be a problem when I implement proper ray tracing, in which case I wouldn't have to do anything)
-- [ ] Make `sh_distance` in `sky_shader_refraction.frag` $\varphi$-dependent. Also, rename that shader already
+- [X] Make `sh_distance` in `sky_shader_refraction.frag` $\varphi$-dependent. Also, rename that shader already
 - [ ] Add a slider for number of points in Hammersley point set
+- [ ] Move common code out of `SwapChainFrame::makeDescriptorResources()` into a separate function
+- [ ] **!!! FIX THAT VERY UGLY THING WITH SH TERMS UNIFORM BUFFER !!!**

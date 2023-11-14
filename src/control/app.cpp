@@ -1,24 +1,21 @@
 #include "app.h"
 #include "logging.h"
 #include "../view/camera.h"
+#include "../preprocessing/preprocessing_common.h"
 
-/**
-* Construct a new App.
-* 
-* @param width	the width of the window
-* @param height the height of the window
-*/
+
+// Construct a new App.
 App::App(int width, int height)
 {
 	buildGlfwWindow(width, height);
-
 	graphicsEngine = new Engine(width, height, window);
-
 	scene = new Scene();
 }
 
-Camera camera;
-uint32_t distance_calculation_mode = 1;
+static Camera camera;
+static uint32_t distance_calculation_mode = 1;
+static uint32_t hammersley_points_num = 100;
+static bool recalculate_sh_terms = false;
 
 static void on_keyboard_pressed(GLFWwindow* window, int , int, int , int)
 {
@@ -50,15 +47,13 @@ static void on_keyboard_pressed(GLFWwindow* window, int , int, int , int)
 
 	if (glfwGetKey(window, '3'))
 		distance_calculation_mode = 3;
+
+	if (glfwGetKey(window, 'N'))
+		recalculate_sh_terms = true;
 }
 
-/**
-* Build the App's window (using glfw)
-* 
-* @param width		the width of the window
-* @param height		the height of the window
-* @param debugMode	whether to make extra print statements
-*/
+
+// Build the App's window (using glfw)
 void App::buildGlfwWindow(int width, int height)
 {
 	std::stringstream message;
@@ -83,14 +78,26 @@ void App::buildGlfwWindow(int width, int height)
 	glfwSetKeyCallback(window, on_keyboard_pressed);
 }
 
-/**
-* Start the App's main loop
-*/
+// Start the App's main loop
 void App::run()
 {
+	std::vector<glm::dvec3> hammersleySequence = construct_hemisphere_hammersley_sequence(hammersley_points_num);
+	std::vector<float> sphereShTerms = calculate_sh_terms(hammersleySequence, sphere_width);
+	graphicsEngine->setSphereShTerms(sphereShTerms);
 	while (!glfwWindowShouldClose(window))
 	{
 		glfwPollEvents();
+
+		if (recalculate_sh_terms)
+		{
+			std::cout << "Enter the number of points in Hammersley sequence: ";
+			std::cin >> hammersley_points_num;
+			std::vector<glm::dvec3> hammersleySequence = construct_hemisphere_hammersley_sequence(hammersley_points_num);
+			std::vector<float> sphereShTerms = calculate_sh_terms(hammersleySequence, sphere_width);
+			graphicsEngine->setSphereShTerms(sphereShTerms);
+			recalculate_sh_terms = false;
+		}
+
 		graphicsEngine->setDistanceCalculationMode(distance_calculation_mode);
 		graphicsEngine->render(scene);
 
@@ -100,9 +107,7 @@ void App::run()
 	}
 }
 
-/**
-* Calculates the App's framerate and updates the window title
-*/
+// Calculates the App's framerate and updates the window title
 void App::calculateFrameRate()
 {
 	currentTime = glfwGetTime();
@@ -122,9 +127,7 @@ void App::calculateFrameRate()
 	++numFrames;
 }
 
-/**
-* App destructor.
-*/
+// App destructor.
 App::~App()
 {
 	delete graphicsEngine;

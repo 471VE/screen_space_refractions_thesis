@@ -21,6 +21,12 @@ void vkUtil::SwapChainFrame::makeDescriptorResources()
 
 	renderParamsWriteLocation = logicalDevice.mapMemory(renderParamsBuffer.bufferMemory, 0, sizeof(RenderParams));
 
+	input.size = sizeof(ShTerms);
+	input.usage = vk::BufferUsageFlagBits::eUniformBuffer;
+	shTermsBuffer = create_buffer(input);
+
+	shTermsWriteLocation = logicalDevice.mapMemory(shTermsBuffer.bufferMemory, 0, sizeof(ShTerms));
+
 	input.size = sizeof(CameraMatrices);
 	input.usage = vk::BufferUsageFlagBits::eUniformBuffer;
 	cameraMatrixBuffer = create_buffer(input);
@@ -51,6 +57,10 @@ void vkUtil::SwapChainFrame::makeDescriptorResources()
 	renderParamsDescriptor.buffer = renderParamsBuffer.buffer;
 	renderParamsDescriptor.offset = 0;
 	renderParamsDescriptor.range = sizeof(RenderParams);
+
+	shTermsDescriptor.buffer = shTermsBuffer.buffer;
+	shTermsDescriptor.offset = 0;
+	shTermsDescriptor.range = sizeof(ShTerms);
 
 	cameraMatrixDescriptor.buffer = cameraMatrixBuffer.buffer;
 	cameraMatrixDescriptor.offset = 0;
@@ -105,7 +115,8 @@ void vkUtil::SwapChainFrame::recordWriteOperations()
 		const VkBufferView* pTexelBufferView;
 	} VkWriteDescriptorSet;
 	*/
-	vk::WriteDescriptorSet cameraVectorWriteOp, cameraMatrixWriteOp, ssboWriteOp, renderParamsWriteOp;
+	vk::WriteDescriptorSet cameraVectorWriteOp, cameraMatrixWriteOp, ssboWriteOp,
+	 renderParamsWriteOp, shTermsWriteOp;
 
 	cameraVectorWriteOp.dstSet = descriptorSet[pipelineType::SKY];
 	cameraVectorWriteOp.dstBinding = 0;
@@ -121,6 +132,14 @@ void vkUtil::SwapChainFrame::recordWriteOperations()
 	renderParamsWriteOp.descriptorType = vk::DescriptorType::eUniformBuffer;
 	renderParamsWriteOp.pBufferInfo = &renderParamsDescriptor;
 
+	// When making this automatic, don't forget about increasing dstBinding
+	shTermsWriteOp.dstSet = descriptorSet[pipelineType::SKY];
+	shTermsWriteOp.dstBinding = 2;
+	shTermsWriteOp.dstArrayElement = 0; //byte offset within binding for inline uniform blocks
+	shTermsWriteOp.descriptorCount = 1;
+	shTermsWriteOp.descriptorType = vk::DescriptorType::eUniformBuffer;
+	shTermsWriteOp.pBufferInfo = &shTermsDescriptor;
+
 	cameraMatrixWriteOp.dstSet = descriptorSet[pipelineType::STANDARD];
 	cameraMatrixWriteOp.dstBinding = 0;
 	cameraMatrixWriteOp.dstArrayElement = 0; //byte offset within binding for inline uniform blocks
@@ -135,11 +154,19 @@ void vkUtil::SwapChainFrame::recordWriteOperations()
 	ssboWriteOp.descriptorType = vk::DescriptorType::eStorageBuffer;
 	ssboWriteOp.pBufferInfo = &ssboDescriptor;
 
-	writeOps = { cameraVectorWriteOp, cameraMatrixWriteOp, ssboWriteOp, renderParamsWriteOp };
+	writeOps = { cameraVectorWriteOp, cameraMatrixWriteOp, ssboWriteOp, renderParamsWriteOp,
+		shTermsWriteOp };
 
 }
 
 void vkUtil::SwapChainFrame::writeDescriptorSet() { logicalDevice.updateDescriptorSets(writeOps, nullptr); }
+
+void vkUtil::SwapChainFrame::destroyBufferAndFreeMemory(Buffer buffer)
+{
+	logicalDevice.unmapMemory(buffer.bufferMemory);
+	logicalDevice.freeMemory(buffer.bufferMemory);
+	logicalDevice.destroyBuffer(buffer.buffer);
+}
 
 void vkUtil::SwapChainFrame::destroy()
 {
@@ -150,21 +177,11 @@ void vkUtil::SwapChainFrame::destroy()
 	logicalDevice.destroySemaphore(imageAvailable);
 	logicalDevice.destroySemaphore(renderFinished);
 
-	logicalDevice.unmapMemory(cameraVectorBuffer.bufferMemory);
-	logicalDevice.freeMemory(cameraVectorBuffer.bufferMemory);
-	logicalDevice.destroyBuffer(cameraVectorBuffer.buffer);
-
-	logicalDevice.unmapMemory(renderParamsBuffer.bufferMemory);
-	logicalDevice.freeMemory(renderParamsBuffer.bufferMemory);
-	logicalDevice.destroyBuffer(renderParamsBuffer.buffer);
-
-	logicalDevice.unmapMemory(cameraMatrixBuffer.bufferMemory);
-	logicalDevice.freeMemory(cameraMatrixBuffer.bufferMemory);
-	logicalDevice.destroyBuffer(cameraMatrixBuffer.buffer);
-
-	logicalDevice.unmapMemory(modelBuffer.bufferMemory);
-	logicalDevice.freeMemory(modelBuffer.bufferMemory);
-	logicalDevice.destroyBuffer(modelBuffer.buffer);
+	destroyBufferAndFreeMemory(cameraVectorBuffer);
+	destroyBufferAndFreeMemory(renderParamsBuffer);
+	destroyBufferAndFreeMemory(shTermsBuffer);
+	destroyBufferAndFreeMemory(cameraMatrixBuffer);
+	destroyBufferAndFreeMemory(modelBuffer);
 
 	logicalDevice.destroyImage(depthBuffer);
 	logicalDevice.freeMemory(depthBufferMemory);

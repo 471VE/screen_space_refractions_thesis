@@ -45,6 +45,10 @@ namespace vkUtil
 		Buffer renderParamsBuffer;
 		void* renderParamsWriteLocation;
 
+		ShTerms shTermsData;
+		Buffer shTermsBuffer;
+		void* shTermsWriteLocation;
+
 		std::vector<glm::mat4> modelTransforms;
 		Buffer modelBuffer;
 		void* modelBufferWriteLocation;
@@ -52,7 +56,8 @@ namespace vkUtil
 		//Resource Descriptors
 		vk::DescriptorBufferInfo cameraVectorDescriptor, cameraMatrixDescriptor;
 		vk::DescriptorBufferInfo ssboDescriptor;
-		vk::DescriptorBufferInfo renderParamsDescriptor; 
+		vk::DescriptorBufferInfo renderParamsDescriptor;
+		vk::DescriptorBufferInfo shTermsDescriptor;
 		std::unordered_map<pipelineType, vk::DescriptorSet> descriptorSet;
 
 		//Write Operations
@@ -65,6 +70,8 @@ namespace vkUtil
 		void makeDepthResources();
 
 		void writeDescriptorSet();
+
+		void destroyBufferAndFreeMemory(Buffer buffer);
 
 		void destroy();
 	};
