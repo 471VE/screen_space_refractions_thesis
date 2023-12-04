@@ -265,13 +265,15 @@ void Engine::makeAssets()
 	//Meshes
 	meshes = new VertexMenagerie();
 	std::unordered_map<meshTypes, std::vector<const char*>> model_filenames = {
-		{meshTypes::GROUND, {"resources/models/ground.obj","resources/models/ground.mtl"}},
+		{meshTypes::CUBE, {"resources/models/cube.obj", "resources/models/blank.mtl"}}
+		// {meshTypes::GROUND, {"resources/models/ground.obj","resources/models/ground.mtl"}},
 		// {meshTypes::GIRL, {"resources/models/girl.obj","resources/models/girl.mtl"}},
 		// {meshTypes::SKULL, {"resources/models/skull.obj","resources/models/skull.mtl"}},
 		// {meshTypes::VIKING_ROOM, {"resources/models/viking_room.obj","resources/models/viking_room.mtl"}}
 	};
 	std::unordered_map<meshTypes, glm::mat4> preTransforms = {
-		{meshTypes::GROUND, glm::mat4(1.f)},
+		{meshTypes::CUBE, glm::mat4(1.f)}
+		// {meshTypes::GROUND, glm::mat4(1.f)},
 		// {meshTypes::GIRL, glm::rotate(
 		// 	glm::mat4(1.f), 
 		// 	glm::radians(180.f), 
@@ -289,7 +291,8 @@ void Engine::makeAssets()
 	//Materials
 
 	std::unordered_map<meshTypes, std::vector<const char*>> filenames = {
-		{meshTypes::GROUND, {"resources/textures/ground.jpg"}},
+		{meshTypes::CUBE, {"resources/textures/none.png"}}
+		// {meshTypes::GROUND, {"resources/textures/ground.jpg"}},
 		// {meshTypes::GIRL, {"resources/textures/none.png"}},
 		// {meshTypes::SKULL, {"resources/textures/skull.png"}},
 		// {meshTypes::VIKING_ROOM, {"resources/textures/viking_room.png"}},
@@ -303,7 +306,7 @@ void Engine::makeAssets()
 	//Submit loading work
 	workQueue.lock.lock();
 	std::vector<meshTypes> mesh_types = {
-		meshTypes::GROUND,// meshTypes::GIRL, meshTypes::SKULL, meshTypes::VIKING_ROOM
+		meshTypes::CUBE,// meshTypes::GIRL, meshTypes::SKULL, meshTypes::VIKING_ROOM
 	};
 	for (meshTypes type : mesh_types)
 	{

@@ -45,7 +45,9 @@ enum class meshTypes {
 	GIRL,
 	GROUND,
 	SKULL,
-	VIKING_ROOM
+	VIKING_ROOM,
+	SPHERE,
+	CUBE
 };
 
 enum class pipelineType {

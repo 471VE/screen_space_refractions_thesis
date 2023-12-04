@@ -11,6 +11,8 @@ Scene::Scene()
 	// positions.insert({ meshTypes::GIRL, {} });
 	// positions.insert({ meshTypes::SKULL, {} });
 	// positions.insert({ meshTypes::VIKING_ROOM, {} });
+	positions.insert({ meshTypes::CUBE, {} });
+	positions[meshTypes::CUBE].push_back(glm::vec3(0.f, 0.f, 0.f));
 
 	// positions[meshTypes::GROUND].push_back(glm::vec3(10.f, 0.f, 0.f));
 	// positions[meshTypes::GIRL].push_back(glm::vec3(5.f, 0.f, 0.f));

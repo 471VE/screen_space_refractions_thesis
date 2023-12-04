@@ -12,7 +12,8 @@ static std::vector<std::string> split(std::string line, std::string delimiter)
 		split_line.push_back(token);
 		line.erase(0, pos + delimiter.length());
 	}
-	split_line.push_back(line);
+	if (!line.empty())
+		split_line.push_back(line);
 
 	return split_line;
 }
@@ -29,6 +30,9 @@ void vkmesh::ObjMesh::load(const char* objFilepath, const char* mtlFilepath, glm
 
 	while (std::getline(file, line))
 	{
+		if (line.empty())
+			continue;
+
 		words = split(line, " ");
 
 		if (!words[0].compare("newmtl"))
@@ -52,7 +56,11 @@ void vkmesh::ObjMesh::load(const char* objFilepath, const char* mtlFilepath, glm
 
 	while (std::getline(file, line))
 	{
+		if (line.empty())
+			continue;
+
 		words = split(line, " ");
+
 		if (!words[0].compare("v"))
 			vertex_count += 1;
 
@@ -81,6 +89,9 @@ void vkmesh::ObjMesh::load(const char* objFilepath, const char* mtlFilepath, glm
 
 	while (std::getline(file, line))
 	{
+		if (line.empty())
+			continue;
+			
 		words = split(line, " ");
 
 		if (!words[0].compare("v"))
