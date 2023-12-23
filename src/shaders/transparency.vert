@@ -26,6 +26,7 @@ layout(location = 0) out vec3 fragColor;
 layout(location = 1) out vec2 fragTexCoord;
 layout(location = 2) out vec3 fragNormal;
 layout(location = 3) out float width;
+layout(location = 4) out vec2 screenSpacePos;
 
 #define IOR 1.45f // index of refraction
 #define UP vec3(0.f, 1.f, 0.f)
@@ -80,6 +81,7 @@ void main()
   vec4 currentVertexPos = ObjectData.model[gl_InstanceIndex] * vec4(vertexPosition, 1.f);
 	gl_Position = cameraMatrices.viewProjection * currentVertexPos;
   gl_Position += vec4(2.f, 0.f, 0.f, 0.f);
+  screenSpacePos = gl_Position.xy;
 	fragColor = vertexColor;
 	fragTexCoord = vertexTexCoord;
 	fragNormal = normalize((ObjectData.model[gl_InstanceIndex] * vec4(vertexNormal, 0.f)).xyz);

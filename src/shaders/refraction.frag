@@ -15,6 +15,7 @@ layout(set = 0, binding = 1) uniform RenderData {
 layout(set = 1, binding = 0) uniform samplerCube material;
 
 layout(location = 0) out vec4 outColor;
+layout(location = 1) out vec3 albedo;
 
 
 #define MAX_STEPS 100

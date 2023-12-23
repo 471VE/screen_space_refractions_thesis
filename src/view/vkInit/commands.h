@@ -5,23 +5,18 @@
 
 namespace vkinit {
 
-	/**
-		Data structures used in creating command buffers
-	*/
+		// Data structures used in creating command buffers
 	struct commandBufferInputChunk {
 		vk::Device device; 
 		vk::CommandPool commandPool;
 		std::vector<vkutil::SwapChainFrame>& frames;
 	};
 
-	/**
-		Make a command pool.
-
-		\param device the logical device
-		\param physicalDevice the physical device
-		\param surface the windows surface (used for getting the queue families)
-		\returns the created command pool
-	*/
+	// Make a command pool.
+	// \param device the logical device
+	// \param physicalDevice the physical device
+	// \param surface the windows surface (used for getting the queue families)
+	// \returns the created command pool
 	vk::CommandPool make_command_pool(vk::Device device, vk::PhysicalDevice physicalDevice, vk::SurfaceKHR surface)
 	{
 		vkutil::QueueFamilyIndices queueFamilyIndices = vkutil::find_queue_families(physicalDevice, surface);
@@ -41,12 +36,9 @@ namespace vkinit {
 		}
 	}
 	
-	/**
-		Make a main command buffer.
-
-		\param inputChunk the required input info
-		\returns the main command buffer
-	*/
+	// Make a main command buffer.
+	// \param inputChunk the required input info
+	// \returns the main command buffer
 	vk::CommandBuffer make_command_buffer(commandBufferInputChunk inputChunk)
 	{
 		vk::CommandBufferAllocateInfo allocInfo = {};
@@ -55,7 +47,7 @@ namespace vkinit {
 		allocInfo.commandBufferCount = 1;
 		
 
-		//Make a "main" command buffer for the engine
+		// Make a "main" command buffer for the engine:
 		try
 		{
 			vk::CommandBuffer commandBuffer = inputChunk.device.allocateCommandBuffers(allocInfo)[0];
@@ -69,11 +61,8 @@ namespace vkinit {
 		}
 	}
 
-	/**
-		Make a command buffer for each frame
-
-		\param inputChunk the required input info
-	*/
+	// Make a command buffer for each frame
+	// \param inputChunk the required input info
 	void make_frame_command_buffers(commandBufferInputChunk inputChunk)
 	{
 		std::stringstream message;

@@ -23,18 +23,18 @@ public:
 
 private:
 
-	//glfw-related variables
+	// glfw-related variables
 	int width;
 	int height;
 	GLFWwindow* window;
 
-	//instance-related variables
+	// instance-related variables
 	vk::Instance instance{ nullptr };
 	vk::DebugUtilsMessengerEXT debugMessenger{ nullptr };
 	vk::DispatchLoaderDynamic dldi;
 	vk::SurfaceKHR surface;
 
-	//device-related variables
+	// device-related variables
 	vk::PhysicalDevice physicalDevice{ nullptr };
 	vk::Device device{ nullptr };
 	vk::Queue graphicsQueue{ nullptr };
@@ -44,60 +44,60 @@ private:
 	vk::Format swapchainFormat;
 	vk::Extent2D swapchainExtent;
 
-	//pipeline-related variables
+	// pipeline-related variables
 	std::vector<pipelineType> pipelineTypes = { {pipelineType::SKY, pipelineType::STANDARD} };
 	std::unordered_map<pipelineType,vk::PipelineLayout> pipelineLayout;
 	std::unordered_map<pipelineType, vk::RenderPass> renderpass;
 	std::unordered_map<pipelineType, vk::Pipeline> pipeline;
 
-	//descriptor-related variables
+	// descriptor-related variables
 	std::unordered_map<pipelineType, vk::DescriptorSetLayout> frameSetLayout;
-	vk::DescriptorPool frameDescriptorPool; //Descriptors bound on a "per frame" basis
+	vk::DescriptorPool frameDescriptorPool; // Descriptors bound on a "per frame" basis
 	std::unordered_map<pipelineType, vk::DescriptorSetLayout> meshSetLayout;
-	vk::DescriptorPool meshDescriptorPool; //Descriptors bound on a "per mesh" basis
+	vk::DescriptorPool meshDescriptorPool; // Descriptors bound on a "per mesh" basis
 
-	//Command-related variables
+	// Command-related variables
 	vk::CommandPool commandPool;
 	vk::CommandBuffer mainCommandBuffer;
 
-	//Synchronization objects
+	// Synchronization objects
 	int maxFramesInFlight, frameNumber;
 
-	//asset pointers
+	// Asset pointers
 	VertexMenagerie* meshes;
 	std::unordered_map<meshTypes, vkimage::Texture*> materials;
 	vkimage::CubeMap* cubemap;
 
-	//Job System
+	// Job System
 	bool done = false;
 	vkjob::WorkQueue workQueue;
 	std::vector<std::thread> workers;
 
-	//Camera-related variables
+	// Camera-related variables
 	glm::mat4 view;
 	glm::vec4 camVecForwards, camVecRight, camVecUp, camPos;
 
-	//Render-related variables
+	// Render-related variables
 	uint32_t distanceCalculationMode = 1;
 
-	//instance setup
+	//Iinstance setup
 	void makeInstance();
 
-	//device setup
+	// Device setup
 	void makeDevice();
 	void makeSwapchain();
 	void recreateSwapchain();
 
-	//pipeline setup
+	// Pipeline setup
 	void makeDescriptorSetLayouts();
 	void makePipelines();
 
-	//final setup steps
+	// Final setup steps
 	void finalizeSetup();
 	void make_framebuffers();
 	void makeFrameResources();
 
-	//asset creation
+	// Asset creation
 	void makeWorkerThreads();
 	void makeAssets();
 	void endWorkerThreads();
@@ -109,6 +109,6 @@ private:
 	void renderObjects(
 		vk::CommandBuffer commandBuffer, meshTypes objectType, uint32_t& startInstance, uint32_t instanceCount);
 
-	//Cleanup functions
+	// Cleanup functions
 	void cleanupSwapchain();
 };

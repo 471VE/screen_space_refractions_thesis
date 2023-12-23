@@ -3,9 +3,7 @@
 
 namespace vkutil {
 
-	/**
-		Data structures used in rendering each individual object
-	*/
+		// Data structures used in rendering each individual object
 	struct ObjectData {
 		glm::mat4 model;
 	};

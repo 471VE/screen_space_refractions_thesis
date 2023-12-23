@@ -3,12 +3,10 @@
 
 namespace vkinit {
 
-	/**
-		Make a semaphore.
-
-		\param device the logical device
-		\returns the created semaphore
-	*/
+	// Make a semaphore.
+	// 
+	// \param device the logical device
+	// \returns the created semaphore
 	vk::Semaphore make_semaphore(vk::Device device)
 	{
 		vk::SemaphoreCreateInfo semaphoreInfo = {};
@@ -25,12 +23,10 @@ namespace vkinit {
 		}
 	}
 
-	/**
-		Make a fence.
-
-		\param device the logical device
-		\returns the created fence
-	*/
+	// Make a fence.
+	//
+	// \param device the logical device
+	// \returns the created fence
 	vk::Fence make_fence(vk::Device device)
 	{
 		vk::FenceCreateInfo fenceInfo = {};

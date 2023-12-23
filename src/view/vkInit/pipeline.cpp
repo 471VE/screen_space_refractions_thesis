@@ -292,13 +292,13 @@ vk::PipelineViewportStateCreateInfo vkinit::PipelineBuilder::makeViewportState()
 void vkinit::PipelineBuilder::makeRasterizerInfo()
 {
 	rasterizer.flags = vk::PipelineRasterizationStateCreateFlags();
-	rasterizer.depthClampEnable = VK_FALSE; //discard out of bounds fragments, don't clamp them
-	rasterizer.rasterizerDiscardEnable = VK_FALSE; //This flag would disable fragment output
+	rasterizer.depthClampEnable = VK_FALSE; // discard out of bounds fragments, don't clamp them
+	rasterizer.rasterizerDiscardEnable = VK_FALSE; // This flag would disable fragment output
 	rasterizer.polygonMode = vk::PolygonMode::eFill;
 	rasterizer.lineWidth = 1.f;
 	rasterizer.cullMode = vk::CullModeFlagBits::eBack;
 	rasterizer.frontFace = vk::FrontFace::eCounterClockwise;
-	rasterizer.depthBiasEnable = VK_FALSE; //Depth bias can be useful in shadow maps.
+	rasterizer.depthBiasEnable = VK_FALSE; // Depth bias can be useful in shadow maps.
 
 }
 
@@ -329,13 +329,13 @@ void vkinit::PipelineBuilder::configureColorBlending()
 vk::PipelineLayout vkinit::PipelineBuilder::makePipelineLayout()
 {
 	// typedef struct VkPipelineLayoutCreateInfo {
-	// 	VkStructureType                 sType;
-	// 	const void*                     pNext;
-	// 	VkPipelineLayoutCreateFlags     flags;
-	// 	uint32_t                        setLayoutCount;
-	// 	const VkDescriptorSetLayout*    pSetLayouts;
-	// 	uint32_t                        pushConstantRangeCount;
-	// 	const VkPushConstantRange*      pPushConstantRanges;
+	// 	 VkStructureType                 sType;
+	// 	 const void*                     pNext;
+	// 	 VkPipelineLayoutCreateFlags     flags;
+	// 	 uint32_t                        setLayoutCount;
+	// 	 const VkDescriptorSetLayout*    pSetLayouts;
+	// 	 uint32_t                        pushConstantRangeCount;
+	// 	 const VkPushConstantRange*      pPushConstantRanges;
 	// } VkPipelineLayoutCreateInfo;
 
 	vk::PipelineLayoutCreateInfo layoutInfo;
@@ -373,7 +373,7 @@ vk::RenderPass vkinit::PipelineBuilder::makeRenderpass()
 
 	// Renderpasses are broken down into subpasses, there's always at least one.
 	vk::SubpassDescription subpass = makeSubpass(flattenedAttachmentReferences);
-	// Now create the renderpass
+	// Now create the renderpassЖ
 	vk::RenderPassCreateInfo renderpassInfo = makeRenderpassInfo(flattenedAttachmentDescriptions, subpass);
 	try
 	{

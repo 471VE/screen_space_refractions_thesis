@@ -20,10 +20,8 @@
 #include <thread>
 #include <mutex>
 
-/**
-	Data structures used for creating buffers
-	and allocating memory
-*/
+// Data structures used for creating buffers
+// and allocating memory
 struct BufferInputChunk {
 	size_t size;
 	vk::BufferUsageFlags usage;
@@ -32,9 +30,7 @@ struct BufferInputChunk {
 	vk::MemoryPropertyFlags memoryProperties;
 };
 
-/**
-	holds a vulkan buffer and memory allocation
-*/
+// Holds a vulkan buffer and memory allocation
 struct Buffer {
 	vk::Buffer buffer;
 	vk::DeviceMemory bufferMemory;

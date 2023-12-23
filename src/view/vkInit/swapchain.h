@@ -6,21 +6,17 @@
 
 namespace vkinit {
 
-	/**
-		Holds properties of the swapchain
-		capabilities: no. of images and supported sizes
-		formats: eg. supported pixel formats
-		present modes: available presentation modes (eg. double buffer, fifo, mailbox)
-	*/
+	// Holds properties of the swapchain
+	// capabilities: no. of images and supported sizes
+	// formats: eg. supported pixel formats
+	// present modes: available presentation modes (eg. double buffer, fifo, mailbox)
 	struct SwapChainSupportDetails {
 		vk::SurfaceCapabilitiesKHR capabilities;
 		std::vector<vk::SurfaceFormatKHR> formats;
 		std::vector<vk::PresentModeKHR> presentModes;
 	};
 
-	/**
-		Various data structures associated with the swapchain.
-	*/
+	// Various data structures associated with the swapchain.
 	struct SwapChainBundle {
 		vk::SwapchainKHR swapchain;
 		std::vector<vkutil::SwapChainFrame> frames;
@@ -28,31 +24,26 @@ namespace vkinit {
 		vk::Extent2D extent;
 	};
 
-	/**
-		Check the supported swapchain parameters
-
-		\param device the physical device
-		\param surface the window surface which will use the swapchain
-		\returns a struct holding the details
-	*/
+	// Check the supported swapchain parameters
+	// \param device the physical device
+	// \param surface the window surface which will use the swapchain
+	// \returns a struct holding the details
 	SwapChainSupportDetails query_swapchain_support(vk::PhysicalDevice device, vk::SurfaceKHR surface)
 	{
 		SwapChainSupportDetails support;
 
-		/*
-		* typedef struct VkSurfaceCapabilitiesKHR {
-			uint32_t                         minImageCount;
-			uint32_t                         maxImageCount;
-			VkExtent2D                       currentExtent;
-			VkExtent2D                       minImageExtent;
-			VkExtent2D                       maxImageExtent;
-			uint32_t                         maxImageArrayLayers;
-			VkSurfaceTransformFlagsKHR       supportedTransforms;
-			VkSurfaceTransformFlagBitsKHR    currentTransform;
-			VkCompositeAlphaFlagsKHR         supportedCompositeAlpha;
-			VkImageUsageFlags                supportedUsageFlags;
-		} VkSurfaceCapabilitiesKHR;
-		*/
+		// typedef struct VkSurfaceCapabilitiesKHR {
+		// 	uint32_t                         minImageCount;
+		// 	uint32_t                         maxImageCount;
+		// 	VkExtent2D                       currentExtent;
+		// 	VkExtent2D                       minImageExtent;
+		// 	VkExtent2D                       maxImageExtent;
+		// 	uint32_t                         maxImageArrayLayers;
+		// 	VkSurfaceTransformFlagsKHR       supportedTransforms;
+		// 	VkSurfaceTransformFlagBitsKHR    currentTransform;
+		// 	VkCompositeAlphaFlagsKHR         supportedCompositeAlpha;
+		// 	VkImageUsageFlags                supportedUsageFlags;
+		// } VkSurfaceCapabilitiesKHR;
 		support.capabilities = device.getSurfaceCapabilitiesKHR(surface);
 
 #ifndef NDEBUG
@@ -62,11 +53,11 @@ namespace vkinit {
 		std::cout << "  maximum image count: " << support.capabilities.maxImageCount << '\n';
 
 		std::cout << "  current extent: \n";
-		/*typedef struct VkExtent2D {
-			uint32_t    width;
-			uint32_t    height;
-		} VkExtent2D;
-		*/
+		// typedef struct VkExtent2D {
+		// 	uint32_t    width;
+		// 	uint32_t    height;
+		// } VkExtent2D;
+
 		std::cout << "    width: " << support.capabilities.currentExtent.width << '\n';
 		std::cout << "    height: " << support.capabilities.currentExtent.height << '\n';
 
@@ -105,12 +96,10 @@ namespace vkinit {
 #ifndef NDEBUG
 		for (vk::SurfaceFormatKHR supportedFormat : support.formats)
 		{
-			/*
-			* typedef struct VkSurfaceFormatKHR {
-				VkFormat           format;
-				VkColorSpaceKHR    colorSpace;
-			} VkSurfaceFormatKHR;
-			*/
+			// typedef struct VkSurfaceFormatKHR {
+			// 	VkFormat           format;
+			// 	VkColorSpaceKHR    colorSpace;
+			// } VkSurfaceFormatKHR;
 
 			std::cout << "supported pixel format: " << vk::to_string(supportedFormat.format) << '\n';
 			std::cout << "supported color space: " << vk::to_string(supportedFormat.colorSpace) << '\n';
@@ -128,12 +117,9 @@ namespace vkinit {
 		return support;
 	}
 
-	/**
-		Choose a surface format for the swapchain
-
-		\param formats a vector of surface formats supported by the device
-		\returns the chosen format
-	*/
+	// Choose a surface format for the swapchain
+	// \param formats a vector of surface formats supported by the device
+	// \returns the chosen format
 	vk::SurfaceFormatKHR choose_swapchain_surface_format(std::vector<vk::SurfaceFormatKHR> formats)
 	{
 		for (vk::SurfaceFormatKHR format : formats)
@@ -144,12 +130,9 @@ namespace vkinit {
 		return formats[0];
 	}
 
-	/**
-		Choose a present mode.
-
-		\param presentModes a vector of present modes supported by the device
-		\returns the chosen present mode
-	*/
+	// Choose a present mode.
+	// \param presentModes a vector of present modes supported by the device
+	// \returns the chosen present mode
 	vk::PresentModeKHR choose_swapchain_present_mode(std::vector<vk::PresentModeKHR> presentModes)
 	{
 		for (vk::PresentModeKHR presentMode : presentModes)
@@ -159,14 +142,11 @@ namespace vkinit {
 		return vk::PresentModeKHR::eFifo;
 	}
 
-	/**
-		Choose an extent for the swapchain.
-
-		\param width the requested width
-		\param height the requested height
-		\param capabilities a struct describing the supported capabilities of the device
-		\returns the chosen extent
-	*/
+	// Choose an extent for the swapchain.
+	// \param width the requested width
+	// \param height the requested height
+	// \param capabilities a struct describing the supported capabilities of the device
+	// \returns the chosen extent
 	vk::Extent2D choose_swapchain_extent(uint32_t width, uint32_t height, vk::SurfaceCapabilitiesKHR capabilities)
 	{
 		if (capabilities.currentExtent.width != UINT32_MAX)
@@ -188,16 +168,13 @@ namespace vkinit {
 		}
 	}
 
-	/**
-		Create a swapchain
-
-		\param logicalDevice the logical device
-		\param physicalDevice the physical device
-		\param surface the window surface to use the swapchain with
-		\param width the requested width
-		\param height the requested height
-		\returns a struct holding the swapchain and other associated data structures
-	*/
+	// Create a swapchain
+	// \param logicalDevice the logical device
+	// \param physicalDevice the physical device
+	// \param surface the window surface to use the swapchain with
+	// \param width the requested width
+	// \param height the requested height
+	// \returns a struct holding the swapchain and other associated data structures
 	SwapChainBundle create_swapchain(vk::Device logicalDevice, vk::PhysicalDevice physicalDevice, vk::SurfaceKHR surface, int width, int height)
 	{
 		SwapChainSupportDetails support = query_swapchain_support(physicalDevice, surface);
@@ -213,25 +190,25 @@ namespace vkinit {
 			support.capabilities.minImageCount + 1
 		);
 
-		// * VULKAN_HPP_CONSTEXPR SwapchainCreateInfoKHR(
-	  // VULKAN_HPP_NAMESPACE::SwapchainCreateFlagsKHR flags_         = {},
-	  // VULKAN_HPP_NAMESPACE::SurfaceKHR              surface_       = {},
-	  // uint32_t                                      minImageCount_ = {},
-	  // VULKAN_HPP_NAMESPACE::Format                  imageFormat_   = VULKAN_HPP_NAMESPACE::Format::eUndefined,
-	  // VULKAN_HPP_NAMESPACE::ColorSpaceKHR   imageColorSpace_  = VULKAN_HPP_NAMESPACE::ColorSpaceKHR::eSrgbNonlinear,
-	  // VULKAN_HPP_NAMESPACE::Extent2D        imageExtent_      = {},
-	  // uint32_t                              imageArrayLayers_ = {},
-	  // VULKAN_HPP_NAMESPACE::ImageUsageFlags imageUsage_       = {},
-	  // VULKAN_HPP_NAMESPACE::SharingMode     imageSharingMode_ = VULKAN_HPP_NAMESPACE::SharingMode::eExclusive,
-	  // uint32_t                              queueFamilyIndexCount_ = {},
-	  // const uint32_t *                      pQueueFamilyIndices_   = {},
-	  // VULKAN_HPP_NAMESPACE::SurfaceTransformFlagBitsKHR preTransform_ =
-		// VULKAN_HPP_NAMESPACE::SurfaceTransformFlagBitsKHR::eIdentity,
-	  // VULKAN_HPP_NAMESPACE::CompositeAlphaFlagBitsKHR compositeAlpha_ =
-		// VULKAN_HPP_NAMESPACE::CompositeAlphaFlagBitsKHR::eOpaque,
-	  // VULKAN_HPP_NAMESPACE::PresentModeKHR presentMode_  = VULKAN_HPP_NAMESPACE::PresentModeKHR::eImmediate,
-	  // VULKAN_HPP_NAMESPACE::Bool32         clipped_      = {},
-	  // VULKAN_HPP_NAMESPACE::SwapchainKHR   oldSwapchain_ = {} ) VULKAN_HPP_NOEXCEPT
+		// VULKAN_HPP_CONSTEXPR SwapchainCreateInfoKHR(
+	  //   VULKAN_HPP_NAMESPACE::SwapchainCreateFlagsKHR flags_         = {},
+	  //   VULKAN_HPP_NAMESPACE::SurfaceKHR              surface_       = {},
+	  //   uint32_t                                      minImageCount_ = {},
+	  //   VULKAN_HPP_NAMESPACE::Format                  imageFormat_   = VULKAN_HPP_NAMESPACE::Format::eUndefined,
+	  //   VULKAN_HPP_NAMESPACE::ColorSpaceKHR   imageColorSpace_  = VULKAN_HPP_NAMESPACE::ColorSpaceKHR::eSrgbNonlinear,
+	  //   VULKAN_HPP_NAMESPACE::Extent2D        imageExtent_      = {},
+	  //   uint32_t                              imageArrayLayers_ = {},
+	  //   VULKAN_HPP_NAMESPACE::ImageUsageFlags imageUsage_       = {},
+	  //   VULKAN_HPP_NAMESPACE::SharingMode     imageSharingMode_ = VULKAN_HPP_NAMESPACE::SharingMode::eExclusive,
+	  //   uint32_t                              queueFamilyIndexCount_ = {},
+	  //   const uint32_t *                      pQueueFamilyIndices_   = {},
+	  //   VULKAN_HPP_NAMESPACE::SurfaceTransformFlagBitsKHR preTransform_ =
+		//   VULKAN_HPP_NAMESPACE::SurfaceTransformFlagBitsKHR::eIdentity,
+	  //   VULKAN_HPP_NAMESPACE::CompositeAlphaFlagBitsKHR compositeAlpha_ =
+		//   VULKAN_HPP_NAMESPACE::CompositeAlphaFlagBitsKHR::eOpaque,
+	  //   VULKAN_HPP_NAMESPACE::PresentModeKHR presentMode_  = VULKAN_HPP_NAMESPACE::PresentModeKHR::eImmediate,
+	  //   VULKAN_HPP_NAMESPACE::Bool32         clipped_      = {},
+	  //   VULKAN_HPP_NAMESPACE::SwapchainKHR   oldSwapchain_ = {} ) VULKAN_HPP_NOEXCEPT
 		vk::SwapchainCreateInfoKHR createInfo = vk::SwapchainCreateInfoKHR(
 			vk::SwapchainCreateFlagsKHR(), surface, imageCount, format.format, format.colorSpace,
 			extent, 1, vk::ImageUsageFlagBits::eColorAttachment

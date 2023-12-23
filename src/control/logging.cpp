@@ -26,29 +26,24 @@ void vklogging::Logger::printList(std::vector<std::string> items)
 	std::cout << std::endl;
 }
 
-/**
-* Extract the transform types contained within the given bitmask
-*
-* @param bits	the bitmask which holds various transforms
-* @return		a vector of strings describing the transforms
-*/
+// Extract the transform types contained within the given bitmask
+// @param bits	the bitmask which holds various transforms
+// @return		a vector of strings describing the transforms
 std::vector<std::string> vklogging::log_transform_bits(vk::SurfaceTransformFlagsKHR bits)
 {
 	std::vector<std::string> result;
 
-	/*
-		* typedef enum VkSurfaceTransformFlagBitsKHR {
-			VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR = 0x00000001,
-			VK_SURFACE_TRANSFORM_ROTATE_90_BIT_KHR = 0x00000002,
-			VK_SURFACE_TRANSFORM_ROTATE_180_BIT_KHR = 0x00000004,
-			VK_SURFACE_TRANSFORM_ROTATE_270_BIT_KHR = 0x00000008,
-			VK_SURFACE_TRANSFORM_HORIZONTAL_MIRROR_BIT_KHR = 0x00000010,
-			VK_SURFACE_TRANSFORM_HORIZONTAL_MIRROR_ROTATE_90_BIT_KHR = 0x00000020,
-			VK_SURFACE_TRANSFORM_HORIZONTAL_MIRROR_ROTATE_180_BIT_KHR = 0x00000040,
-			VK_SURFACE_TRANSFORM_HORIZONTAL_MIRROR_ROTATE_270_BIT_KHR = 0x00000080,
-			VK_SURFACE_TRANSFORM_INHERIT_BIT_KHR = 0x00000100,
-		} VkSurfaceTransformFlagBitsKHR;
-	*/
+	// typedef enum VkSurfaceTransformFlagBitsKHR {
+	// 	VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR = 0x00000001,
+	// 	VK_SURFACE_TRANSFORM_ROTATE_90_BIT_KHR = 0x00000002,
+	// 	VK_SURFACE_TRANSFORM_ROTATE_180_BIT_KHR = 0x00000004,
+	// 	VK_SURFACE_TRANSFORM_ROTATE_270_BIT_KHR = 0x00000008,
+	// 	VK_SURFACE_TRANSFORM_HORIZONTAL_MIRROR_BIT_KHR = 0x00000010,
+	// 	VK_SURFACE_TRANSFORM_HORIZONTAL_MIRROR_ROTATE_90_BIT_KHR = 0x00000020,
+	// 	VK_SURFACE_TRANSFORM_HORIZONTAL_MIRROR_ROTATE_180_BIT_KHR = 0x00000040,
+	// 	VK_SURFACE_TRANSFORM_HORIZONTAL_MIRROR_ROTATE_270_BIT_KHR = 0x00000080,
+	// 	VK_SURFACE_TRANSFORM_INHERIT_BIT_KHR = 0x00000100,
+	// } VkSurfaceTransformFlagBitsKHR;
 	if (bits & vk::SurfaceTransformFlagBitsKHR::eIdentity)
 		result.push_back("identity");
 
@@ -80,25 +75,21 @@ std::vector<std::string> vklogging::log_transform_bits(vk::SurfaceTransformFlags
 	return result;
 }
 
-	/**
-	* Extract the alpha composite types contained within the given bitmask
-	*
-	* @param bits	the bitmask which holds various alpha composite modes
-	* @return		a vector of strings describing the alpha composite modes
-	*/
-
+	// Extract the alpha composite types contained within the given bitmask
+	//
+	// @param bits	the bitmask which holds various alpha composite modes
+	// @return		a vector of strings describing the alpha composite modes
 	std::vector<std::string> vklogging::log_alpha_composite_bits(vk::CompositeAlphaFlagsKHR bits)
 	{
 		std::vector<std::string> result;
 
-		/*
-			typedef enum VkCompositeAlphaFlagBitsKHR {
-				VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR = 0x00000001,
-				VK_COMPOSITE_ALPHA_PRE_MULTIPLIED_BIT_KHR = 0x00000002,
-				VK_COMPOSITE_ALPHA_POST_MULTIPLIED_BIT_KHR = 0x00000004,
-				VK_COMPOSITE_ALPHA_INHERIT_BIT_KHR = 0x00000008,
-			} VkCompositeAlphaFlagBitsKHR;
-		*/
+		// typedef enum VkCompositeAlphaFlagBitsKHR {
+		// 	VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR = 0x00000001,
+		// 	VK_COMPOSITE_ALPHA_PRE_MULTIPLIED_BIT_KHR = 0x00000002,
+		// 	VK_COMPOSITE_ALPHA_POST_MULTIPLIED_BIT_KHR = 0x00000004,
+		// 	VK_COMPOSITE_ALPHA_INHERIT_BIT_KHR = 0x00000008,
+		// } VkCompositeAlphaFlagBitsKHR;
+
 		if (bits & vk::CompositeAlphaFlagBitsKHR::eOpaque)
 			result.push_back("opaque (alpha ignored)");
 	
@@ -115,60 +106,58 @@ std::vector<std::string> vklogging::log_transform_bits(vk::SurfaceTransformFlags
 		return result;
 	}
 
-	/**
-	* Extract the image usages contained within the given bitmask
-	*
-	* @param bits	the bitmask which holds various image usages
-	* @return		a vector of strings describing the image usages
-	*/
+	// Extract the image usages contained within the given bitmask
+	//
+	// @param bits	the bitmask which holds various image usages
+	// @return		a vector of strings describing the image usages
 	std::vector<std::string> vklogging::log_image_usage_bits(vk::ImageUsageFlags bits)
 	{
 		std::vector<std::string> result;
 
-		/*
-			typedef enum VkImageUsageFlagBits {
-				VK_IMAGE_USAGE_TRANSFER_SRC_BIT = 0x00000001,
-				VK_IMAGE_USAGE_TRANSFER_DST_BIT = 0x00000002,
-				VK_IMAGE_USAGE_SAMPLED_BIT = 0x00000004,
-				VK_IMAGE_USAGE_STORAGE_BIT = 0x00000008,
-				VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT = 0x00000010,
-				VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT = 0x00000020,
-				VK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT = 0x00000040,
-				VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT = 0x00000080,
-				#ifdef VK_ENABLE_BETA_EXTENSIONS
-					// Provided by VK_KHR_video_decode_queue
-					VK_IMAGE_USAGE_VIDEO_DECODE_DST_BIT_KHR = 0x00000400,
-				#endif
-				#ifdef VK_ENABLE_BETA_EXTENSIONS
-					// Provided by VK_KHR_video_decode_queue
-					VK_IMAGE_USAGE_VIDEO_DECODE_SRC_BIT_KHR = 0x00000800,
-				#endif
-				#ifdef VK_ENABLE_BETA_EXTENSIONS
-					// Provided by VK_KHR_video_decode_queue
-					VK_IMAGE_USAGE_VIDEO_DECODE_DPB_BIT_KHR = 0x00001000,
-				#endif
-				// Provided by VK_EXT_fragment_density_map
-				VK_IMAGE_USAGE_FRAGMENT_DENSITY_MAP_BIT_EXT = 0x00000200,
-				// Provided by VK_KHR_fragment_shading_rate
-				VK_IMAGE_USAGE_FRAGMENT_SHADING_RATE_ATTACHMENT_BIT_KHR = 0x00000100,
-				#ifdef VK_ENABLE_BETA_EXTENSIONS
-					// Provided by VK_KHR_video_encode_queue
-					VK_IMAGE_USAGE_VIDEO_ENCODE_DST_BIT_KHR = 0x00002000,
-				#endif
-				#ifdef VK_ENABLE_BETA_EXTENSIONS
-					// Provided by VK_KHR_video_encode_queue
-					VK_IMAGE_USAGE_VIDEO_ENCODE_SRC_BIT_KHR = 0x00004000,
-				#endif
-				#ifdef VK_ENABLE_BETA_EXTENSIONS
-					// Provided by VK_KHR_video_encode_queue
-					VK_IMAGE_USAGE_VIDEO_ENCODE_DPB_BIT_KHR = 0x00008000,
-				#endif
-				// Provided by VK_HUAWEI_invocation_mask
-				VK_IMAGE_USAGE_INVOCATION_MASK_BIT_HUAWEI = 0x00040000,
-				// Provided by VK_NV_shading_rate_image
-				VK_IMAGE_USAGE_SHADING_RATE_IMAGE_BIT_NV = VK_IMAGE_USAGE_FRAGMENT_SHADING_RATE_ATTACHMENT_BIT_KHR,
-		} VkImageUsageFlagBits;
-		*/
+		
+		// 	typedef enum VkImageUsageFlagBits {
+		// 		VK_IMAGE_USAGE_TRANSFER_SRC_BIT = 0x00000001,
+		// 		VK_IMAGE_USAGE_TRANSFER_DST_BIT = 0x00000002,
+		// 		VK_IMAGE_USAGE_SAMPLED_BIT = 0x00000004,
+		// 		VK_IMAGE_USAGE_STORAGE_BIT = 0x00000008,
+		// 		VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT = 0x00000010,
+		// 		VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT = 0x00000020,
+		// 		VK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT = 0x00000040,
+		// 		VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT = 0x00000080,
+		// 		#ifdef VK_ENABLE_BETA_EXTENSIONS
+		// 			// Provided by VK_KHR_video_decode_queue
+		// 			VK_IMAGE_USAGE_VIDEO_DECODE_DST_BIT_KHR = 0x00000400,
+		// 		#endif
+		// 		#ifdef VK_ENABLE_BETA_EXTENSIONS
+		// 			// Provided by VK_KHR_video_decode_queue
+		// 			VK_IMAGE_USAGE_VIDEO_DECODE_SRC_BIT_KHR = 0x00000800,
+		// 		#endif
+		// 		#ifdef VK_ENABLE_BETA_EXTENSIONS
+		// 			// Provided by VK_KHR_video_decode_queue
+		// 			VK_IMAGE_USAGE_VIDEO_DECODE_DPB_BIT_KHR = 0x00001000,
+		// 		#endif
+		// 		// Provided by VK_EXT_fragment_density_map
+		// 		VK_IMAGE_USAGE_FRAGMENT_DENSITY_MAP_BIT_EXT = 0x00000200,
+		// 		// Provided by VK_KHR_fragment_shading_rate
+		// 		VK_IMAGE_USAGE_FRAGMENT_SHADING_RATE_ATTACHMENT_BIT_KHR = 0x00000100,
+		// 		#ifdef VK_ENABLE_BETA_EXTENSIONS
+		// 			// Provided by VK_KHR_video_encode_queue
+		// 			VK_IMAGE_USAGE_VIDEO_ENCODE_DST_BIT_KHR = 0x00002000,
+		// 		#endif
+		// 		#ifdef VK_ENABLE_BETA_EXTENSIONS
+		// 			// Provided by VK_KHR_video_encode_queue
+		// 			VK_IMAGE_USAGE_VIDEO_ENCODE_SRC_BIT_KHR = 0x00004000,
+		// 		#endif
+		// 		#ifdef VK_ENABLE_BETA_EXTENSIONS
+		// 			// Provided by VK_KHR_video_encode_queue
+		// 			VK_IMAGE_USAGE_VIDEO_ENCODE_DPB_BIT_KHR = 0x00008000,
+		// 		#endif
+		// 		// Provided by VK_HUAWEI_invocation_mask
+		// 		VK_IMAGE_USAGE_INVOCATION_MASK_BIT_HUAWEI = 0x00040000,
+		// 		// Provided by VK_NV_shading_rate_image
+		// 		VK_IMAGE_USAGE_SHADING_RATE_IMAGE_BIT_NV = VK_IMAGE_USAGE_FRAGMENT_SHADING_RATE_ATTACHMENT_BIT_KHR,
+		// } VkImageUsageFlagBits;
+		
 		if (bits & vk::ImageUsageFlagBits::eTransferSrc)
 			result.push_back("transfer src: image can be used as the source of a transfer command.");
 	
@@ -214,27 +203,24 @@ suitable for use as a fragment shading rate attachment or shading rate image");
 		return result;
 	}
 
-	/**
-	* Translate the given present mode to a dexcriptive string
-	*
-	* @param presentMode	an enum which describes the present mode
-	* @return				a description of the present mode
-	*/
+	// Translate the given present mode to a dexcriptive string
+	//
+	// @param presentMode	an enum which describes the present mode
+	// @return a description of the present mode
 	std::string vklogging::log_present_mode(vk::PresentModeKHR presentMode)
 	{
-		/*
-		* // Provided by VK_KHR_surface
-		typedef enum VkPresentModeKHR {
-			VK_PRESENT_MODE_IMMEDIATE_KHR = 0,
-			VK_PRESENT_MODE_MAILBOX_KHR = 1,
-			VK_PRESENT_MODE_FIFO_KHR = 2,
-			VK_PRESENT_MODE_FIFO_RELAXED_KHR = 3,
-			// Provided by VK_KHR_shared_presentable_image
-			VK_PRESENT_MODE_SHARED_DEMAND_REFRESH_KHR = 1000111000,
-			// Provided by VK_KHR_shared_presentable_image
-			VK_PRESENT_MODE_SHARED_CONTINUOUS_REFRESH_KHR = 1000111001,
-		} VkPresentModeKHR;
-		*/
+		// // Provided by VK_KHR_surface
+		// typedef enum VkPresentModeKHR {
+		// 	VK_PRESENT_MODE_IMMEDIATE_KHR = 0,
+		// 	VK_PRESENT_MODE_MAILBOX_KHR = 1,
+		// 	VK_PRESENT_MODE_FIFO_KHR = 2,
+		// 	VK_PRESENT_MODE_FIFO_RELAXED_KHR = 3,
+		// 	// Provided by VK_KHR_shared_presentable_image
+		// 	VK_PRESENT_MODE_SHARED_DEMAND_REFRESH_KHR = 1000111000,
+		// 	// Provided by VK_KHR_shared_presentable_image
+		// 	VK_PRESENT_MODE_SHARED_CONTINUOUS_REFRESH_KHR = 1000111001,
+		// } VkPresentModeKHR;
+
 		switch (presentMode)
 		{
 			case (vk::PresentModeKHR::eImmediate):
@@ -293,33 +279,27 @@ This mode may result in visible tearing if rendering to the image is not timed c
 		}
 	}
 
-	/**
-	* Print out some properties of a physical device
-	*
-	* @param device the physical device
-	*/
+	// Print out some properties of a physical device
+	// @param device the physical device	
 	void vklogging::log_device_properties(const vk::PhysicalDevice& device)
 	{
-		/*
-		* void vkGetPhysicalDeviceProperties(
-			VkPhysicalDevice                            physicalDevice,
-			VkPhysicalDeviceProperties*                 pProperties);
-		*/
+		// void vkGetPhysicalDeviceProperties(
+		// 	VkPhysicalDevice                            physicalDevice,
+		// 	VkPhysicalDeviceProperties*                 pProperties);
+
 		vk::PhysicalDeviceProperties properties = device.getProperties();
 
-		/*
-		* typedef struct VkPhysicalDeviceProperties {
-			uint32_t                            apiVersion;
-			uint32_t                            driverVersion;
-			uint32_t                            vendorID;
-			uint32_t                            deviceID;
-			VkPhysicalDeviceType                deviceType;
-			char                                deviceName[VK_MAX_PHYSICAL_DEVICE_NAME_SIZE];
-			uint8_t                             pipelineCacheUUID[VK_UUID_SIZE];
-			VkPhysicalDeviceLimits              limits;
-			VkPhysicalDeviceSparseProperties    sparseProperties;
-			} VkPhysicalDeviceProperties;
-		*/
+		// typedef struct VkPhysicalDeviceProperties {
+		// 	uint32_t                            apiVersion;
+		// 	uint32_t                            driverVersion;
+		// 	uint32_t                            vendorID;
+		// 	uint32_t                            deviceID;
+		// 	VkPhysicalDeviceType                deviceType;
+		// 	char                                deviceName[VK_MAX_PHYSICAL_DEVICE_NAME_SIZE];
+		// 	uint8_t                             pipelineCacheUUID[VK_UUID_SIZE];
+		// 	VkPhysicalDeviceLimits              limits;
+		// 	VkPhysicalDeviceSparseProperties    sparseProperties;
+		// 	} VkPhysicalDeviceProperties;
 		std::cout << "Device name: " << properties.deviceName << '\n';
 
 		std::cout << "Device type: ";
@@ -346,71 +326,62 @@ This mode may result in visible tearing if rendering to the image is not timed c
 		}
 	}
 
-/**
-	* Debug call back function, called by validation layers
-	*/
+// Debug call back function, called by validation layers
 VKAPI_ATTR VkBool32 VKAPI_CALL vklogging::debugCallback(
 	VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
 	VkDebugUtilsMessageTypeFlagsEXT messageType,
 	const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData,
 	void* pUserData
 ) {
-	/*
-	* Debug call back:
-	*
-	*	typedef enum VkDebugUtilsMessageSeverityFlagBitsEXT {
-		VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT = 0x00000001,
-		VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT = 0x00000010,
-		VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT = 0x00000100,
-		VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT = 0x00001000,
-		VK_DEBUG_UTILS_MESSAGE_SEVERITY_FLAG_BITS_MAX_ENUM_EXT = 0x7FFFFFFF
-	} VkDebugUtilsMessageSeverityFlagBitsEXT;
+	// Debug call back:
+	
+	// typedef enum VkDebugUtilsMessageSeverityFlagBitsEXT {
+	// 	VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT = 0x00000001,
+	// 	VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT = 0x00000010,
+	// 	VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT = 0x00000100,
+	// 	VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT = 0x00001000,
+	// 	VK_DEBUG_UTILS_MESSAGE_SEVERITY_FLAG_BITS_MAX_ENUM_EXT = 0x7FFFFFFF
+	// } VkDebugUtilsMessageSeverityFlagBitsEXT;
 
-	*	typedef enum VkDebugUtilsMessageTypeFlagBitsEXT {
-		VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT = 0x00000001,
-		VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT = 0x00000002,
-		VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT = 0x00000004,
-		VK_DEBUG_UTILS_MESSAGE_TYPE_FLAG_BITS_MAX_ENUM_EXT = 0x7FFFFFFF
-	} VkDebugUtilsMessageTypeFlagBitsEXT;
+	// typedef enum VkDebugUtilsMessageTypeFlagBitsEXT {
+	// 	VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT = 0x00000001,
+	// 	VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT = 0x00000002,
+	// 	VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT = 0x00000004,
+	// 	VK_DEBUG_UTILS_MESSAGE_TYPE_FLAG_BITS_MAX_ENUM_EXT = 0x7FFFFFFF
+	// } VkDebugUtilsMessageTypeFlagBitsEXT;
 
-	*	typedef struct VkDebugUtilsMessengerCallbackDataEXT {
-		VkStructureType                              sType;
-		const void*                                  pNext;
-		VkDebugUtilsMessengerCallbackDataFlagsEXT    flags;
-		const char*                                  pMessageIdName;
-		int32_t                                      messageIdNumber;
-		const char*                                  pMessage;
-		uint32_t                                     queueLabelCount;
-		const VkDebugUtilsLabelEXT*                  pQueueLabels;
-		uint32_t                                     cmdBufLabelCount;
-		const VkDebugUtilsLabelEXT*                  pCmdBufLabels;
-		uint32_t                                     objectCount;
-		const VkDebugUtilsObjectNameInfoEXT*         pObjects;
-	} VkDebugUtilsMessengerCallbackDataEXT;
-
-	*/
+	// typedef struct VkDebugUtilsMessengerCallbackDataEXT {
+	// 	VkStructureType                              sType;
+	// 	const void*                                  pNext;
+	// 	VkDebugUtilsMessengerCallbackDataFlagsEXT    flags;
+	// 	const char*                                  pMessageIdName;
+	// 	int32_t                                      messageIdNumber;
+	// 	const char*                                  pMessage;
+	// 	uint32_t                                     queueLabelCount;
+	// 	const VkDebugUtilsLabelEXT*                  pQueueLabels;
+	// 	uint32_t                                     cmdBufLabelCount;
+	// 	const VkDebugUtilsLabelEXT*                  pCmdBufLabels;
+	// 	uint32_t                                     objectCount;
+	// 	const VkDebugUtilsObjectNameInfoEXT*         pObjects;
+	// } VkDebugUtilsMessengerCallbackDataEXT;
 
 	std::cerr << "validation layer: " << pCallbackData->pMessage << std::endl;
 
 	return VK_FALSE;
 }
 
-/**
-* Make a debug messenger
-*
-* @param instance	the vulkan instance which will own/call the messenger
-* @param dldi		the dispatch loader used to call the creation function
-* @return			the created debug messenger
-*/
+// Make a debug messenger.
+// 
+// @param instance	the vulkan instance which will own/call the messenger
+// @param dldi		the dispatch loader used to call the creation function
+// @return			the created debug messenger
 vk::DebugUtilsMessengerEXT vklogging::make_debug_messenger(vk::Instance& instance, vk::DispatchLoaderDynamic& dldi)
 {
-	/*
-	* DebugUtilsMessengerCreateInfoEXT( VULKAN_HPP_NAMESPACE::DebugUtilsMessengerCreateFlagsEXT flags_           = {},
-									VULKAN_HPP_NAMESPACE::DebugUtilsMessageSeverityFlagsEXT messageSeverity_ = {},
-									VULKAN_HPP_NAMESPACE::DebugUtilsMessageTypeFlagsEXT     messageType_     = {},
-									PFN_vkDebugUtilsMessengerCallbackEXT                    pfnUserCallback_ = {},
-									void * pUserData_ = {} )
-	*/
+	// DebugUtilsMessengerCreateInfoEXT( VULKAN_HPP_NAMESPACE::DebugUtilsMessengerCreateFlagsEXT flags_           = {},
+	// 								VULKAN_HPP_NAMESPACE::DebugUtilsMessageSeverityFlagsEXT messageSeverity_ = {},
+	// 								VULKAN_HPP_NAMESPACE::DebugUtilsMessageTypeFlagsEXT     messageType_     = {},
+	// 								PFN_vkDebugUtilsMessengerCallbackEXT                    pfnUserCallback_ = {},
+	// 								void * pUserData_ = {} )
 
 	vk::DebugUtilsMessengerCreateInfoEXT createInfo = vk::DebugUtilsMessengerCreateInfoEXT(
 		vk::DebugUtilsMessengerCreateFlagsEXT(),

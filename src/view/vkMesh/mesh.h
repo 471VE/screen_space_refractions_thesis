@@ -3,18 +3,15 @@
 
 namespace vkmesh {
 
-	/**
-		\returns the input binding description for a (vec2 pos, vec3 color, vec2 texcoords) vertex format.
-	*/
+	// \returns the input binding description for a (vec2 pos, vec3 color, vec2 texcoords) vertex format.
 	vk::VertexInputBindingDescription get_pos_color_binding_description()
 	{
-		/* Provided by VK_VERSION_1_0
-		typedef struct VkVertexInputBindingDescription {
-			uint32_t             binding;
-			uint32_t             stride;
-			VkVertexInputRate    inputRate;
-		} VkVertexInputBindingDescription;
-		*/
+		// Provided by VK_VERSION_1_0:
+		// typedef struct VkVertexInputBindingDescription {
+		// 	uint32_t             binding;
+		// 	uint32_t             stride;
+		// 	VkVertexInputRate    inputRate;
+		// } VkVertexInputBindingDescription;
 
 		vk::VertexInputBindingDescription bindingDescription;
 		bindingDescription.binding = 0;
@@ -24,19 +21,16 @@ namespace vkmesh {
 		return bindingDescription;
 	}
 
-	/**
-		\returns the input attribute descriptions for a (vec2 pos, vec3 color, vec2 texcoords) vertex format.
-	*/
+	// \returns the input attribute descriptions for a (vec2 pos, vec3 color, vec2 texcoords) vertex format.
 	std::vector<vk::VertexInputAttributeDescription> get_pos_color_attribute_descriptions()
 	{
-		/* Provided by VK_VERSION_1_0
-		typedef struct VkVertexInputAttributeDescription {
-			uint32_t    location;
-			uint32_t    binding;
-			VkFormat    format;
-			uint32_t    offset;
-		} VkVertexInputAttributeDescription;
-		*/
+		// Provided by VK_VERSION_1_0:
+		// typedef struct VkVertexInputAttributeDescription {
+		// 	uint32_t    location;
+		// 	uint32_t    binding;
+		// 	VkFormat    format;
+		// 	uint32_t    offset;
+		// } VkVertexInputAttributeDescription;
 
 		std::vector<vk::VertexInputAttributeDescription> attributes;
 		vk::VertexInputAttributeDescription dummy;

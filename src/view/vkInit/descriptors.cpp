@@ -33,8 +33,8 @@ vk::DescriptorPool vkinit::make_descriptor_pool(
 ) {
 	std::vector<vk::DescriptorPoolSize> poolSizes;
 	// typedef struct VkDescriptorPoolSize {
-	// 	VkDescriptorType    type;
-	// 	uint32_t            descriptorCount;
+	// 	 VkDescriptorType    type;
+	// 	 uint32_t            descriptorCount;
 	// } VkDescriptorPoolSize;
 
 	for (int i = 0; i < descriptorTypes.size(); i++)
@@ -47,12 +47,12 @@ vk::DescriptorPool vkinit::make_descriptor_pool(
 
 	vk::DescriptorPoolCreateInfo poolInfo;
 	// typedef struct VkDescriptorPoolCreateInfo {
-	// 	VkStructureType                sType;
-	// 	const void*                    pNext;
-	// 	VkDescriptorPoolCreateFlags    flags;
-	// 	uint32_t                       maxSets;
-	// 	uint32_t                       poolSizeCount;
-	// 	const VkDescriptorPoolSize*    pPoolSizes;
+	//  	VkStructureType                sType;
+	//  	const void*                    pNext;
+	//  	VkDescriptorPoolCreateFlags    flags;
+	//  	uint32_t                       maxSets;
+	//  	uint32_t                       poolSizeCount;
+	//  	const VkDescriptorPoolSize*    pPoolSizes;
 	// } VkDescriptorPoolCreateInfo;
 
 	poolInfo.flags = vk::DescriptorPoolCreateFlags();
@@ -77,11 +77,11 @@ vk::DescriptorSet vkinit::allocate_descriptor_set(
 ) {
 	vk::DescriptorSetAllocateInfo allocationInfo;
 	// typedef struct VkDescriptorSetAllocateInfo {
-	// 	VkStructureType                 sType;
-	// 	const void*                     pNext;
-	// 	VkDescriptorPool                descriptorPool;
-	// 	uint32_t                        descriptorSetCount;
-	// 	const VkDescriptorSetLayout*    pSetLayouts;
+	//   VkStructureType                 sType;
+	//   const void*                     pNext;
+	//   VkDescriptorPool                descriptorPool;
+	//   uint32_t                        descriptorSetCount;
+	//   const VkDescriptorSetLayout*    pSetLayouts;
 	// } VkDescriptorSetAllocateInfo;
 
 	allocationInfo.descriptorPool = descriptorPool;

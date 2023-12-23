@@ -8,25 +8,23 @@
 
 vk::Image vkimage::make_image(ImageInputChunk input)
 {
-	/*
-	typedef struct VkImageCreateInfo {
-		VkStructureType          sType;
-		const void* pNext;
-		VkImageCreateFlags       flags;
-		VkImageType              imageType;
-		VkFormat                 format;
-		VkExtent3D               extent;
-		uint32_t                 mipLevels;
-		uint32_t                 arrayLayers;
-		VkSampleCountFlagBits    samples;
-		VkImageTiling            tiling;
-		VkImageUsageFlags        usage;
-		VkSharingMode            sharingMode;
-		uint32_t                 queueFamilyIndexCount;
-		const uint32_t* pQueueFamilyIndices;
-		VkImageLayout            initialLayout;
-	} VkImageCreateInfo;
-	*/
+	// typedef struct VkImageCreateInfo {
+	// 	VkStructureType          sType;
+	// 	const void* pNext;
+	// 	VkImageCreateFlags       flags;
+	// 	VkImageType              imageType;
+	// 	VkFormat                 format;
+	// 	VkExtent3D               extent;
+	// 	uint32_t                 mipLevels;
+	// 	uint32_t                 arrayLayers;
+	// 	VkSampleCountFlagBits    samples;
+	// 	VkImageTiling            tiling;
+	// 	VkImageUsageFlags        usage;
+	// 	VkSharingMode            sharingMode;
+	// 	uint32_t                 queueFamilyIndexCount;
+	// 	const uint32_t* pQueueFamilyIndices;
+	// 	VkImageLayout            initialLayout;
+	// } VkImageCreateInfo;
 
 	vk::ImageCreateInfo imageInfo;
 	imageInfo.flags = vk::ImageCreateFlagBits() | input.flags;
@@ -79,15 +77,14 @@ void vkimage::transition_image_layout(ImageLayoutTransitionJob transitionJob)
 {
 	vkutil::start_job(transitionJob.commandBuffer);
 
-	/*
-	typedef struct VkImageSubresourceRange {
-		VkImageAspectFlags    aspectMask;
-		uint32_t              baseMipLevel;
-		uint32_t              levelCount;
-		uint32_t              baseArrayLayer;
-		uint32_t              layerCount;
-	} VkImageSubresourceRange;
-	*/
+	// typedef struct VkImageSubresourceRange {
+	// 	VkImageAspectFlags    aspectMask;
+	// 	uint32_t              baseMipLevel;
+	// 	uint32_t              levelCount;
+	// 	uint32_t              baseArrayLayer;
+	// 	uint32_t              layerCount;
+	// } VkImageSubresourceRange;
+
 	vk::ImageSubresourceRange access;
 	access.aspectMask = vk::ImageAspectFlagBits::eColor;
 	access.baseMipLevel = 0;
@@ -95,20 +92,19 @@ void vkimage::transition_image_layout(ImageLayoutTransitionJob transitionJob)
 	access.baseArrayLayer = 0;
 	access.layerCount = transitionJob.arrayCount;
 
-	/*
-	typedef struct VkImageMemoryBarrier {
-		VkStructureType            sType;
-		const void* pNext;
-		VkAccessFlags              srcAccessMask;
-		VkAccessFlags              dstAccessMask;
-		VkImageLayout              oldLayout;
-		VkImageLayout              newLayout;
-		uint32_t                   srcQueueFamilyIndex;
-		uint32_t                   dstQueueFamilyIndex;
-		VkImage                    image;
-		VkImageSubresourceRange    subresourceRange;
-	} VkImageMemoryBarrier;
-	*/
+	// typedef struct VkImageMemoryBarrier {
+	// 	VkStructureType            sType;
+	// 	const void* pNext;
+	// 	VkAccessFlags              srcAccessMask;
+	// 	VkAccessFlags              dstAccessMask;
+	// 	VkImageLayout              oldLayout;
+	// 	VkImageLayout              newLayout;
+	// 	uint32_t                   srcQueueFamilyIndex;
+	// 	uint32_t                   dstQueueFamilyIndex;
+	// 	VkImage                    image;
+	// 	VkImageSubresourceRange    subresourceRange;
+	// } VkImageMemoryBarrier;
+
 	vk::ImageMemoryBarrier barrier;
 	barrier.oldLayout = transitionJob.oldLayout;
 	barrier.newLayout = transitionJob.newLayout;
@@ -147,16 +143,15 @@ void vkimage::copy_buffer_to_image(BufferImageCopyJob copyJob)
 {
 	vkutil::start_job(copyJob.commandBuffer);
 
-	/*
-	typedef struct VkBufferImageCopy {
-		VkDeviceSize                bufferOffset;
-		uint32_t                    bufferRowLength;
-		uint32_t                    bufferImageHeight;
-		VkImageSubresourceLayers    imageSubresource;
-		VkOffset3D                  imageOffset;
-		VkExtent3D                  imageExtent;
-	} VkBufferImageCopy;
-	*/
+	// typedef struct VkBufferImageCopy {
+	// 	VkDeviceSize                bufferOffset;
+	// 	uint32_t                    bufferRowLength;
+	// 	uint32_t                    bufferImageHeight;
+	// 	VkImageSubresourceLayers    imageSubresource;
+	// 	VkOffset3D                  imageOffset;
+	// 	VkExtent3D                  imageExtent;
+	// } VkBufferImageCopy;
+
 	vk::BufferImageCopy copy;
 	copy.bufferOffset = 0;
 	copy.bufferRowLength = 0;
@@ -187,14 +182,12 @@ vk::ImageView vkimage::make_image_view(
 	vk::Device logicalDevice, vk::Image image, vk::Format format,
 	vk::ImageAspectFlags aspect, vk::ImageViewType type, uint32_t arrayCount)
 {
-	/*
-	* ImageViewCreateInfo( VULKAN_HPP_NAMESPACE::ImageViewCreateFlags flags_ = {},
-		VULKAN_HPP_NAMESPACE::Image                image_ = {},
-		VULKAN_HPP_NAMESPACE::ImageViewType    viewType_  = VULKAN_HPP_NAMESPACE::ImageViewType::e1D,
-		VULKAN_HPP_NAMESPACE::Format           format_    = VULKAN_HPP_NAMESPACE::Format::eUndefined,
-		VULKAN_HPP_NAMESPACE::ComponentMapping components_            = {},
-		VULKAN_HPP_NAMESPACE::ImageSubresourceRange subresourceRange_ = {} ) VULKAN_HPP_NOEXCEPT
-	*/
+	// ImageViewCreateInfo( VULKAN_HPP_NAMESPACE::ImageViewCreateFlags flags_ = {},
+	// 										 VULKAN_HPP_NAMESPACE::Image                image_ = {},
+	// 										 VULKAN_HPP_NAMESPACE::ImageViewType    viewType_  = VULKAN_HPP_NAMESPACE::ImageViewType::e1D,
+	// 										 VULKAN_HPP_NAMESPACE::Format           format_    = VULKAN_HPP_NAMESPACE::Format::eUndefined,
+	// 										 VULKAN_HPP_NAMESPACE::ComponentMapping components_            = {},
+	// 										 VULKAN_HPP_NAMESPACE::ImageSubresourceRange subresourceRange_ = {} ) VULKAN_HPP_NOEXCEPT
 
 	vk::ImageViewCreateInfo createInfo = {};
 	createInfo.image = image;
@@ -222,13 +215,11 @@ vk::Format vkimage::find_supported_format(
 	{
 		vk::FormatProperties properties = physicalDevice.getFormatProperties(format);
 
-		/*
-		typedef struct VkFormatProperties {
-			VkFormatFeatureFlags    linearTilingFeatures;
-			VkFormatFeatureFlags    optimalTilingFeatures;
-			VkFormatFeatureFlags    bufferFeatures;
-		} VkFormatProperties;
-		*/
+		// typedef struct VkFormatProperties {
+		// 	VkFormatFeatureFlags    linearTilingFeatures;
+		// 	VkFormatFeatureFlags    optimalTilingFeatures;
+		// 	VkFormatFeatureFlags    bufferFeatures;
+		// } VkFormatProperties;
 
 		if (tiling == vk::ImageTiling::eLinear
 			&& (properties.linearTilingFeatures & features) == features)

@@ -3,22 +3,17 @@
 #include "../vkUtil/frame.h"
 
 namespace vkinit {
-	/**
-		Data structures involved in making framebuffers for the
-		swapchain.
-	*/
+
+		// Data structures involved in making framebuffers for the swapchain.
 	struct framebufferInput {
 		vk::Device device;
 		std::unordered_map<pipelineType, vk::RenderPass> renderpass;
 		vk::Extent2D swapchainExtent;
 	};
 
-	/**
-		Make framebuffers for the swapchain
-
-		\param inputChunk required input for creation
-		\param frames the vector to be populated with the created framebuffers
-	*/
+	// Make framebuffers for the swapchain
+	// \param inputChunk required input for creation
+	// \param frames the vector to be populated with the created framebuffers
 	void make_framebuffers(framebufferInput inputChunk, std::vector<vkutil::SwapChainFrame>& frames)
 	{
 		std::stringstream message;
@@ -75,4 +70,4 @@ namespace vkinit {
 			}
 		}
 	}
-} // namespace vkInit
+} // namespace vkinit

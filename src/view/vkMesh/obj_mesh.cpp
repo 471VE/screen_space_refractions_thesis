@@ -165,18 +165,18 @@ void vkmesh::ObjMesh::readCorner(const std::string& vertex_description)
 
 	std::vector<std::string> v_vt_vn = split(vertex_description, "/");
 
-	//position
+	// Position
 	glm::vec3 pos = v[std::stol(v_vt_vn[0]) - 1];
 	vertices.push_back(pos[0]);
 	vertices.push_back(pos[1]);
 	vertices.push_back(pos[2]);
 
-	//color
+	// Color
 	vertices.push_back(brushColor.r);
 	vertices.push_back(brushColor.g);
 	vertices.push_back(brushColor.b);
 
-	//texcoord
+	// Texcoord
 	glm::vec2 texcoord = glm::vec2(0.f, 0.f);
 	if (v_vt_vn.size() == 3 && v_vt_vn[1].size() > 0)
 		texcoord = vt[std::stol(v_vt_vn[1]) - 1];
@@ -184,7 +184,7 @@ void vkmesh::ObjMesh::readCorner(const std::string& vertex_description)
 	vertices.push_back(texcoord[0]);
 	vertices.push_back(texcoord[1]);
 
-	//normal
+	// Normal
 	glm::vec3 normal = vn[std::stol(v_vt_vn[2]) - 1];
 	vertices.push_back(normal[0]);
 	vertices.push_back(normal[1]);

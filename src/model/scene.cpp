@@ -1,8 +1,5 @@
 #include "scene.h"
 
-/**
-* Scene constructor
-*/
 Scene::Scene()
 {
 	// Turn off scene for now

@@ -9,11 +9,11 @@ namespace vkutil
 
 	public:
 
-		//For doing work
+		// For doing work
 		vk::Device logicalDevice;
 		vk::PhysicalDevice physicalDevice;
 
-		//Swapchain-type stuff
+		// Swapchain-type stuff
 		vk::Image image;
 		vk::ImageView imageView;
 		std::unordered_map<pipelineType,vk::Framebuffer> framebuffer;
@@ -25,11 +25,11 @@ namespace vkutil
 
 		vk::CommandBuffer commandBuffer;
 
-		//Sync objects
+		// Sync objects
 		vk::Semaphore imageAvailable, renderFinished;
 		vk::Fence inFlight;
 
-		//Resources
+		// Resources
 		CameraMatrices cameraMatrixData;
 		Buffer cameraMatrixBuffer;
 		void* cameraMatrixWriteLocation;
@@ -49,14 +49,14 @@ namespace vkutil
 		Buffer modelBuffer;
 		void* modelBufferWriteLocation;
 
-		//Resource Descriptors
+		// Resource Descriptors
 		vk::DescriptorBufferInfo cameraVectorDescriptor, cameraMatrixDescriptor;
 		vk::DescriptorBufferInfo ssboDescriptor;
 		vk::DescriptorBufferInfo renderParamsDescriptor;
 		vk::DescriptorBufferInfo shTermsDescriptor;
 		std::unordered_map<pipelineType, vk::DescriptorSet> descriptorSet;
 
-		//Write Operations
+		// Write Operations
 		std::vector<vk::WriteDescriptorSet> writeOps;
 
 		void makeDescriptorResources();

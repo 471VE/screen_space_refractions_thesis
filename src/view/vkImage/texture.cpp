@@ -57,7 +57,7 @@ void vkimage::Texture::load()
 
 void vkimage::Texture::populate()
 {
-	//First create a CPU-visible buffer...
+	// First create a CPU-visible buffer...
 	BufferInputChunk input;
 	input.logicalDevice = logicalDevice;
 	input.physicalDevice = physicalDevice;
@@ -67,12 +67,12 @@ void vkimage::Texture::populate()
 
 	Buffer stagingBuffer = vkutil::create_buffer(input);
 
-	//...then fill it,
+	// ...then fill it,
 	void* writeLocation = logicalDevice.mapMemory(stagingBuffer.bufferMemory, 0, input.size);
 	memcpy(writeLocation, pixels, input.size);
 	logicalDevice.unmapMemory(stagingBuffer.bufferMemory);
 
-	//then transfer it to image memory
+	// then transfer it to image memory
 	ImageLayoutTransitionJob transitionJob;
 	transitionJob.commandBuffer = commandBuffer;
 	transitionJob.queue = queue;
@@ -96,7 +96,7 @@ void vkimage::Texture::populate()
 	transitionJob.newLayout = vk::ImageLayout::eShaderReadOnlyOptimal;
 	transition_image_layout(transitionJob);
 
-	//Now the staging buffer can be destroyed
+	// Now the staging buffer can be destroyed
 	logicalDevice.freeMemory(stagingBuffer.bufferMemory);
 	logicalDevice.destroyBuffer(stagingBuffer.buffer);
 }
@@ -111,28 +111,27 @@ void vkimage::Texture::makeView()
 
 void vkimage::Texture::makeSampler()
 {
-	/*
-	typedef struct VkSamplerCreateInfo {
-		VkStructureType         sType;
-		const void* pNext;
-		VkSamplerCreateFlags    flags;
-		VkFilter                magFilter;
-		VkFilter                minFilter;
-		VkSamplerMipmapMode     mipmapMode;
-		VkSamplerAddressMode    addressModeU;
-		VkSamplerAddressMode    addressModeV;
-		VkSamplerAddressMode    addressModeW;
-		float                   mipLodBias;
-		VkBool32                anisotropyEnable;
-		float                   maxAnisotropy;
-		VkBool32                compareEnable;
-		VkCompareOp             compareOp;
-		float                   minLod;
-		float                   maxLod;
-		VkBorderColor           borderColor;
-		VkBool32                unnormalizedCoordinates;
-	} VkSamplerCreateInfo;
-	*/
+	// typedef struct VkSamplerCreateInfo {
+	// 	VkStructureType         sType;
+	// 	const void* pNext;
+	// 	VkSamplerCreateFlags    flags;
+	// 	VkFilter                magFilter;
+	// 	VkFilter                minFilter;
+	// 	VkSamplerMipmapMode     mipmapMode;
+	// 	VkSamplerAddressMode    addressModeU;
+	// 	VkSamplerAddressMode    addressModeV;
+	// 	VkSamplerAddressMode    addressModeW;
+	// 	float                   mipLodBias;
+	// 	VkBool32                anisotropyEnable;
+	// 	float                   maxAnisotropy;
+	// 	VkBool32                compareEnable;
+	// 	VkCompareOp             compareOp;
+	// 	float                   minLod;
+	// 	float                   maxLod;
+	// 	VkBorderColor           borderColor;
+	// 	VkBool32                unnormalizedCoordinates;
+	// } VkSamplerCreateInfo;
+
 	vk::SamplerCreateInfo samplerInfo;
 	samplerInfo.flags = vk::SamplerCreateFlags();
 	samplerInfo.minFilter = vk::Filter::eNearest;

@@ -3,23 +3,23 @@
 
 uint32_t vkutil::find_memory_type_index(vk::PhysicalDevice physicalDevice, uint32_t supportedMemoryIndices, vk::MemoryPropertyFlags requestedProperties)
 {
-	/*
-	* // Provided by VK_VERSION_1_0
-	typedef struct VkPhysicalDeviceMemoryProperties {
-		uint32_t        memoryTypeCount;
-		VkMemoryType    memoryTypes[VK_MAX_MEMORY_TYPES];
-		uint32_t        memoryHeapCount;
-		VkMemoryHeap    memoryHeaps[VK_MAX_MEMORY_HEAPS];
-	} VkPhysicalDeviceMemoryProperties;
-	*/
+	// Provided by VK_VERSION_1_0:
+	//
+	// typedef struct VkPhysicalDeviceMemoryProperties {
+	// 	uint32_t        memoryTypeCount;
+	// 	VkMemoryType    memoryTypes[VK_MAX_MEMORY_TYPES];
+	// 	uint32_t        memoryHeapCount;
+	// 	VkMemoryHeap    memoryHeaps[VK_MAX_MEMORY_HEAPS];
+	// } VkPhysicalDeviceMemoryProperties;
+	
 	vk::PhysicalDeviceMemoryProperties memoryProperties = physicalDevice.getMemoryProperties();
 
 	for (uint32_t i = 0; i < memoryProperties.memoryTypeCount; i++)
 	{
-		//bit i of supportedMemoryIndices is set if that memory type is supported by the device
+		// Bit i of supportedMemoryIndices is set if that memory type is supported by the device
 		bool supported{ static_cast<bool>(supportedMemoryIndices & (1 << i)) };
 
-		//propertyFlags holds all the memory properties supported by this memory type
+		// PropertyFlags holds all the memory properties supported by this memory type
 		bool sufficient{ (memoryProperties.memoryTypes[i].propertyFlags & requestedProperties) == requestedProperties };
 
 		if (supported && sufficient)
@@ -30,25 +30,24 @@ uint32_t vkutil::find_memory_type_index(vk::PhysicalDevice physicalDevice, uint3
 
 void vkutil::allocate_buffer_memory(Buffer& buffer, const BufferInputChunk& input)
 {
-	/*
-	// Provided by VK_VERSION_1_0
-	typedef struct VkMemoryRequirements {
-		VkDeviceSize    size;
-		VkDeviceSize    alignment;
-		uint32_t        memoryTypeBits;
-	} VkMemoryRequirements;
-	*/
+	// Provided by VK_VERSION_1_0:
+	// 
+	// typedef struct VkMemoryRequirements {
+	// 	VkDeviceSize    size;
+	// 	VkDeviceSize    alignment;
+	// 	uint32_t        memoryTypeBits;
+	// } VkMemoryRequirements;
 	vk::MemoryRequirements memoryRequirements = input.logicalDevice.getBufferMemoryRequirements(buffer.buffer);
 
-	/*
-	* // Provided by VK_VERSION_1_0
-	typedef struct VkMemoryAllocateInfo {
-		VkStructureType    sType;
-		const void*        pNext;
-		VkDeviceSize       allocationSize;
-		uint32_t           memoryTypeIndex;
-	} VkMemoryAllocateInfo;
-	*/
+	//Provided by VK_VERSION_1_0:
+	//
+	//typedef struct VkMemoryAllocateInfo {
+	//	VkStructureType    sType;
+	//	const void*        pNext;
+	//	VkDeviceSize       allocationSize;
+	//	uint32_t           memoryTypeIndex;
+	//} VkMemoryAllocateInfo;
+
 	vk::MemoryAllocateInfo allocInfo;
 	allocInfo.allocationSize = memoryRequirements.size;
 	allocInfo.memoryTypeIndex = find_memory_type_index(
@@ -62,19 +61,19 @@ void vkutil::allocate_buffer_memory(Buffer& buffer, const BufferInputChunk& inpu
 
 Buffer vkutil::create_buffer(BufferInputChunk input)
 {
-	/*
-	* // Provided by VK_VERSION_1_0
-	typedef struct VkBufferCreateInfo {
-		VkStructureType        sType;
-		const void*            pNext;
-		VkBufferCreateFlags    flags;
-		VkDeviceSize           size;
-		VkBufferUsageFlags     usage;
-		VkSharingMode          sharingMode;
-		uint32_t               queueFamilyIndexCount;
-		const uint32_t*        pQueueFamilyIndices;
-	} VkBufferCreateInfo;
-	*/
+	// Provided by VK_VERSION_1_0:
+	// 
+	// typedef struct VkBufferCreateInfo {
+	// 	 VkStructureType        sType;
+	// 	 const void*            pNext;
+	// 	 VkBufferCreateFlags    flags;
+	// 	 VkDeviceSize           size;
+	// 	 VkBufferUsageFlags     usage;
+	// 	 VkSharingMode          sharingMode;
+	// 	 uint32_t               queueFamilyIndexCount;
+	// 	 const uint32_t*        pQueueFamilyIndices;
+	// } VkBufferCreateInfo;
+	
 	vk::BufferCreateInfo bufferInfo;
 	bufferInfo.flags = vk::BufferCreateFlags();
 	bufferInfo.size = input.size;
@@ -92,14 +91,14 @@ void vkutil::copy_buffer(Buffer& srcBuffer, Buffer& dstBuffer, vk::DeviceSize si
 {
 	vkutil::start_job(commandBuffer);
 
-	/*
-	* // Provided by VK_VERSION_1_0
-	typedef struct VkBufferCopy {
-		VkDeviceSize    srcOffset;
-		VkDeviceSize    dstOffset;
-		VkDeviceSize    size;
-	} VkBufferCopy;
-	*/
+	// Provided by VK_VERSION_1_0:
+	//
+	// typedef struct VkBufferCopy {
+	// 	VkDeviceSize    srcOffset;
+	// 	VkDeviceSize    dstOffset;
+	// 	VkDeviceSize    size;
+	// } VkBufferCopy;
+
 	vk::BufferCopy copyRegion;
 	copyRegion.srcOffset = 0;
 	copyRegion.dstOffset = 0;

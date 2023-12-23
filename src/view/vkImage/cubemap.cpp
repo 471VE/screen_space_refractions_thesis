@@ -57,7 +57,7 @@ void vkimage::CubeMap::load()
 
 void vkimage::CubeMap::populate()
 {
-	//First create a CPU-visible buffer...
+	// First create a CPU-visible buffer...
 	BufferInputChunk input;
 	input.logicalDevice = logicalDevice;
 	input.physicalDevice = physicalDevice;
@@ -68,7 +68,7 @@ void vkimage::CubeMap::populate()
 
 	Buffer stagingBuffer = vkutil::create_buffer(input);
 
-	//...then fill it,
+	// ...then fill it,
 	for (int i = 0; i < 6; ++i)
 	{
 		void* writeLocation = logicalDevice.mapMemory(stagingBuffer.bufferMemory, image_size * i, image_size);
@@ -76,7 +76,7 @@ void vkimage::CubeMap::populate()
 		logicalDevice.unmapMemory(stagingBuffer.bufferMemory);
 	}
 
-	//then transfer it to image memory
+	// then transfer it to image memory
 	ImageLayoutTransitionJob transitionJob;
 	transitionJob.commandBuffer = commandBuffer;
 	transitionJob.queue = queue;
@@ -115,28 +115,26 @@ void vkimage::CubeMap::makeView()
 
 void vkimage::CubeMap::makeSampler()
 {
-	/*
-	typedef struct VkSamplerCreateInfo {
-		VkStructureType         sType;
-		const void* pNext;
-		VkSamplerCreateFlags    flags;
-		VkFilter                magFilter;
-		VkFilter                minFilter;
-		VkSamplerMipmapMode     mipmapMode;
-		VkSamplerAddressMode    addressModeU;
-		VkSamplerAddressMode    addressModeV;
-		VkSamplerAddressMode    addressModeW;
-		float                   mipLodBias;
-		VkBool32                anisotropyEnable;
-		float                   maxAnisotropy;
-		VkBool32                compareEnable;
-		VkCompareOp             compareOp;
-		float                   minLod;
-		float                   maxLod;
-		VkBorderColor           borderColor;
-		VkBool32                unnormalizedCoordinates;
-	} VkSamplerCreateInfo;
-	*/
+	// typedef struct VkSamplerCreateInfo {
+	//   VkStructureType         sType;
+	//   const void* pNext;
+	//   VkSamplerCreateFlags    flags;
+	//   VkFilter                magFilter;
+	//   VkFilter                minFilter;
+	//   VkSamplerMipmapMode     mipmapMode;
+	//   VkSamplerAddressMode    addressModeU;
+	//   VkSamplerAddressMode    addressModeV;
+	//   VkSamplerAddressMode    addressModeW;
+	//   float                   mipLodBias;
+	//   VkBool32                anisotropyEnable;
+	//   float                   maxAnisotropy;
+	//   VkBool32                compareEnable;
+	//   VkCompareOp             compareOp;
+	//   float                   minLod;
+	//   float                   maxLod;
+	//   VkBorderColor           borderColor;
+	//   VkBool32                unnormalizedCoordinates;
+	// } VkSamplerCreateInfo;
 	vk::SamplerCreateInfo samplerInfo;
 	samplerInfo.flags = vk::SamplerCreateFlags();
 	samplerInfo.minFilter = vk::Filter::eNearest;

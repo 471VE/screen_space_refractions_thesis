@@ -24,35 +24,26 @@ namespace vkinit {
 		}
 	};
 
-	/**
-		Make a descriptor set layout from the given descriptions
-
-		\param device the logical device
-		\param bindings	a vector of the bindings used in the shader
-		\returns the created descriptor set layout
-	*/
+	// Make a descriptor set layout from the given descriptions
+	// \param device the logical device
+	// \param bindings	a vector of the bindings used in the shader
+	// \returns the created descriptor set layout
 	vk::DescriptorSetLayout makeDescriptorSetLayout(
 		vk::Device device, const descriptorSetLayoutData &bindings);
 
-	/**
-		Make a descriptor pool
-
-		\param device the logical device
-		\param size the number of descriptor sets to allocate from the pool
-		\param descriptorTypes	used to get the descriptor types
-		\returns the created descriptor pool
-	*/
+	// Make a descriptor pool
+	// \param device the logical device
+	// \param size the number of descriptor sets to allocate from the pool
+	// \param descriptorTypes	used to get the descriptor types
+	// \returns the created descriptor pool
 	vk::DescriptorPool make_descriptor_pool(
 		vk::Device device, uint32_t size, const std::vector<vk::DescriptorType> &descriptorTypes);
 
-	/**
-		Allocate a descriptor set from a pool.
-
-		\param device the logical device
-		\param descriptorPool the pool to allocate from
-		\param layout the descriptor set layout which the set must adhere to
-		\returns the allocated descriptor set
-	*/
+	// Allocate a descriptor set from a pool.
+	// \param device the logical device
+	// \param descriptorPool the pool to allocate from
+	// \param layout the descriptor set layout which the set must adhere to
+	// \returns the allocated descriptor set
 	vk::DescriptorSet allocate_descriptor_set(
 		vk::Device device, vk::DescriptorPool descriptorPool,
 		vk::DescriptorSetLayout layout);
