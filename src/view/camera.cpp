@@ -65,7 +65,10 @@ void Camera::getTransformationMatrixColumns(glm::vec4& forwards, glm::vec4& righ
   forwards = {forwardsVector.x, forwardsVector.z, forwardsVector.y, 0.f};
   right = {rightVector.x, rightVector.z, rightVector.y, 0.f};
   up = {upVector.x, upVector.z, upVector.y, 0.f};
-  pos = {camPos.x, camPos.z, camPos.y, 0.f};
+  // This is the actual position of the camera that is used in the shader.
+  // DON'T FORGET ABOUT IT!!!
+  // Also, find out why it is this way and replace this comment with the explanation.
+  pos = {camPos.x, camPos.y, camPos.z, 0.f};
 }
 
 void Camera::resetSpeedVector() { camSpeedVector = { 0.f, 0.f, 0.f }; }

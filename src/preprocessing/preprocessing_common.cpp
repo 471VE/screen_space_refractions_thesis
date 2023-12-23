@@ -1,5 +1,8 @@
 #include "preprocessing_common.h"
 
+#include <algorithm>
+#include <execution>
+
 #include <glm/ext.hpp>
 
 #define SPHERE_RADIUS 0.5
@@ -71,12 +74,17 @@ std::vector<float> calculate_sh_terms(
   std::vector<glm::dvec3> hammersleySequence, std::function<double(glm::dvec3)> getObjectWidth
 ) {
   std::vector<double> shTermsSums(SPHERICAL_HARMONICS.size(), 0.);
-  for (const glm::dvec3 &direction : hammersleySequence)
-  {
-    double width = getObjectWidth(direction);
-    for (int i = 0; i < SPHERICAL_HARMONICS.size(); i++)
-      shTermsSums[i] += SPHERICAL_HARMONICS[i](direction) * width;
-  }
+
+  std::for_each(
+    std::execution::par,
+    hammersleySequence.begin(),
+    hammersleySequence.end(),
+    [&getObjectWidth, &shTermsSums](auto&& direction)
+    {
+      double width = getObjectWidth(direction);
+      for (int i = 0; i < SPHERICAL_HARMONICS.size(); i++)
+        shTermsSums[i] += SPHERICAL_HARMONICS[i](direction) * width;
+    });
 
   std::vector<float> shTerms;
   shTerms.reserve(shTermsSums.size());
@@ -88,5 +96,3 @@ std::vector<float> calculate_sh_terms(
 
   return shTerms;
 }
-
-double sphere_width(glm::dvec3 direction) { return 2. * SPHERE_RADIUS * direction.z; }

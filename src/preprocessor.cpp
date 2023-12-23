@@ -7,11 +7,7 @@
 int main()
 {
   std::vector<glm::dvec3> hammersleySequence = construct_hemisphere_hammersley_sequence(NUM_POINTS);
-  std::vector<float> shTerms = calculate_sh_terms(hammersleySequence, sphere_width);
-  
-  std::cout << "Spherical harmonics expansion terms:\n";
-  for (float &term : shTerms)
-    std::cout << term << '\n';
+  // std::vector<float> shTerms = calculate_sh_terms(hammersleySequence, sphere_width);
 
   return 0;
 }

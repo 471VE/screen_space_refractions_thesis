@@ -25,6 +25,5 @@ void main()
 {
 	vec2 pos = screen_corners[gl_VertexIndex];
 	gl_Position = vec4(pos, 0.f, 1.f);
-	// real aspect ratio should be passed here, not hardcoded constant!!!
 	forwards = normalize(cameraData.forwards + pos.x * cameraData.right - 1.f / renderParams.aspectRatio * pos.y * cameraData.up).xyz;
 }

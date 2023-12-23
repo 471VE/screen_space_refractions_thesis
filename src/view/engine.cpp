@@ -128,16 +128,15 @@ void Engine::makeDescriptorSetLayouts()
 		vk::DescriptorType::eUniformBuffer,
 		vk::ShaderStageFlagBits::eVertex | vk::ShaderStageFlagBits::eFragment
 	);
-	skyPipelineBindings.emplace_back(
-		vk::DescriptorType::eUniformBuffer,
-		vk::ShaderStageFlagBits::eFragment
-	);
 	frameSetLayout[pipelineType::SKY] = vkinit::makeDescriptorSetLayout(device, skyPipelineBindings);
 
 	// Standard pipeline bindings
 	standardPipelineBindings.emplace_back(
 		vk::DescriptorType::eUniformBuffer,
 		vk::ShaderStageFlagBits::eVertex | vk::ShaderStageFlagBits::eFragment
+	);
+	standardPipelineBindings.emplace_back(
+		vk::DescriptorType::eUniformBuffer, vk::ShaderStageFlagBits::eVertex
 	);
 	standardPipelineBindings.emplace_back(
 		vk::DescriptorType::eStorageBuffer, vk::ShaderStageFlagBits::eVertex
@@ -179,8 +178,8 @@ void Engine::makePipelines()
 		vkmesh::get_pos_color_binding_description(), 
 		vkmesh::get_pos_color_attribute_descriptions()
 	);
-	pipelineBuilder.specifyVertexShader("resources/shaders/model.vert.spv");
-	pipelineBuilder.specifyFragmentShader("resources/shaders/model.frag.spv");
+	pipelineBuilder.specifyVertexShader("resources/shaders/transparency.vert.spv");
+	pipelineBuilder.specifyFragmentShader("resources/shaders/transparency.frag.spv");
 	pipelineBuilder.specifySwapchainExtent(swapchainExtent);
 	pipelineBuilder.specifyDepthAttachment(swapchainFrames[0].depthFormat, 1);
 	pipelineBuilder.addDescriptorSetLayout(frameSetLayout[pipelineType::STANDARD]);
@@ -409,12 +408,6 @@ void Engine::setDistanceCalculationMode(int mode)
 	distanceCalculationMode = mode;
 }
 
-void Engine::setSphereShTerms(const std::vector<float> &sphereShTerms_)
-{
-	sphereShTerms.resize(sphereShTerms_.size());
-	std::copy(sphereShTerms_.begin(), sphereShTerms_.end(), sphereShTerms.begin());
-}
-
 void Engine::prepareFrame(uint32_t imageIndex, Scene* scene)
 {
 	vkutil::SwapChainFrame& _frame = swapchainFrames[imageIndex];
@@ -428,9 +421,6 @@ void Engine::prepareFrame(uint32_t imageIndex, Scene* scene)
 	_frame.renderParamsData.aspectRatio = static_cast<float>(width) / static_cast<float>(height);
 	_frame.renderParamsData.distanceCalculationMode = distanceCalculationMode;
 	memcpy(_frame.renderParamsWriteLocation, &(_frame.renderParamsData), sizeof(RenderParams));
-
-	// Will contain garbage after 9 elements
-	memcpy(_frame.shTermsWriteLocation, sphereShTerms.data(), sizeof(ShTerms));
 
 	glm::mat4 projection = glm::perspective(glm::radians(45.f), static_cast<float>(swapchainExtent.width) / static_cast<float>(swapchainExtent.height), 0.1f, 100.f);
 	projection[1][1] *= -1;
@@ -692,14 +682,11 @@ Engine::~Engine()
 #ifndef NDEBUG
 	instance.destroyDebugUtilsMessengerEXT(debugMessenger, nullptr, dldi);
 #endif
-	/*
-	* from vulkan_funcs.hpp:
-	* 
-	* void Instance::destroy( Optional<const VULKAN_HPP_NAMESPACE::AllocationCallbacks> allocator = nullptr,
-                                            Dispatch const & d = ::vk::getDispatchLoaderStatic())
-	*/
+	// from vulkan_funcs.hpp:	
+	// void Instance::destroy( Optional<const VULKAN_HPP_NAMESPACE::AllocationCallbacks> allocator = nullptr,
+  //                                           Dispatch const & d = ::vk::getDispatchLoaderStatic())
 	instance.destroy();
 
-	//terminate glfw
+	// terminate glfw
 	glfwTerminate();
 }

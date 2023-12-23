@@ -11,5 +11,3 @@ std::vector<glm::dvec3> construct_hemisphere_hammersley_sequence(uint32_t numPoi
 std::vector<float> calculate_sh_terms(
   std::vector<glm::dvec3> hammersleySequence, std::function<double(glm::dvec3)> getObjectWidth
 );
-
-double sphere_width(glm::dvec3 direction);

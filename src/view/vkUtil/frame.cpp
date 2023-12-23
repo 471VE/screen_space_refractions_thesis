@@ -21,12 +21,6 @@ void vkutil::SwapChainFrame::makeDescriptorResources()
 
 	renderParamsWriteLocation = logicalDevice.mapMemory(renderParamsBuffer.bufferMemory, 0, sizeof(RenderParams));
 
-	input.size = sizeof(ShTerms);
-	input.usage = vk::BufferUsageFlagBits::eUniformBuffer;
-	shTermsBuffer = create_buffer(input);
-
-	shTermsWriteLocation = logicalDevice.mapMemory(shTermsBuffer.bufferMemory, 0, sizeof(ShTerms));
-
 	input.size = sizeof(CameraMatrices);
 	input.usage = vk::BufferUsageFlagBits::eUniformBuffer;
 	cameraMatrixBuffer = create_buffer(input);
@@ -43,13 +37,12 @@ void vkutil::SwapChainFrame::makeDescriptorResources()
 	for (int i = 0; i < 1024; ++i)
 		modelTransforms.push_back(glm::mat4(1.f));
 
-	/*
-	typedef struct VkDescriptorBufferInfo {
-		VkBuffer        buffer;
-		VkDeviceSize    offset;
-		VkDeviceSize    range;
-	} VkDescriptorBufferInfo;
-	*/
+	// typedef struct VkDescriptorBufferInfo {
+	// 	VkBuffer        buffer;
+	// 	VkDeviceSize    offset;
+	// 	VkDeviceSize    range;
+	// } VkDescriptorBufferInfo;
+
 	cameraVectorDescriptor.buffer = cameraVectorBuffer.buffer;
 	cameraVectorDescriptor.offset = 0;
 	cameraVectorDescriptor.range = sizeof(CameraVectors);
@@ -57,10 +50,6 @@ void vkutil::SwapChainFrame::makeDescriptorResources()
 	renderParamsDescriptor.buffer = renderParamsBuffer.buffer;
 	renderParamsDescriptor.offset = 0;
 	renderParamsDescriptor.range = sizeof(RenderParams);
-
-	shTermsDescriptor.buffer = shTermsBuffer.buffer;
-	shTermsDescriptor.offset = 0;
-	shTermsDescriptor.range = sizeof(ShTerms);
 
 	cameraMatrixDescriptor.buffer = cameraMatrixBuffer.buffer;
 	cameraMatrixDescriptor.offset = 0;
@@ -101,22 +90,21 @@ void vkutil::SwapChainFrame::makeDepthResources()
 
 void vkutil::SwapChainFrame::recordWriteOperations()
 {
-	/*
-	typedef struct VkWriteDescriptorSet {
-		VkStructureType                  sType;
-		const void* pNext;
-		VkDescriptorSet                  dstSet;
-		uint32_t                         dstBinding;
-		uint32_t                         dstArrayElement;
-		uint32_t                         descriptorCount;
-		VkDescriptorType                 descriptorType;
-		const VkDescriptorImageInfo* pImageInfo;
-		const VkDescriptorBufferInfo* pBufferInfo;
-		const VkBufferView* pTexelBufferView;
-	} VkWriteDescriptorSet;
-	*/
-	vk::WriteDescriptorSet cameraVectorWriteOp, cameraMatrixWriteOp, ssboWriteOp,
-	 renderParamsWriteOp, shTermsWriteOp;
+	// typedef struct VkWriteDescriptorSet {
+	// 	 VkStructureType                  sType;
+	// 	 const void* pNext;
+	// 	 VkDescriptorSet                  dstSet;
+	// 	 uint32_t                         dstBinding;
+	// 	 uint32_t                         dstArrayElement;
+	// 	 uint32_t                         descriptorCount;
+	// 	 VkDescriptorType                 descriptorType;
+	// 	 const VkDescriptorImageInfo*     pImageInfo;
+	// 	 const VkDescriptorBufferInfo*    pBufferInfo;
+	// 	 const VkBufferView*              pTexelBufferView;
+	// } VkWriteDescriptorSet;
+
+	vk::WriteDescriptorSet cameraVectorWriteOp, cameraMatrixWriteOp, ssboWriteOp, renderParamsWriteOp,
+		cameraVectorModelWriteOp;
 
 	cameraVectorWriteOp.dstSet = descriptorSet[pipelineType::SKY];
 	cameraVectorWriteOp.dstBinding = 0;
@@ -125,20 +113,13 @@ void vkutil::SwapChainFrame::recordWriteOperations()
 	cameraVectorWriteOp.descriptorType = vk::DescriptorType::eUniformBuffer;
 	cameraVectorWriteOp.pBufferInfo = &cameraVectorDescriptor;
 
+	// When making this automatic, don't forget about increasing dstBinding
 	renderParamsWriteOp.dstSet = descriptorSet[pipelineType::SKY];
 	renderParamsWriteOp.dstBinding = 1;
 	renderParamsWriteOp.dstArrayElement = 0; //byte offset within binding for inline uniform blocks
 	renderParamsWriteOp.descriptorCount = 1;
 	renderParamsWriteOp.descriptorType = vk::DescriptorType::eUniformBuffer;
 	renderParamsWriteOp.pBufferInfo = &renderParamsDescriptor;
-
-	// When making this automatic, don't forget about increasing dstBinding
-	shTermsWriteOp.dstSet = descriptorSet[pipelineType::SKY];
-	shTermsWriteOp.dstBinding = 2;
-	shTermsWriteOp.dstArrayElement = 0; //byte offset within binding for inline uniform blocks
-	shTermsWriteOp.descriptorCount = 1;
-	shTermsWriteOp.descriptorType = vk::DescriptorType::eUniformBuffer;
-	shTermsWriteOp.pBufferInfo = &shTermsDescriptor;
 
 	cameraMatrixWriteOp.dstSet = descriptorSet[pipelineType::STANDARD];
 	cameraMatrixWriteOp.dstBinding = 0;
@@ -147,15 +128,21 @@ void vkutil::SwapChainFrame::recordWriteOperations()
 	cameraMatrixWriteOp.descriptorType = vk::DescriptorType::eUniformBuffer;
 	cameraMatrixWriteOp.pBufferInfo = &cameraMatrixDescriptor;
 
+	cameraVectorModelWriteOp.dstSet = descriptorSet[pipelineType::STANDARD];
+	cameraVectorModelWriteOp.dstBinding = 1;
+	cameraVectorModelWriteOp.dstArrayElement = 0; //byte offset within binding for inline uniform blocks
+	cameraVectorModelWriteOp.descriptorCount = 1;
+	cameraVectorModelWriteOp.descriptorType = vk::DescriptorType::eUniformBuffer;
+	cameraVectorModelWriteOp.pBufferInfo = &cameraVectorDescriptor;
+
 	ssboWriteOp.dstSet = descriptorSet[pipelineType::STANDARD];
-	ssboWriteOp.dstBinding = 1;
+	ssboWriteOp.dstBinding = 2;
 	ssboWriteOp.dstArrayElement = 0; //byte offset within binding for inline uniform blocks
 	ssboWriteOp.descriptorCount = 1;
 	ssboWriteOp.descriptorType = vk::DescriptorType::eStorageBuffer;
 	ssboWriteOp.pBufferInfo = &ssboDescriptor;
 
-	writeOps = { cameraVectorWriteOp, cameraMatrixWriteOp, ssboWriteOp, renderParamsWriteOp,
-		shTermsWriteOp };
+	writeOps = { cameraVectorWriteOp, cameraMatrixWriteOp, ssboWriteOp, renderParamsWriteOp, cameraVectorModelWriteOp };
 
 }
 
@@ -179,7 +166,6 @@ void vkutil::SwapChainFrame::destroy()
 
 	destroyBufferAndFreeMemory(cameraVectorBuffer);
 	destroyBufferAndFreeMemory(renderParamsBuffer);
-	destroyBufferAndFreeMemory(shTermsBuffer);
 	destroyBufferAndFreeMemory(cameraMatrixBuffer);
 	destroyBufferAndFreeMemory(modelBuffer);
 

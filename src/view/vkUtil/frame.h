@@ -44,11 +44,7 @@ namespace vkutil
 		};
 		Buffer renderParamsBuffer;
 		void* renderParamsWriteLocation;
-
-		ShTerms shTermsData;
-		Buffer shTermsBuffer;
-		void* shTermsWriteLocation;
-
+		
 		std::vector<glm::mat4> modelTransforms;
 		Buffer modelBuffer;
 		void* modelBufferWriteLocation;

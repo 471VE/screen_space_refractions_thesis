@@ -1,7 +1,6 @@
 #include "app.h"
 #include "logging.h"
 #include "../view/camera.h"
-#include "../preprocessing/preprocessing_common.h"
 
 
 // Construct a new App.
@@ -14,8 +13,6 @@ App::App(int width, int height)
 
 static Camera camera;
 static uint32_t distance_calculation_mode = 1;
-static uint32_t hammersley_points_num = 100;
-static bool recalculate_sh_terms = false;
 
 static void on_keyboard_pressed(GLFWwindow* window, int , int, int , int)
 {
@@ -47,9 +44,6 @@ static void on_keyboard_pressed(GLFWwindow* window, int , int, int , int)
 
 	if (glfwGetKey(window, '3'))
 		distance_calculation_mode = 3;
-
-	if (glfwGetKey(window, 'N'))
-		recalculate_sh_terms = true;
 }
 
 
@@ -81,22 +75,9 @@ void App::buildGlfwWindow(int width, int height)
 // Start the App's main loop
 void App::run()
 {
-	std::vector<glm::dvec3> hammersleySequence = construct_hemisphere_hammersley_sequence(hammersley_points_num);
-	std::vector<float> sphereShTerms = calculate_sh_terms(hammersleySequence, sphere_width);
-	graphicsEngine->setSphereShTerms(sphereShTerms);
 	while (!glfwWindowShouldClose(window))
 	{
 		glfwPollEvents();
-
-		if (recalculate_sh_terms)
-		{
-			std::cout << "Enter the number of points in Hammersley sequence: ";
-			std::cin >> hammersley_points_num;
-			std::vector<glm::dvec3> hammersleySequence = construct_hemisphere_hammersley_sequence(hammersley_points_num);
-			std::vector<float> sphereShTerms = calculate_sh_terms(hammersleySequence, sphere_width);
-			graphicsEngine->setSphereShTerms(sphereShTerms);
-			recalculate_sh_terms = false;
-		}
 
 		graphicsEngine->setDistanceCalculationMode(distance_calculation_mode);
 		graphicsEngine->render(scene);

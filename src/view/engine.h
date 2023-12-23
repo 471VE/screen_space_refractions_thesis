@@ -20,7 +20,6 @@ public:
 	void render(Scene* scene);
 	void updateCameraData(Camera& camera);
 	void setDistanceCalculationMode(int mode);
-	void setSphereShTerms(const std::vector<float> &sphereShTerms);
 
 private:
 
@@ -80,7 +79,6 @@ private:
 
 	//Render-related variables
 	uint32_t distanceCalculationMode = 1;
-	std::vector<float> sphereShTerms; // temporary
 
 	//instance setup
 	void makeInstance();
