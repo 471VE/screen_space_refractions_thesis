@@ -264,7 +264,7 @@ void Engine::makeAssets()
 	//Meshes
 	meshes = new VertexMenagerie();
 	std::unordered_map<meshTypes, std::vector<const char*>> model_filenames = {
-		{meshTypes::CUBE, {"resources/models/cube.obj", "resources/models/blank.mtl"}}
+		{meshTypes::CUBE, {"resources/models/human_skull.obj", "resources/models/blank.mtl"}}
 		// {meshTypes::GROUND, {"resources/models/ground.obj","resources/models/ground.mtl"}},
 		// {meshTypes::GIRL, {"resources/models/girl.obj","resources/models/girl.mtl"}},
 		// {meshTypes::SKULL, {"resources/models/skull.obj","resources/models/skull.mtl"}},
