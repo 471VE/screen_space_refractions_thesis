@@ -19,12 +19,9 @@ Engine::Engine(int width, int height, GLFWwindow* window)
 	vklogging::Logger::getLogger()->print("Making a graphics engine...");
 
 	makeInstance();
-
 	makeDevice();
-
 	makeDescriptorSetLayouts();
 	makePipelines();
-
 	finalizeSetup();
 
 	makeWorkerThreads();
@@ -143,7 +140,7 @@ void Engine::makeDescriptorSetLayouts()
 	);
 	frameSetLayout[pipelineType::STANDARD] = vkinit::makeDescriptorSetLayout(device, standardPipelineBindings);
 
-	//Binding for individual draw calls
+	// Binding for individual draw calls
 	individualDrawCallBindings.emplace_back(
 		vk::DescriptorType::eCombinedImageSampler, vk::ShaderStageFlagBits::eFragment
 	);
@@ -261,7 +258,7 @@ void Engine::makeWorkerThreads()
 
 void Engine::makeAssets()
 {
-	//Meshes
+	// Meshes
 	meshes = new VertexMenagerie();
 	std::unordered_map<meshTypes, std::vector<const char*>> model_filenames = {
 		{meshTypes::CUBE, {"resources/models/human_skull.obj", "resources/models/blank.mtl"}}
@@ -297,12 +294,12 @@ void Engine::makeAssets()
 		// {meshTypes::VIKING_ROOM, {"resources/textures/viking_room.png"}},
 	};
 
-	//Make a descriptor pool to allocate sets.
+	// Make a descriptor pool to allocate sets.
 	meshDescriptorPool = vkinit::make_descriptor_pool(
 		device, static_cast<uint32_t>(filenames.size()) + 1, {vk::DescriptorType::eCombinedImageSampler}
 	);
 
-	//Submit loading work
+	// Submit loading work
 	workQueue.lock.lock();
 	std::vector<meshTypes> mesh_types = {
 		meshTypes::CUBE,// meshTypes::GIRL, meshTypes::SKULL, meshTypes::VIKING_ROOM
@@ -328,8 +325,7 @@ void Engine::makeAssets()
 	}
 	workQueue.lock.unlock();
 
-	//Work will be done by the background threads,
-	//we just need to wait.
+	// Work will be done by the background threads, we just need to wait.
 #ifndef NDEBUG
 	std::cout << "Waiting for work to finish." << std::endl;
 #endif
@@ -687,6 +683,5 @@ Engine::~Engine()
   //                                           Dispatch const & d = ::vk::getDispatchLoaderStatic())
 	instance.destroy();
 
-	// terminate glfw
 	glfwTerminate();
 }

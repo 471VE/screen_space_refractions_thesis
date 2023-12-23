@@ -9,7 +9,7 @@ VertexMenagerie::VertexMenagerie()
 static bool ray_intersects_triangle(const glm::vec3 &rayOrigin, const glm::dvec3 &rayVector, 
 	const glm::vec3 &vertex0, const glm::vec3 &vertex1, const glm::vec3 &vertex2, double &distToIntersectionPoint)
 {
-    const float EPSILON = 1.e-7f;
+    constexpr float EPSILON = 1.e-7f;
     glm::dvec3 edge1, edge2, rayVecXe2, s, sXe1;
     float det, invDet, u, v;
     edge1 = vertex1 - vertex0;
