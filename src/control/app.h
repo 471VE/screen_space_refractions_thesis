@@ -5,21 +5,20 @@
 
 class App {
 
-private:
-	Engine* graphicsEngine;
-	GLFWwindow* window;
-	Scene* scene;
+	private:
+		Engine* graphicsEngine;
+		GLFWwindow* window;
+		Scene* scene;
 
-	double lastTime, currentTime;
-	int numFrames;
-	float frameTime;
+		double lastTime, currentTime;
+		int numFrames;
+		float frameTime;
 
-	void buildGlfwWindow(int width, int height);
+		void buildGlfwWindow(int width, int height);
+		void calculateFrameRate();
 
-	void calculateFrameRate();
-
-public:
-	App(int width, int height);
-	~App();
-	void run();
+	public:
+		App(int width, int height);
+		~App();
+		void run();
 };

@@ -213,27 +213,25 @@ namespace vkinit {
 			support.capabilities.minImageCount + 1
 		);
 
-		/*
-		* VULKAN_HPP_CONSTEXPR SwapchainCreateInfoKHR(
-	  VULKAN_HPP_NAMESPACE::SwapchainCreateFlagsKHR flags_         = {},
-	  VULKAN_HPP_NAMESPACE::SurfaceKHR              surface_       = {},
-	  uint32_t                                      minImageCount_ = {},
-	  VULKAN_HPP_NAMESPACE::Format                  imageFormat_   = VULKAN_HPP_NAMESPACE::Format::eUndefined,
-	  VULKAN_HPP_NAMESPACE::ColorSpaceKHR   imageColorSpace_  = VULKAN_HPP_NAMESPACE::ColorSpaceKHR::eSrgbNonlinear,
-	  VULKAN_HPP_NAMESPACE::Extent2D        imageExtent_      = {},
-	  uint32_t                              imageArrayLayers_ = {},
-	  VULKAN_HPP_NAMESPACE::ImageUsageFlags imageUsage_       = {},
-	  VULKAN_HPP_NAMESPACE::SharingMode     imageSharingMode_ = VULKAN_HPP_NAMESPACE::SharingMode::eExclusive,
-	  uint32_t                              queueFamilyIndexCount_ = {},
-	  const uint32_t *                      pQueueFamilyIndices_   = {},
-	  VULKAN_HPP_NAMESPACE::SurfaceTransformFlagBitsKHR preTransform_ =
-		VULKAN_HPP_NAMESPACE::SurfaceTransformFlagBitsKHR::eIdentity,
-	  VULKAN_HPP_NAMESPACE::CompositeAlphaFlagBitsKHR compositeAlpha_ =
-		VULKAN_HPP_NAMESPACE::CompositeAlphaFlagBitsKHR::eOpaque,
-	  VULKAN_HPP_NAMESPACE::PresentModeKHR presentMode_  = VULKAN_HPP_NAMESPACE::PresentModeKHR::eImmediate,
-	  VULKAN_HPP_NAMESPACE::Bool32         clipped_      = {},
-	  VULKAN_HPP_NAMESPACE::SwapchainKHR   oldSwapchain_ = {} ) VULKAN_HPP_NOEXCEPT
-		*/
+		// * VULKAN_HPP_CONSTEXPR SwapchainCreateInfoKHR(
+	  // VULKAN_HPP_NAMESPACE::SwapchainCreateFlagsKHR flags_         = {},
+	  // VULKAN_HPP_NAMESPACE::SurfaceKHR              surface_       = {},
+	  // uint32_t                                      minImageCount_ = {},
+	  // VULKAN_HPP_NAMESPACE::Format                  imageFormat_   = VULKAN_HPP_NAMESPACE::Format::eUndefined,
+	  // VULKAN_HPP_NAMESPACE::ColorSpaceKHR   imageColorSpace_  = VULKAN_HPP_NAMESPACE::ColorSpaceKHR::eSrgbNonlinear,
+	  // VULKAN_HPP_NAMESPACE::Extent2D        imageExtent_      = {},
+	  // uint32_t                              imageArrayLayers_ = {},
+	  // VULKAN_HPP_NAMESPACE::ImageUsageFlags imageUsage_       = {},
+	  // VULKAN_HPP_NAMESPACE::SharingMode     imageSharingMode_ = VULKAN_HPP_NAMESPACE::SharingMode::eExclusive,
+	  // uint32_t                              queueFamilyIndexCount_ = {},
+	  // const uint32_t *                      pQueueFamilyIndices_   = {},
+	  // VULKAN_HPP_NAMESPACE::SurfaceTransformFlagBitsKHR preTransform_ =
+		// VULKAN_HPP_NAMESPACE::SurfaceTransformFlagBitsKHR::eIdentity,
+	  // VULKAN_HPP_NAMESPACE::CompositeAlphaFlagBitsKHR compositeAlpha_ =
+		// VULKAN_HPP_NAMESPACE::CompositeAlphaFlagBitsKHR::eOpaque,
+	  // VULKAN_HPP_NAMESPACE::PresentModeKHR presentMode_  = VULKAN_HPP_NAMESPACE::PresentModeKHR::eImmediate,
+	  // VULKAN_HPP_NAMESPACE::Bool32         clipped_      = {},
+	  // VULKAN_HPP_NAMESPACE::SwapchainKHR   oldSwapchain_ = {} ) VULKAN_HPP_NOEXCEPT
 		vk::SwapchainCreateInfoKHR createInfo = vk::SwapchainCreateInfoKHR(
 			vk::SwapchainCreateFlagsKHR(), surface, imageCount, format.format, format.colorSpace,
 			extent, 1, vk::ImageUsageFlagBits::eColorAttachment

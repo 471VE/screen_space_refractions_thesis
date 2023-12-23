@@ -646,9 +646,7 @@ void Engine::cleanupSwapchain()
 Engine::~Engine()
 {
 	device.waitIdle();
-
 	vklogging::Logger::getLogger()->print("The app has been closed.");
-
 	device.destroyCommandPool(commandPool);
 
 	for (pipelineType pipeline_type : pipelineTypes)

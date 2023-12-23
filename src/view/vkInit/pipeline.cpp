@@ -6,8 +6,7 @@ vkinit::PipelineBuilder::PipelineBuilder(vk::Device device)
 	this->device = device;
 	reset();
 
-	//Some stages are fixed with sensible defaults and don't
-	//need to be reconfigured
+	// Some stages are fixed with sensible defaults and don't need to be reconfigured
 	configureInputAssembly();
 	makeRasterizerInfo();
 	configureMultisampling();
@@ -34,7 +33,6 @@ void vkinit::PipelineBuilder::resetVertexFormat()
 	vertexInputInfo.pVertexBindingDescriptions = nullptr;
 	vertexInputInfo.vertexAttributeDescriptionCount = 0;
 	vertexInputInfo.pVertexAttributeDescriptions = nullptr;
-
 }
 
 void vkinit::PipelineBuilder::resetRenderpassAttachments()
@@ -207,43 +205,43 @@ void vkinit::PipelineBuilder::resetDescriptorSetLayouts() {	descriptorSetLayouts
 
 vkinit::GraphicsPipelineOutBundle vkinit::PipelineBuilder::build()
 {
-		//Vertex Input
+		// Vertex Input
 		pipelineInfo.pVertexInputState = &vertexInputInfo;
 
-		//Input Assembly
+		// Input Assembly
 		pipelineInfo.pInputAssemblyState = &inputAssemblyInfo;
 
-		//Viewport and Scissor
+		// Viewport and Scissor
 		makeViewportState();
 		pipelineInfo.pViewportState = &viewportState;
 
-		//Rasterizer
+		// Rasterizer
 		pipelineInfo.pRasterizationState = &rasterizer;
 
-		//Shader Modules
+		// Shader Modules
 		pipelineInfo.stageCount = static_cast<uint32_t>(shaderStages.size());
 		pipelineInfo.pStages = shaderStages.data();
 
-		//Depth-Stencil is handled by depth attachment functions.
+		// Depth-Stencil is handled by depth attachment functions.
 
-		//Multisampling
+		// Multisampling
 		pipelineInfo.pMultisampleState = &multisampling;
 
-		//Color Blend
+		// Color Blend
 		pipelineInfo.pColorBlendState = &colorBlending;
 
-		//Pipeline Layout
+		// Pipeline Layout
 		vklogging::Logger::getLogger()->print("Create Pipeline Layout");
 		vk::PipelineLayout pipelineLayout = makePipelineLayout();
 		pipelineInfo.layout = pipelineLayout;
 
-		//Renderpass
+		// Renderpass
 		vklogging::Logger::getLogger()->print("Create RenderPass");
 		vk::RenderPass renderpass = makeRenderpass();
 		pipelineInfo.renderPass = renderpass;
 		pipelineInfo.subpass = 0;
 
-		//Make the Pipeline
+		// Make the Pipeline
 		vklogging::Logger::getLogger()->print("Create Graphics Pipeline");
 		vk::Pipeline graphicsPipeline;
 		try
@@ -330,17 +328,15 @@ void vkinit::PipelineBuilder::configureColorBlending()
 
 vk::PipelineLayout vkinit::PipelineBuilder::makePipelineLayout()
 {
-	/*
-	typedef struct VkPipelineLayoutCreateInfo {
-		VkStructureType                 sType;
-		const void*                     pNext;
-		VkPipelineLayoutCreateFlags     flags;
-		uint32_t                        setLayoutCount;
-		const VkDescriptorSetLayout*    pSetLayouts;
-		uint32_t                        pushConstantRangeCount;
-		const VkPushConstantRange*      pPushConstantRanges;
-	} VkPipelineLayoutCreateInfo;
-	*/
+	// typedef struct VkPipelineLayoutCreateInfo {
+	// 	VkStructureType                 sType;
+	// 	const void*                     pNext;
+	// 	VkPipelineLayoutCreateFlags     flags;
+	// 	uint32_t                        setLayoutCount;
+	// 	const VkDescriptorSetLayout*    pSetLayouts;
+	// 	uint32_t                        pushConstantRangeCount;
+	// 	const VkPushConstantRange*      pPushConstantRanges;
+	// } VkPipelineLayoutCreateInfo;
 
 	vk::PipelineLayoutCreateInfo layoutInfo;
 	layoutInfo.flags = vk::PipelineLayoutCreateFlags();
@@ -375,9 +371,9 @@ vk::RenderPass vkinit::PipelineBuilder::makeRenderpass()
 		flattenedAttachmentReferences[i] = attachmentReferences[i];
 	}
 
-	//Renderpasses are broken down into subpasses, there's always at least one.
+	// Renderpasses are broken down into subpasses, there's always at least one.
 	vk::SubpassDescription subpass = makeSubpass(flattenedAttachmentReferences);
-	//Now create the renderpass
+	// Now create the renderpass
 	vk::RenderPassCreateInfo renderpassInfo = makeRenderpassInfo(flattenedAttachmentDescriptions, subpass);
 	try
 	{

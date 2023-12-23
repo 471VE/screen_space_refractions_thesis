@@ -127,52 +127,52 @@ void VertexMenagerie::finalize(vertexBufferFinalizationChunk finalizationChunk)
 		| vk::MemoryPropertyFlagBits::eHostCoherent;
 	Buffer stagingBuffer = vkutil::create_buffer(inputChunk);
 
-	//fill it with vertex data
+	// Fill it with vertex data:
 	void* memoryLocation = logicalDevice.mapMemory(stagingBuffer.bufferMemory, 0, inputChunk.size);
 	memcpy(memoryLocation, vertexLump.data(), inputChunk.size);
 	logicalDevice.unmapMemory(stagingBuffer.bufferMemory);
 
-	//make the vertex buffer
+	// Make the vertex buffer:
 	inputChunk.usage = vk::BufferUsageFlagBits::eTransferDst 
 		| vk::BufferUsageFlagBits::eVertexBuffer;
 	inputChunk.memoryProperties = vk::MemoryPropertyFlagBits::eDeviceLocal;
 	vertexBuffer = vkutil::create_buffer(inputChunk);
 
-	//copy to it
+	// Copy to it:
 	vkutil::copy_buffer(
 		stagingBuffer, vertexBuffer, inputChunk.size, 
 		finalizationChunk.queue, finalizationChunk.commandBuffer
 	);
 
-	//destroy staging buffer
+	// Destroy staging buffer:
 	logicalDevice.destroyBuffer(stagingBuffer.buffer);
 	logicalDevice.freeMemory(stagingBuffer.bufferMemory);
 
-	//make a staging buffer for indices
+	// Make a staging buffer for indices:
 	inputChunk.size = sizeof(uint32_t) * indexLump.size();
 	inputChunk.usage = vk::BufferUsageFlagBits::eTransferSrc;
 	inputChunk.memoryProperties = vk::MemoryPropertyFlagBits::eHostVisible 
 		| vk::MemoryPropertyFlagBits::eHostCoherent;
 	stagingBuffer = vkutil::create_buffer(inputChunk);
 
-	//fill it with index data
+	// Fill it with index data:
 	memoryLocation = logicalDevice.mapMemory(stagingBuffer.bufferMemory, 0, inputChunk.size);
 	memcpy(memoryLocation, indexLump.data(), inputChunk.size);
 	logicalDevice.unmapMemory(stagingBuffer.bufferMemory);
 
-	//make the vertex buffer
+	// Make the vertex buffer:
 	inputChunk.usage = vk::BufferUsageFlagBits::eTransferDst
 		| vk::BufferUsageFlagBits::eIndexBuffer;
 	inputChunk.memoryProperties = vk::MemoryPropertyFlagBits::eDeviceLocal;
 	indexBuffer = vkutil::create_buffer(inputChunk);
 
-	//copy to it
+	// Copy to it:
 	vkutil::copy_buffer(
 		stagingBuffer, indexBuffer, inputChunk.size, 
 		finalizationChunk.queue, finalizationChunk.commandBuffer
 	);
 
-	//destroy staging buffer
+	// Destroy staging buffer:
 	logicalDevice.destroyBuffer(stagingBuffer.buffer);
 	logicalDevice.freeMemory(stagingBuffer.bufferMemory);
 	vertexLump.clear();
@@ -180,11 +180,11 @@ void VertexMenagerie::finalize(vertexBufferFinalizationChunk finalizationChunk)
 
 VertexMenagerie::~VertexMenagerie()
 {
-	//destroy vertex buffer
+	// Destroy vertex buffer:
 	logicalDevice.destroyBuffer(vertexBuffer.buffer);
 	logicalDevice.freeMemory(vertexBuffer.bufferMemory);
 
-	//destroy index buffer
+	// Destroy index buffer:
 	logicalDevice.destroyBuffer(indexBuffer.buffer);
 	logicalDevice.freeMemory(indexBuffer.bufferMemory);
 
