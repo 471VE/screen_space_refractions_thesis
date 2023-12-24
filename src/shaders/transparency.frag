@@ -6,7 +6,6 @@ layout(location = 2) in vec3 fragNormal;
 layout(location = 3) in float width;
 
 layout(set = 1, binding = 0) uniform sampler2D material;
-layout(set = 0, binding = 3) uniform sampler2D albedoMap;
 
 layout(location = 0) out vec4 outColor;
 

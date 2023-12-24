@@ -138,9 +138,6 @@ void Engine::makeDescriptorSetLayouts()
 	standardPipelineBindings.emplace_back(
 		vk::DescriptorType::eStorageBuffer, vk::ShaderStageFlagBits::eVertex
 	);
-	standardPipelineBindings.emplace_back(
-		vk::DescriptorType::eInputAttachment, vk::ShaderStageFlagBits::eFragment
-	);
 	frameSetLayout[pipelineType::STANDARD] = vkinit::makeDescriptorSetLayout(device, standardPipelineBindings);
 
 	// Binding for individual draw calls
