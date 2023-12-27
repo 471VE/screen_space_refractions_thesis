@@ -1,5 +1,6 @@
 #pragma once
 #include "../../config.h"
+#include "../../common/common_definitions.h"
 
 namespace vkmesh {
 
@@ -15,7 +16,7 @@ namespace vkmesh {
 
 		vk::VertexInputBindingDescription bindingDescription;
 		bindingDescription.binding = 0;
-		bindingDescription.stride = 20 * sizeof(float);
+		bindingDescription.stride = SINGLE_VERTEX_FLOAT_NUM * sizeof(float);
 		bindingDescription.inputRate = vk::VertexInputRate::eVertex;
 		
 		return bindingDescription;
@@ -34,13 +35,8 @@ namespace vkmesh {
 
 		std::vector<vk::VertexInputAttributeDescription> attributes;
 		vk::VertexInputAttributeDescription dummy;
-		attributes.push_back(dummy);
-		attributes.push_back(dummy);
-		attributes.push_back(dummy);
-		attributes.push_back(dummy);
-		attributes.push_back(dummy);
-		attributes.push_back(dummy);
-		attributes.push_back(dummy);
+		for (int i = 0; i < 16; i++)
+			attributes.push_back(dummy);
 
 		// Pos
 		attributes[0].binding = 0;
@@ -67,6 +63,8 @@ namespace vkmesh {
 		attributes[3].offset = 8 * sizeof(float);
 
 		// Spherical harmonics expansion coefficients
+
+		// Width
 		attributes[4].binding = 0;
 		attributes[4].location = 4;
 		attributes[4].format = vk::Format::eR32G32B32Sfloat;
@@ -81,6 +79,54 @@ namespace vkmesh {
 		attributes[6].location = 6;
 		attributes[6].format = vk::Format::eR32G32B32Sfloat;
 		attributes[6].offset = 17 * sizeof(float);
+
+		// X-coordinate of a refracted vector
+		attributes[7].binding = 0;
+		attributes[7].location = 7;
+		attributes[7].format = vk::Format::eR32G32B32Sfloat;
+		attributes[7].offset = 20 * sizeof(float);
+
+		attributes[8].binding = 0;
+		attributes[8].location = 8;
+		attributes[8].format = vk::Format::eR32G32B32Sfloat;
+		attributes[8].offset = 23 * sizeof(float);
+
+		attributes[9].binding = 0;
+		attributes[9].location = 9;
+		attributes[9].format = vk::Format::eR32G32B32Sfloat;
+		attributes[9].offset = 26 * sizeof(float);
+
+		// Y-coordinate of a refracted vector
+		attributes[10].binding = 0;
+		attributes[10].location = 10;
+		attributes[10].format = vk::Format::eR32G32B32Sfloat;
+		attributes[10].offset = 29 * sizeof(float);
+
+		attributes[11].binding = 0;
+		attributes[11].location = 11;
+		attributes[11].format = vk::Format::eR32G32B32Sfloat;
+		attributes[11].offset = 32 * sizeof(float);
+
+		attributes[12].binding = 0;
+		attributes[12].location = 12;
+		attributes[12].format = vk::Format::eR32G32B32Sfloat;
+		attributes[12].offset = 35 * sizeof(float);
+
+		// Z-coordinate of a refracted vector
+		attributes[13].binding = 0;
+		attributes[13].location = 13;
+		attributes[13].format = vk::Format::eR32G32B32Sfloat;
+		attributes[13].offset = 38 * sizeof(float);
+
+		attributes[14].binding = 0;
+		attributes[14].location = 14;
+		attributes[14].format = vk::Format::eR32G32B32Sfloat;
+		attributes[14].offset = 41 * sizeof(float);
+
+		attributes[15].binding = 0;
+		attributes[15].location = 15;
+		attributes[15].format = vk::Format::eR32G32B32Sfloat;
+		attributes[15].offset = 44 * sizeof(float);
 
 		return attributes;
 	}

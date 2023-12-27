@@ -21,7 +21,6 @@ layout(location = 0) out vec4 outColor;
 #define MAX_DIST 100.f
 #define SURF_DIST 0.001f
 #define GAMMA 2.2f
-#define IOR 1.45f // index of refraction
 #define M_PI 3.1415926535897932384626433832795f
 #define UP vec3(0.f, 1.f, 0.f)
 
@@ -84,8 +83,8 @@ float sd_box_frame(vec3 p, vec3 b, float e)
 
 float get_dist(vec3 p)
 {
-  float d = sd_box(p, vec3(1.f));
-  // float d = sd_sphere(p, SPHERE_RADIUS);
+  // float d = sd_box(p, vec3(1.f));
+  float d = sd_sphere(p, SPHERE_RADIUS);
   // float d = sd_cylinder(p, vec3(-0.2, -0.2, -0.f), vec3(0.f, 0.2, 0.2), 0.25);
   // float d = sd_cylinder(p, vec3(-0.f, -0.2, -0.f), vec3(0.f, 0.2, 0.f), 0.25);
   // float d = sd_cone(p - vec3(0.f, 0.5f, 0.f), vec2(sin(3.14f / 6.f), cos(3.14f / 6.f)), 1.f);
@@ -155,50 +154,38 @@ vec3 refract_safe(vec3 I, vec3 N, float eta)
 
 void main()
 {
-  vec3 color = sample_cubemap_linear_space(rayDirection);   
-  float dist = ray_march(cameraData.position.xzy, rayDirection, 1.f); // outside of object
-  
-  if (dist < MAX_DIST)
+  vec3 color = sample_cubemap_linear_space(rayDirection);
+
+  if (renderParams.distanceCalculationMode == 1)
   {
-    color = vec3(0.f);
-
-    vec3 pos = cameraData.position.xzy + rayDirection * dist; // 3d hit position
-    vec3 normal = get_normal(pos); // surface normal orientation
-
-    float energyLeft = 1.f;
-
-    vec3 reflectedRayDirection = reflect(rayDirection, normal);
-    vec3 colorReflected = sample_cubemap_linear_space(reflectedRayDirection);
-    vec3 colorRefracted = vec3(0.f);
-
-    float R = get_fresnel_factor(dot(-rayDirection, normal));
-    float T = 1.f - R;
-    color += energyLeft * R * colorReflected;
-    energyLeft *= T;
+    float dist = ray_march(cameraData.position.xzy, rayDirection, 1.f); // outside of object
     
-    vec3 inRayDirection = refract_safe(rayDirection, normal, 1.f/IOR); // ray direction when entering
-    
-    vec3 enterPoint = pos - normal * SURF_DIST * 3.f;
+    if (dist < MAX_DIST)
+    {
+      color = vec3(0.f);
 
-    float distanceInside; // inside the object
-    vec3 exitPoint; // 3d position of exit
-    vec3 exitNormal;
-    vec3 outRayDirection;
+      vec3 pos = cameraData.position.xzy + rayDirection * dist; // 3d hit position
+      vec3 normal = get_normal(pos); // surface normal orientation
 
-    exitPoint = enterPoint;
-    exitNormal = -normal;
+      vec3 reflectedRayDirection = reflect(rayDirection, normal);
+      vec3 colorReflected = sample_cubemap_linear_space(reflectedRayDirection);
 
-    if (renderParams.distanceCalculationMode == 1)
-      distanceInside = ray_march(exitPoint, inRayDirection, -1.f);
-    exitPoint += inRayDirection * distanceInside; 
-    exitNormal = -get_normal(exitPoint);
-    R = get_fresnel_factor(dot(-inRayDirection, exitNormal));
-    T = 1.f - R;
-    outRayDirection = refract_safe(inRayDirection, exitNormal, IOR);
-    inRayDirection = reflect(inRayDirection, exitNormal);
+      float R = get_fresnel_factor(dot(-rayDirection, normal));
+      float T = 1.f - R;
+      color += R * colorReflected;
+      
+      vec3 inRayDirection = refract_safe(rayDirection, normal, 1.f/IOR); // ray direction when entering
+      
+      vec3 enterPoint = pos - normal * SURF_DIST * 3.f;
 
-    colorRefracted = sample_cubemap_linear_space(outRayDirection);
-    color += energyLeft * T * colorRefracted;
+      float distanceInside = ray_march(enterPoint, inRayDirection, -1.f); // inside the object
+      vec3 exitPoint = enterPoint + inRayDirection * distanceInside; // 3d position of exit
+      vec3 exitNormal = -get_normal(exitPoint);
+      vec3 outRayDirection = refract_safe(inRayDirection, exitNormal, IOR);
+
+      vec3 colorRefracted = sample_cubemap_linear_space(outRayDirection);
+      color += T * colorRefracted;
+    }
   }
 
   // Gamma correction

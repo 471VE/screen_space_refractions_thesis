@@ -39,7 +39,7 @@ namespace vkutil
 		void* cameraVectorWriteLocation;
 
 		RenderParams renderParamsData = {
-			.aspectRatio = 16.f / 9.f,
+			.aspectRatio = 9.f / 16.f,
 			.distanceCalculationMode = 1
 		};
 		Buffer renderParamsBuffer;

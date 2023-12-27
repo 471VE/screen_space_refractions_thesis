@@ -5,8 +5,6 @@
 
 #include <glm/ext.hpp>
 
-#define SPHERE_RADIUS 0.5
-
 // Spherical harmonics without constant terms
 static double Y00 (glm::dvec3 dir) { return 1.; }
 
@@ -71,19 +69,24 @@ std::vector<glm::dvec3> construct_hemisphere_hammersley_sequence(uint32_t numPoi
 }
 
 std::vector<float> calculate_sh_terms(
-  std::vector<glm::dvec3> hammersleySequence, std::function<double(glm::dvec3)> getObjectWidth
+  std::vector<glm::dvec3> hammersleySequence, std::function<DataToEncode(glm::dvec3)> getDataToEncode
 ) {
-  std::vector<double> shTermsSums(SPHERICAL_HARMONICS.size(), 0.);
+  std::vector<double> shTermsSums(SPHERICAL_HARMONICS.size() * 4, 0.);
 
   std::for_each(
     std::execution::par,
     hammersleySequence.begin(),
     hammersleySequence.end(),
-    [&getObjectWidth, &shTermsSums](auto&& direction)
+    [&getDataToEncode, &shTermsSums](auto&& direction)
     {
-      double width = getObjectWidth(direction);
+      DataToEncode data = getDataToEncode(direction);
       for (int i = 0; i < SPHERICAL_HARMONICS.size(); i++)
-        shTermsSums[i] += SPHERICAL_HARMONICS[i](direction) * width;
+      {
+        shTermsSums[i + 0 * SPHERICAL_HARMONICS.size()] += SPHERICAL_HARMONICS[i](direction) * data.width;
+        shTermsSums[i + 1 * SPHERICAL_HARMONICS.size()] += SPHERICAL_HARMONICS[i](direction) * data.x;
+        shTermsSums[i + 2 * SPHERICAL_HARMONICS.size()] += SPHERICAL_HARMONICS[i](direction) * data.y;
+        shTermsSums[i + 3 * SPHERICAL_HARMONICS.size()] += SPHERICAL_HARMONICS[i](direction) * data.z;
+      }
     });
 
   std::vector<float> shTerms;
@@ -91,7 +94,7 @@ std::vector<float> calculate_sh_terms(
   for (int i = 0; i < shTermsSums.size(); i++)
     shTerms.push_back(
       float(shTermsSums[i] * 2. * glm::pi<double>() / double(hammersleySequence.size()))
-      * SH_CONSTANTS_SQUARED[i]
+      * SH_CONSTANTS_SQUARED[i % SPHERICAL_HARMONICS.size()]
     );
 
   return shTerms;

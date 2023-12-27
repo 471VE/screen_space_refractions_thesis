@@ -50,3 +50,10 @@ enum class pipelineType {
 	SKY,
 	STANDARD
 };
+
+// Encoding
+#define SINGLE_VERTEX_FLOAT_NUM 47
+
+struct DataToEncode {
+	float width, x, y, z;
+};

@@ -191,6 +191,6 @@ void vkmesh::ObjMesh::readCorner(const std::string& vertex_description)
 	vertices.push_back(normal[2]);
 
 	static constexpr int SPHERICAL_HARMONICS_COEEFS_NUM = 9;
-	for (int i = 0; i < SPHERICAL_HARMONICS_COEEFS_NUM; i++)
+	for (int i = 0; i < SPHERICAL_HARMONICS_COEEFS_NUM * 4; i++)
 		vertices.push_back(0);
 }

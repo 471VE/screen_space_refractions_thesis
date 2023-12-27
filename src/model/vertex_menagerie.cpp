@@ -1,5 +1,6 @@
 #include "vertex_menagerie.h"
 #include "../preprocessing/preprocessing_common.h"
+#include "../common/common_definitions.h"
 
 VertexMenagerie::VertexMenagerie()
 	: indexOffset(0)
@@ -46,7 +47,7 @@ void VertexMenagerie::consume(
 	std::vector<uint32_t>& indexData
 ) {
 	int indexCount = static_cast<int>(indexData.size());
-	int vertexCount = static_cast<int>(vertexData.size() / 20);
+	int vertexCount = static_cast<int>(vertexData.size() / SINGLE_VERTEX_FLOAT_NUM);
 	int lastIndex = static_cast<int>(indexLump.size());
 
 	firstIndices.insert(std::make_pair(type, lastIndex));
@@ -55,9 +56,12 @@ void VertexMenagerie::consume(
 	static std::vector<glm::dvec3> hammersleySequence = construct_hemisphere_hammersley_sequence(500);
 	for (int vertexNo = 0; vertexNo < vertexCount; vertexNo++)
 	{
-		glm::vec3 vertexPos = {vertexData[20 * vertexNo], vertexData[20 * vertexNo + 1], vertexData[20 * vertexNo + 2]};
-		glm::vec3 outVertexNormal = {vertexData[20 * vertexNo + 8], vertexData[20 * vertexNo + 9], vertexData[20 * vertexNo + 10]};
-		glm::vec3 inVertexNormal = -outVertexNormal;
+		glm::vec3 vertexPos = {vertexData[SINGLE_VERTEX_FLOAT_NUM * vertexNo],
+													 vertexData[SINGLE_VERTEX_FLOAT_NUM * vertexNo + 1],
+													 vertexData[SINGLE_VERTEX_FLOAT_NUM * vertexNo + 2]};
+		glm::vec3 inVertexNormal = {-vertexData[SINGLE_VERTEX_FLOAT_NUM * vertexNo + 8],
+																-vertexData[SINGLE_VERTEX_FLOAT_NUM * vertexNo + 9],
+																-vertexData[SINGLE_VERTEX_FLOAT_NUM * vertexNo + 10]};
 
 		// Constructing right-handed orthonormal basis
 		static constexpr glm::vec3 UP = glm::vec3(0.f, 1.f, 0.f);
@@ -65,40 +69,66 @@ void VertexMenagerie::consume(
 		glm::vec3 y_axis = glm::normalize(cross(inVertexNormal, x_axis));
 		glm::mat3 transform = glm::mat3(x_axis, y_axis, inVertexNormal);
 
-		std::function<double(glm::dvec3)> getWidth = [&vertexCount, &vertexData, &vertexPos, &vertexNo, &transform, &indexCount, &indexData](glm::dvec3 direction)
+		std::function<DataToEncode(glm::dvec3)> getDataToEncode = [&vertexCount, &vertexData, &vertexPos, &vertexNo, &transform, &indexCount, &indexData](glm::dvec3 direction)
 		{
 			double width = 0;
 			double maxWidth = 0;
+			glm::vec3 refractedDirection = {0.f, 0.f, 0.f};
 			for (int triangleIndexNo = 0; triangleIndexNo + 2 < indexCount; triangleIndexNo += 3)
 			{
 				glm::vec3 triangleVertex0 = {
-					vertexData[20 * indexData[triangleIndexNo]],      // x
-					vertexData[20 * indexData[triangleIndexNo] + 1],  // y
-					vertexData[20 * indexData[triangleIndexNo] + 2]}; // z
+					vertexData[SINGLE_VERTEX_FLOAT_NUM * indexData[triangleIndexNo    ]    ],  // x
+					vertexData[SINGLE_VERTEX_FLOAT_NUM * indexData[triangleIndexNo    ] + 1],  // y
+					vertexData[SINGLE_VERTEX_FLOAT_NUM * indexData[triangleIndexNo    ] + 2]}; // z
 
 				glm::vec3 triangleVertex1 = {
-					vertexData[20 * indexData[triangleIndexNo + 1]],
-					vertexData[20 * indexData[triangleIndexNo + 1] + 1],
-					vertexData[20 * indexData[triangleIndexNo + 1] + 2]};
+					vertexData[SINGLE_VERTEX_FLOAT_NUM * indexData[triangleIndexNo + 1]    ],
+					vertexData[SINGLE_VERTEX_FLOAT_NUM * indexData[triangleIndexNo + 1] + 1],
+					vertexData[SINGLE_VERTEX_FLOAT_NUM * indexData[triangleIndexNo + 1] + 2]};
 
 				glm::vec3 triangleVertex2 = {
-					vertexData[20 * indexData[triangleIndexNo + 2]],
-					vertexData[20 * indexData[triangleIndexNo + 2] + 1],
-					vertexData[20 * indexData[triangleIndexNo + 2] + 2]};
+					vertexData[SINGLE_VERTEX_FLOAT_NUM * indexData[triangleIndexNo + 2]    ],
+					vertexData[SINGLE_VERTEX_FLOAT_NUM * indexData[triangleIndexNo + 2] + 1],
+					vertexData[SINGLE_VERTEX_FLOAT_NUM * indexData[triangleIndexNo + 2] + 2]};
 
 				// Here we go from vertex reference frame to object reference frame
 				glm::vec3 globalDirection = transform * direction;
 				if (ray_intersects_triangle(vertexPos, globalDirection,
-						triangleVertex0, triangleVertex1, triangleVertex2, width))
-					maxWidth = std::max(maxWidth, width);
+						triangleVertex0, triangleVertex1, triangleVertex2, width)) [[unlikely]]
+					if (width > maxWidth)
+					{
+						maxWidth = width;
+
+						glm::vec3 triangleNormal0 = {
+							vertexData[SINGLE_VERTEX_FLOAT_NUM * indexData[triangleIndexNo] + 8 ],  // x
+							vertexData[SINGLE_VERTEX_FLOAT_NUM * indexData[triangleIndexNo] + 9 ],  // y
+							vertexData[SINGLE_VERTEX_FLOAT_NUM * indexData[triangleIndexNo] + 10]}; // z
+
+						glm::vec3 triangleNormal1 = {
+							vertexData[SINGLE_VERTEX_FLOAT_NUM * indexData[triangleIndexNo + 1] + 8 ],
+							vertexData[SINGLE_VERTEX_FLOAT_NUM * indexData[triangleIndexNo + 1] + 9 ],
+							vertexData[SINGLE_VERTEX_FLOAT_NUM * indexData[triangleIndexNo + 1] + 10]};
+
+						glm::vec3 triangleNormal2 = {
+							vertexData[SINGLE_VERTEX_FLOAT_NUM * indexData[triangleIndexNo + 2] + 8 ],
+							vertexData[SINGLE_VERTEX_FLOAT_NUM * indexData[triangleIndexNo + 2] + 9 ],
+							vertexData[SINGLE_VERTEX_FLOAT_NUM * indexData[triangleIndexNo + 2] + 10]};
+
+						glm::vec3 triangleNormalAvg = glm::normalize((triangleNormal0 + triangleNormal1 + triangleNormal2) / 3.f);
+
+						// Normal is directed inward, eta = IOR of glass since we go from glass to air
+						refractedDirection = glm::refract(globalDirection, -triangleNormalAvg, IOR);
+						if (glm::dot(refractedDirection, refractedDirection) > FLT_EPSILON)
+							refractedDirection = glm::normalize(refractedDirection);
+					}
 			}
-			return maxWidth;
+			return DataToEncode(maxWidth, refractedDirection.x, refractedDirection.y, refractedDirection.z);
 		};
-		std::vector<float> sphCoeffs = calculate_sh_terms(hammersleySequence, getWidth);
+		std::vector<float> sphCoeffs = calculate_sh_terms(hammersleySequence, getDataToEncode);
 
 		static constexpr int SPHERICAL_HARMONICS_COEEFS_NUM = 9;
-		for (int i = 0; i < SPHERICAL_HARMONICS_COEEFS_NUM; i++)
-			vertexData[20 * vertexNo + 11 + i] = sphCoeffs[i];
+		for (int i = 0; i < SPHERICAL_HARMONICS_COEEFS_NUM * 4; i++)
+			vertexData[SINGLE_VERTEX_FLOAT_NUM * vertexNo + 11 + i] = sphCoeffs[i];
 
 		if (vertexNo % 100 == 0)
 			std::cout << "Vertex: " << vertexNo << "/" << vertexCount << '\n';

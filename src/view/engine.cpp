@@ -261,7 +261,7 @@ void Engine::makeAssets()
 	// Meshes
 	meshes = new VertexMenagerie();
 	std::unordered_map<meshTypes, std::vector<const char*>> model_filenames = {
-		{meshTypes::CUBE, {"resources/models/cube.obj", "resources/models/blank.mtl"}}
+		{meshTypes::CUBE, {"resources/models/human_skull.obj", "resources/models/blank.mtl"}}
 		// {meshTypes::GROUND, {"resources/models/ground.obj","resources/models/ground.mtl"}},
 		// {meshTypes::GIRL, {"resources/models/girl.obj","resources/models/girl.mtl"}},
 		// {meshTypes::SKULL, {"resources/models/skull.obj","resources/models/skull.mtl"}},
@@ -414,7 +414,7 @@ void Engine::prepareFrame(uint32_t imageIndex, Scene* scene)
 	_frame.cameraVectorData.position = camPos;
 	memcpy(_frame.cameraVectorWriteLocation, &(_frame.cameraVectorData), sizeof(CameraVectors));
 
-	_frame.renderParamsData.aspectRatio = static_cast<float>(width) / static_cast<float>(height);
+	_frame.renderParamsData.aspectRatio = static_cast<float>(height) / static_cast<float>(width);
 	_frame.renderParamsData.distanceCalculationMode = distanceCalculationMode;
 	memcpy(_frame.renderParamsWriteLocation, &(_frame.renderParamsData), sizeof(RenderParams));
 
@@ -461,9 +461,7 @@ void Engine::recordDrawCommandsSky(vk::CommandBuffer commandBuffer, uint32_t ima
 	renderPassInfo.pClearValues = clearValues.data();
 
 	commandBuffer.beginRenderPass(&renderPassInfo, vk::SubpassContents::eInline);
-
 	commandBuffer.bindPipeline(vk::PipelineBindPoint::eGraphics, pipeline[pipelineType::SKY]);
-
 	commandBuffer.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, pipelineLayout[pipelineType::SKY], 0, swapchainFrames[imageIndex].descriptorSet[pipelineType::SKY], nullptr);
 
 	cubemap->use(commandBuffer, pipelineLayout[pipelineType::SKY]);
@@ -492,28 +490,30 @@ void Engine::recordDrawCommandsScene(vk::CommandBuffer commandBuffer, uint32_t i
 	renderPassInfo.clearValueCount = 2;
 	renderPassInfo.pClearValues = clearValues.data();
 
-	commandBuffer.beginRenderPass(&renderPassInfo, vk::SubpassContents::eInline);
+	if (distanceCalculationMode != 1)
+	{
+		commandBuffer.beginRenderPass(&renderPassInfo, vk::SubpassContents::eInline);
+		commandBuffer.bindPipeline(vk::PipelineBindPoint::eGraphics, pipeline[pipelineType::STANDARD]);	
+		commandBuffer.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, pipelineLayout[pipelineType::STANDARD], 0, swapchainFrames[imageIndex].descriptorSet[pipelineType::STANDARD], nullptr);
 
-	commandBuffer.bindPipeline(vk::PipelineBindPoint::eGraphics, pipeline[pipelineType::STANDARD]);
-	
-	commandBuffer.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, pipelineLayout[pipelineType::STANDARD], 0, swapchainFrames[imageIndex].descriptorSet[pipelineType::STANDARD], nullptr);
+		prepareScene(commandBuffer);
+		cubemap->use(commandBuffer, pipelineLayout[pipelineType::STANDARD]);
 
-	prepareScene(commandBuffer);
+		uint32_t startInstance = 0;
+		for (std::pair<meshTypes, std::vector<glm::vec3>> pair : scene->positions)
+			renderObjects(
+				commandBuffer, pair.first, startInstance, static_cast<uint32_t>(pair.second.size())
+			);
 
-	uint32_t startInstance = 0;
-	for (std::pair<meshTypes, std::vector<glm::vec3>> pair : scene->positions)
-		renderObjects(
-			commandBuffer, pair.first, startInstance, static_cast<uint32_t>(pair.second.size())
-		);
-
-	commandBuffer.endRenderPass();
+		commandBuffer.endRenderPass();
+	}
 }
 
 void Engine::renderObjects(vk::CommandBuffer commandBuffer, meshTypes objectType, uint32_t& startInstance, uint32_t instanceCount)
 {
 	int indexCount = meshes->indexCounts.find(objectType)->second;
 	int firstIndex = meshes->firstIndices.find(objectType)->second;
-	materials[objectType]->use(commandBuffer, pipelineLayout[pipelineType::STANDARD]);
+	// materials[objectType]->use(commandBuffer, pipelineLayout[pipelineType::STANDARD]);
 	commandBuffer.drawIndexed(indexCount, instanceCount, firstIndex, 0, startInstance);
 	startInstance += instanceCount;
 }

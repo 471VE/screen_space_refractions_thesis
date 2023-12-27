@@ -34,9 +34,10 @@ using shader_bool  = uint32_t;
 
 #define shader_bool  bool
 
-
 #endif
 
+
+#define IOR 1.45f // index of refraction
 
 struct RenderParams
 {
@@ -57,11 +58,6 @@ struct CameraMatrices
   shader_mat4 view;
   shader_mat4 projection;
   shader_mat4 viewProjection;
-};
-
-struct ShTerms
-{
-  shader_vec4 terms[3];
 };
 
 #endif // COMMON_DEFINITIONS_H
